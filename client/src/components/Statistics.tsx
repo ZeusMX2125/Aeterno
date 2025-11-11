@@ -1,42 +1,32 @@
 import { useState, useRef, MouseEvent } from 'react';
-import { Briefcase, Users, Award, TrendingUp, Clock, List } from 'lucide-react';
+import { Camera, Code, TrendingUp, Users } from 'lucide-react';
 
 const stats = [
   {
-    icon: List,
-    title: 'Action Plan Testing',
-    description: 'Evaluating action plans to ensure effectiveness and goal alignment before implementation.',
-    progress: 30,
-    status: 'IMPORTANT' as const,
+    icon: Camera,
+    number: '500+',
+    label: 'Visual Stories',
+    gradient: 'from-orange-500 to-pink-500',
   },
   {
-    icon: Briefcase,
-    title: 'Implementation',
-    description: 'Launching the refined strategy and executing carefully planned actions.',
-    progress: 75,
-    status: 'IN PROGRESS' as const,
-  },
-  {
-    icon: Users,
-    title: 'User Insights',
-    description: 'Collecting user feedback and analyzing engagement to refine approach.',
-    progress: 60,
-    status: 'IN PROGRESS' as const,
+    icon: Code,
+    number: '120+',
+    label: 'Sites Built',
+    gradient: 'from-primary to-orange-600',
   },
   {
     icon: TrendingUp,
-    title: 'Performance Metrics',
-    description: 'Tracking key indicators to measure success and optimize continuously.',
-    progress: 90,
-    status: 'COMPLETED' as const,
+    number: '2.5M+',
+    label: 'Impressions',
+    gradient: 'from-yellow-500 to-primary',
+  },
+  {
+    icon: Users,
+    number: '98%',
+    label: 'Client Retention',
+    gradient: 'from-primary to-red-500',
   },
 ];
-
-const statusColors = {
-  IMPORTANT: 'text-red-400 bg-red-400/10 border-red-400/30',
-  'IN PROGRESS': 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30',
-  COMPLETED: 'text-green-400 bg-green-400/10 border-green-400/30',
-};
 
 function StatCard({ stat, index }: { stat: typeof stats[0]; index: number }) {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
@@ -54,8 +44,8 @@ function StatCard({ stat, index }: { stat: typeof stats[0]; index: number }) {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    const rotateX = ((y - centerY) / centerY) * -5;
-    const rotateY = ((x - centerX) / centerX) * 5;
+    const rotateX = ((y - centerY) / centerY) * -8;
+    const rotateY = ((x - centerX) / centerX) * 8;
     
     setRotation({ x: rotateX, y: rotateY });
   };
@@ -64,60 +54,55 @@ function StatCard({ stat, index }: { stat: typeof stats[0]; index: number }) {
     setRotation({ x: 0, y: 0 });
   };
 
+  const zDepths = [60, 40, 20, 50];
+  const depth = zDepths[index % zDepths.length];
+
   return (
     <div className="perspective-container">
       <div
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="bg-[#1A1A1A] border border-white/5 rounded-xl p-5 transition-all duration-300 group tilt-3d preserve-3d hover:border-white/10"
+        className="relative group preserve-3d transition-all duration-300 hover:scale-105"
         style={{
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
+          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) translateZ(${depth}px)`,
+          transformStyle: 'preserve-3d',
         }}
         data-testid={`card-stat-${index}`}
       >
-        {/* macOS Traffic Lights */}
-        <div className="flex items-center gap-1.5 mb-4">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <div className="w-3 h-3 rounded-full bg-green-500" />
-        </div>
-
-        {/* Window Title Bar */}
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
-          <div className="w-8 h-8 bg-white/5 rounded-md flex items-center justify-center">
-            <Icon className="w-4 h-4 text-white/60" />
+        {/* Glass card */}
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl group-hover:border-white/20 transition-all">
+          {/* Icon */}
+          <div className="mb-6 relative">
+            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${stat.gradient} p-3 shadow-lg`}>
+              <Icon className="w-full h-full text-white" />
+            </div>
+            {/* Glow effect */}
+            <div className={`absolute inset-0 w-14 h-14 rounded-xl bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300`} />
           </div>
-          <h3 className="font-body text-white text-base font-medium flex-1">
-            {stat.title}
-          </h3>
-        </div>
 
-        {/* Content */}
-        <div className="space-y-4">
-          <p className="font-body text-sm text-white/50 leading-relaxed">
-            {stat.description}
+          {/* Number */}
+          <div 
+            className="font-title text-6xl md:text-7xl font-bold text-white mb-3"
+            style={{
+              transform: 'translateZ(20px)',
+              textShadow: '0 0 40px rgba(242, 122, 35, 0.3)',
+            }}
+            data-testid={`text-stat-number-${index}`}
+          >
+            {stat.number}
+          </div>
+
+          {/* Label */}
+          <p 
+            className="font-body text-base text-white/60 uppercase tracking-wide"
+            style={{ transform: 'translateZ(10px)' }}
+          >
+            {stat.label}
           </p>
 
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2 text-white/60">
-                <Clock className="w-3 h-3" />
-                <span>{stat.progress}% complete</span>
-              </div>
-              <span className={`px-2 py-0.5 rounded text-xs font-medium border ${statusColors[stat.status]}`}>
-                {stat.status}
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-primary to-orange-400 rounded-full transition-all duration-500"
-                style={{ width: `${stat.progress}%` }}
-              />
-            </div>
-          </div>
+          {/* Gradient overlay on hover */}
+          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`} />
         </div>
       </div>
     </div>
@@ -126,44 +111,29 @@ function StatCard({ stat, index }: { stat: typeof stats[0]; index: number }) {
 
 export default function Statistics() {
   return (
-    <section className="py-16 md:py-24 bg-black relative overflow-hidden">
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
+    <section className="py-20 md:py-32 bg-black relative overflow-hidden">
+      {/* Animated background gradients */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
-        <div className="text-center mb-12">
-          <p className="text-primary font-body text-sm uppercase tracking-wider mb-3">
-            PROCESS
+        {/* Header */}
+        <div className="text-center mb-16">
+          <p className="text-primary font-body text-sm uppercase tracking-wider mb-4 opacity-80">
+            By The Numbers
           </p>
-          <h2 className="font-title text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase leading-tight max-w-3xl mx-auto">
-            The Approach <span className="text-primary">Plan</span>
+          <h2 className="font-title text-4xl md:text-5xl lg:text-6xl font-bold text-white uppercase leading-tight">
+            Proven <span className="text-primary">Results</span>
           </h2>
-          <p className="text-white/50 font-body text-base md:text-lg mt-4 max-w-2xl mx-auto">
-            A clear step-by-step strategy designed to achieve goals efficiently.
-          </p>
         </div>
 
-        {/* Staggered grid layout */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 relative">
-          {/* First card - full width on mobile, spans 2 columns on large */}
-          <div className="lg:col-span-2">
-            <StatCard stat={stats[0]} index={0} />
-          </div>
-          
-          {/* Second card */}
-          <div className="lg:translate-y-8">
-            <StatCard stat={stats[1]} index={1} />
-          </div>
-          
-          {/* Third card */}
-          <div className="lg:-translate-y-4">
-            <StatCard stat={stats[2]} index={2} />
-          </div>
-          
-          {/* Fourth card - spans 2 columns on large */}
-          <div className="lg:col-span-2 lg:translate-y-4">
-            <StatCard stat={stats[3]} index={3} />
-          </div>
+        {/* Stats Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          {stats.map((stat, index) => (
+            <StatCard key={index} stat={stat} index={index} />
+          ))}
         </div>
       </div>
     </section>
