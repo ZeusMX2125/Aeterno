@@ -7,11 +7,9 @@ export default function Privacy() {
     <div className="min-h-screen bg-white flex flex-col">
       <div className="flex-1">
         <div className="max-w-4xl mx-auto px-6 py-12 md:py-20">
-          <Link href="/">
-            <a className="inline-flex items-center gap-2 font-body text-brand-orange hover:text-brand-orange/80 transition-colors mb-8" data-testid="link-back-home">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </a>
+          <Link href="/" className="inline-flex items-center gap-2 font-body text-brand-orange hover:text-brand-orange/80 transition-colors mb-8" data-testid="link-back-home">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Home
           </Link>
 
           <h1 className="font-title text-4xl md:text-5xl lg:text-6xl font-bold text-brand-dark-text mb-8">

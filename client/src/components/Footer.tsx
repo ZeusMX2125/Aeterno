@@ -8,10 +8,8 @@ export default function Footer() {
           © {new Date().getFullYear()} Aeterno Media. All rights reserved.
         </p>
         
-        <Link href="/privacy">
-          <a className="font-body text-brand-light-gray text-sm hover:text-white transition-colors underline" data-testid="link-privacy">
-            Privacy Policy
-          </a>
+        <Link href="/privacy" className="font-body text-brand-light-gray text-sm hover:text-white transition-colors underline" data-testid="link-privacy">
+          Privacy Policy
         </Link>
       </div>
     </footer>

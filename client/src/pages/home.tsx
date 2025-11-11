@@ -23,7 +23,7 @@ export default function Home() {
 
   return (
     <div className="w-full overflow-x-hidden">
-      <Hook />
+      <Hook openModal={openModal} />
       <Scene1_Photography openModal={openModal} />
       <Scene2_WebDev openModal={openModal} />
       <Scene3_SMM openModal={openModal} />
