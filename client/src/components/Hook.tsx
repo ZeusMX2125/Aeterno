@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import logoImage from '@assets/generated_images/Aeterno_agency_logo_4c6eece0.png';
+import logoImage from '@assets/AETERNO (2)_1762893208320.png';
 
 interface HookProps {
   openModal: (service: string) => void;

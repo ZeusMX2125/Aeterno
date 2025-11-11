@@ -1,13 +1,20 @@
 import { Link } from 'wouter';
 import { Instagram, Twitter, Linkedin } from 'lucide-react';
+import logoImage from '@assets/AETERNO (2)_1762893208320.png';
 
 export default function Footer() {
   return (
     <footer className="bg-black border-t border-border py-12 px-4 md:px-8" data-testid="footer">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col items-center md:items-start gap-2">
-            <p className="font-title text-2xl font-bold text-white uppercase">
+          <div className="flex flex-col items-center md:items-start gap-3">
+            <img 
+              src={logoImage} 
+              alt="Aeterno Media" 
+              className="w-16 h-auto"
+              data-testid="img-footer-logo"
+            />
+            <p className="font-title text-lg font-bold text-white uppercase">
               Aeterno <span className="text-primary">Media</span>
             </p>
             <p className="font-body text-muted-foreground text-sm">

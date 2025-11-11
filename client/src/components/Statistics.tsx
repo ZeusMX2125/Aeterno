@@ -1,3 +1,4 @@
+import { useState, useRef, MouseEvent } from 'react';
 import { Briefcase, Users, Award, TrendingUp } from 'lucide-react';
 
 const stats = [
@@ -27,6 +28,71 @@ const stats = [
   },
 ];
 
+function StatCard({ stat, index }: { stat: typeof stats[0]; index: number }) {
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const Icon = stat.icon;
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const card = cardRef.current;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((y - centerY) / centerY) * -10; // Max 10 degrees
+    const rotateY = ((x - centerX) / centerX) * 10;
+    
+    setRotation({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setRotation({ x: 0, y: 0 });
+  };
+
+  return (
+    <div className="perspective-container">
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="glass rounded-2xl p-6 md:p-8 hover:glow-orange transition-all duration-300 group tilt-3d preserve-3d"
+        style={{
+          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+        }}
+        data-testid={`card-stat-${index}`}
+      >
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start justify-between depth-layer-mid">
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <Icon className="w-5 h-5 text-primary" />
+            </div>
+          </div>
+          
+          <div>
+            <div 
+              className="font-title text-5xl md:text-6xl font-bold text-white text-glow-orange mb-2 depth-layer-front"
+              data-testid={`text-stat-number-${index}`}
+            >
+              {stat.number}
+            </div>
+            <h3 className="font-title text-lg font-bold text-white uppercase mb-2 depth-layer-mid">
+              {stat.label}
+            </h3>
+            <p className="font-body text-sm text-muted-foreground leading-relaxed depth-layer-back">
+              {stat.description}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Statistics() {
   return (
     <section className="py-16 md:py-24 bg-card border-y border-border relative overflow-hidden">
@@ -47,39 +113,9 @@ export default function Statistics() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={index}
-                className="glass rounded-2xl p-6 md:p-8 hover:glow-orange transition-all duration-300 group"
-                data-testid={`card-stat-${index}`}
-              >
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-start justify-between">
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Icon className="w-5 h-5 text-primary" />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div 
-                      className="font-title text-5xl md:text-6xl font-bold text-white text-glow-orange mb-2"
-                      data-testid={`text-stat-number-${index}`}
-                    >
-                      {stat.number}
-                    </div>
-                    <h3 className="font-title text-lg font-bold text-white uppercase mb-2">
-                      {stat.label}
-                    </h3>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                      {stat.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {stats.map((stat, index) => (
+            <StatCard key={index} stat={stat} index={index} />
+          ))}
         </div>
       </div>
     </section>
