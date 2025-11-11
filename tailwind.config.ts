@@ -11,6 +11,12 @@ export default {
         sm: ".1875rem", /* 3px */
       },
       colors: {
+        // Aeterno Brand Colors
+        "brand-orange": "#F27A23",
+        "brand-dark-blue": "#1E2A3A",
+        "brand-light-gray": "#D9D9D9",
+        "brand-dark-text": "#1A1A1A",
+        
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
@@ -86,6 +92,8 @@ export default {
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
+        title: ["Oswald", "sans-serif"],
+        body: ["Inter", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
