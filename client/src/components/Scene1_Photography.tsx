@@ -64,17 +64,17 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
     <section
       id="scene-photography"
       ref={containerRef}
-      className="min-h-screen w-full relative overflow-hidden"
+      className="min-h-screen w-full relative overflow-hidden bg-black"
       data-testid="section-photography"
     >
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center grayscale"
         style={{ backgroundImage: `url(${beforeImage})` }}
       />
 
       <div
         ref={dividerRef}
-        className="absolute top-0 left-0 w-1 h-full bg-brand-orange z-10"
+        className="absolute top-0 left-0 w-1 h-full bg-primary z-10 shadow-[0_0_30px_rgba(242,122,35,0.6)]"
         style={{ transform: 'translateX(-100%)' }}
       />
 
@@ -87,20 +87,20 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
         }}
       />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-20" />
 
-      <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16 z-30 max-w-3xl">
+      <div className="absolute bottom-8 left-4 md:left-12 right-4 md:right-auto md:max-w-2xl z-30 glass-dark rounded-2xl p-6 md:p-8">
         <h2
           ref={headlineRef}
-          className="font-title text-4xl md:text-6xl font-bold text-white mb-6"
+          className="font-title text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 uppercase leading-tight"
           data-testid="text-photography-headline"
         >
-          It all starts with the perfect image.
+          It all starts with the <span className="text-primary">perfect image</span>
         </h2>
         
         <p
           ref={subheadlineRef}
-          className="font-body text-lg md:text-xl text-white/90 mb-8 max-w-2xl"
+          className="font-body text-base md:text-lg text-muted-foreground mb-6"
           data-testid="text-photography-subheadline"
         >
           We capture and refine the visuals that define your brand.
@@ -109,7 +109,7 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
         <button
           ref={buttonRef}
           onClick={() => openModal('Photography')}
-          className="bg-brand-orange text-white font-body font-medium text-base px-6 py-3 rounded-lg hover-elevate active-elevate-2 transition-all"
+          className="bg-primary text-white font-body font-semibold text-sm md:text-base px-6 py-3 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95"
           data-testid="button-quote-visuals"
         >
           Get a Quote for Visuals

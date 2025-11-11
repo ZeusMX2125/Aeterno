@@ -31,10 +31,11 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
         if (heart) {
           tl.fromTo(
             heart,
-            { opacity: 0, y: 20 },
+            { opacity: 0, y: 20, scale: 0.5 },
             {
               opacity: 1,
               y: -20,
+              scale: 1,
               duration: 0.4,
               ease: 'power2.out',
             },
@@ -72,20 +73,23 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
   return (
     <section
       ref={containerRef}
-      className="min-h-screen w-full relative bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center overflow-hidden"
+      className="min-h-screen w-full relative bg-black flex items-center justify-center overflow-hidden"
       data-testid="section-smm"
     >
-      <div className="w-full max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-        <div ref={textContainerRef} className="space-y-6 order-2 md:order-1">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-bl from-primary/5 via-transparent to-transparent" />
+      
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+        <div ref={textContainerRef} className="space-y-4 md:space-y-6 order-2 md:order-1 glass rounded-2xl p-6 md:p-8">
           <h2
-            className="font-title text-4xl md:text-5xl lg:text-6xl font-bold text-brand-dark-text"
+            className="font-title text-3xl md:text-5xl lg:text-6xl font-bold text-white uppercase leading-tight"
             data-testid="text-smm-headline"
           >
-            Then, we tell the world.
+            Then, we <span className="text-primary">tell the world</span>
           </h2>
           
           <p
-            className="font-body text-lg md:text-xl text-gray-700"
+            className="font-body text-base md:text-lg text-muted-foreground"
             data-testid="text-smm-subheadline"
           >
             We turn your assets into a community. Strategic SMM that grows your audience.
@@ -93,7 +97,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
           
           <button
             onClick={() => openModal('Social Media Marketing')}
-            className="bg-brand-orange text-white font-body font-medium text-base px-6 py-3 rounded-lg hover-elevate active-elevate-2 transition-all"
+            className="bg-primary text-white font-body font-semibold text-sm md:text-base px-6 py-3 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95"
             data-testid="button-quote-socials"
           >
             Get a Quote for Socials
@@ -104,7 +108,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
           <img
             src={phoneImage}
             alt="Phone mockup"
-            className="w-64 md:w-80 h-auto relative z-10"
+            className="w-56 md:w-72 lg:w-80 h-auto relative z-10"
           />
 
           {heartPositions.map((position, index) => (
@@ -114,7 +118,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
               className="absolute z-20"
               style={position}
             >
-              <Heart className="w-8 h-8 text-brand-orange fill-brand-orange" />
+              <Heart className="w-6 h-6 md:w-8 md:h-8 text-primary fill-primary drop-shadow-[0_0_10px_rgba(242,122,35,0.6)]" />
             </div>
           ))}
         </div>

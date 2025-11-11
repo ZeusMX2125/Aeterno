@@ -63,10 +63,13 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
   return (
     <section
       ref={containerRef}
-      className="min-h-screen w-full relative bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center overflow-hidden"
+      className="min-h-screen w-full relative bg-black flex items-center justify-center overflow-hidden"
       data-testid="section-webdev"
     >
-      <div className="w-full max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
+      
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
         <div className="relative">
           <img
             src={laptopImage}
@@ -90,22 +93,22 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
 
           <div
             ref={cursorRef}
-            className="absolute top-1/2 left-1/2 z-20 text-brand-orange"
+            className="absolute top-1/2 left-1/2 z-20 text-primary drop-shadow-[0_0_10px_rgba(242,122,35,0.6)]"
           >
             <MousePointer2 className="w-8 h-8" />
           </div>
         </div>
 
-        <div ref={textContainerRef} className="space-y-6">
+        <div ref={textContainerRef} className="space-y-4 md:space-y-6 glass rounded-2xl p-6 md:p-8">
           <h2
-            className="font-title text-4xl md:text-5xl lg:text-6xl font-bold text-brand-dark-text"
+            className="font-title text-3xl md:text-5xl lg:text-6xl font-bold text-white uppercase leading-tight"
             data-testid="text-webdev-headline"
           >
-            We build your brand's digital home.
+            We build your brand's <span className="text-primary">digital home</span>
           </h2>
           
           <p
-            className="font-body text-lg md:text-xl text-gray-700"
+            className="font-body text-base md:text-lg text-muted-foreground"
             data-testid="text-webdev-subheadline"
           >
             A stunning website is your #1 salesperson. We build experiences that convert.
@@ -113,7 +116,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
           
           <button
             onClick={() => openModal('Web Development')}
-            className="bg-brand-orange text-white font-body font-medium text-base px-6 py-3 rounded-lg hover-elevate active-elevate-2 transition-all"
+            className="bg-primary text-white font-body font-semibold text-sm md:text-base px-6 py-3 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95"
             data-testid="button-quote-website"
           >
             Get a Quote for a Website

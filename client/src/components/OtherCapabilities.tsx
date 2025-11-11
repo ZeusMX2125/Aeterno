@@ -38,41 +38,49 @@ const services = [
   },
   {
     icon: FileText,
-    title: 'Copywriting for Businesses',
+    title: 'Copywriting',
     description: 'Words that persuade, inform, and convert',
   },
 ];
 
 export default function OtherCapabilities() {
   return (
-    <section className="py-20 md:py-32 bg-white" data-testid="section-capabilities">
-      <div className="max-w-6xl mx-auto px-6">
-        <h2
-          className="font-title text-4xl md:text-5xl lg:text-6xl font-bold text-brand-dark-text text-center mb-16"
-          data-testid="text-capabilities-headline"
-        >
-          Our Full Capabilities
-        </h2>
+    <section className="py-16 md:py-24 bg-black relative" data-testid="section-capabilities">
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
+        <div className="text-center mb-12">
+          <p className="text-primary font-body text-sm uppercase tracking-wider mb-3">
+            SERVICES
+          </p>
+          <h2
+            className="font-title text-4xl md:text-5xl lg:text-6xl font-bold text-white uppercase leading-tight"
+            data-testid="text-capabilities-headline"
+          >
+            What We <span className="text-primary">Do Best</span>
+          </h2>
+        </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {services.map((service, index) => {
             const Icon = service.icon;
             return (
               <div
                 key={index}
-                className="border border-brand-light-gray rounded-lg p-8 hover-elevate active-elevate-2 transition-all"
+                className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all duration-300 group hover:glow-orange cursor-pointer"
                 data-testid={`card-service-${index}`}
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-brand-orange/10 rounded-lg flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-brand-orange" />
+                <div className="flex flex-col gap-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Icon className="w-6 h-6 text-primary" />
                   </div>
                   
-                  <div className="flex-1">
-                    <h3 className="font-body font-semibold text-xl text-brand-dark-text mb-2">
+                  <div>
+                    <h3 className="font-title text-lg font-bold text-white mb-2 uppercase">
                       {service.title}
                     </h3>
-                    <p className="font-body text-gray-600">
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed">
                       {service.description}
                     </p>
                   </div>

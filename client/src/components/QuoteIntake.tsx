@@ -79,21 +79,21 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md px-4"
       onClick={closeModal}
       data-testid="modal-quote-backdrop"
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 md:p-12 relative"
+        className="bg-card border border-border rounded-2xl shadow-2xl max-w-2xl w-full p-6 md:p-10 relative"
         onClick={(e) => e.stopPropagation()}
         data-testid="modal-quote-content"
       >
         <button
           onClick={closeModal}
-          className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 text-muted-foreground hover:text-white transition-colors w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/5"
           data-testid="button-close-modal"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
 
         <div className="mb-8">
@@ -102,32 +102,37 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
               <div
                 key={step}
                 className={`h-2 flex-1 rounded-full transition-all ${
-                  step <= currentStep ? 'bg-brand-orange' : 'bg-gray-200'
+                  step <= currentStep ? 'bg-primary' : 'bg-border'
                 }`}
               />
             ))}
           </div>
           
-          <p className="text-center text-sm font-body text-gray-500">
+          <p className="text-center text-sm font-body text-muted-foreground">
             Step {currentStep} of 3
           </p>
         </div>
 
         {currentStep === 1 && (
           <div className="space-y-6">
-            <h3 className="font-title text-3xl font-bold text-brand-dark-text text-center">
-              What service do you need?
-            </h3>
+            <div className="text-center mb-6">
+              <p className="text-primary font-body text-xs uppercase tracking-wider mb-2">
+                SELECT SERVICE
+              </p>
+              <h3 className="font-title text-3xl md:text-4xl font-bold text-white uppercase">
+                What service do you need?
+              </h3>
+            </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {services.map((service) => (
                 <button
                   key={service}
                   onClick={() => handleServiceSelect(service)}
-                  className={`font-body text-sm py-3 px-4 rounded-lg border-2 transition-all ${
+                  className={`font-body text-sm py-3 px-4 rounded-xl border transition-all ${
                     formData.service === service
-                      ? 'bg-brand-orange text-white border-brand-orange'
-                      : 'bg-white text-brand-dark-text border-brand-light-gray hover-elevate'
+                      ? 'bg-primary text-white border-primary glow-orange'
+                      : 'bg-background text-white border-border hover:border-primary/50 hover-elevate'
                   }`}
                   data-testid={`button-service-${service.toLowerCase().replace(/\s+/g, '-')}`}
                 >
@@ -140,16 +145,21 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
 
         {currentStep === 2 && (
           <div className="space-y-6">
-            <h3 className="font-title text-3xl font-bold text-brand-dark-text text-center">
-              What's your budget?
-            </h3>
+            <div className="text-center mb-6">
+              <p className="text-primary font-body text-xs uppercase tracking-wider mb-2">
+                SET BUDGET
+              </p>
+              <h3 className="font-title text-3xl md:text-4xl font-bold text-white uppercase">
+                What's your budget?
+              </h3>
+            </div>
             
             <div className="space-y-8">
-              <div className="text-center">
-                <p className="font-title text-5xl font-bold text-brand-orange">
+              <div className="text-center glass rounded-2xl p-8">
+                <p className="font-title text-6xl md:text-7xl font-bold text-primary text-glow-orange">
                   ${formData.budget.toLocaleString()}
                 </p>
-                <p className="font-body text-gray-500 mt-2">Estimated project budget</p>
+                <p className="font-body text-muted-foreground mt-3">Estimated project budget</p>
               </div>
 
               <Slider
@@ -162,7 +172,7 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
                 data-testid="slider-budget"
               />
 
-              <div className="flex justify-between font-body text-sm text-gray-500">
+              <div className="flex justify-between font-body text-sm text-muted-foreground">
                 <span>$1,000</span>
                 <span>$50,000</span>
               </div>
@@ -172,13 +182,18 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
 
         {currentStep === 3 && (
           <div className="space-y-6">
-            <h3 className="font-title text-3xl font-bold text-brand-dark-text text-center">
-              Let's get in touch
-            </h3>
+            <div className="text-center mb-6">
+              <p className="text-primary font-body text-xs uppercase tracking-wider mb-2">
+                CONTACT INFO
+              </p>
+              <h3 className="font-title text-3xl md:text-4xl font-bold text-white uppercase">
+                Let's get in touch
+              </h3>
+            </div>
             
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <Label htmlFor="name" className="font-body text-brand-dark-text mb-2">
+                <Label htmlFor="name" className="font-body text-white mb-2 text-sm">
                   Full Name
                 </Label>
                 <Input
@@ -187,14 +202,14 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
                   type="text"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="h-12 border-brand-light-gray focus:border-brand-orange focus:ring-brand-orange"
+                  className="h-12 bg-background border-border focus:border-primary focus:ring-primary text-white"
                   placeholder="John Doe"
                   data-testid="input-name"
                 />
               </div>
 
               <div>
-                <Label htmlFor="email" className="font-body text-brand-dark-text mb-2">
+                <Label htmlFor="email" className="font-body text-white mb-2 text-sm">
                   Email Address
                 </Label>
                 <Input
@@ -203,7 +218,7 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="h-12 border-brand-light-gray focus:border-brand-orange focus:ring-brand-orange"
+                  className="h-12 bg-background border-border focus:border-primary focus:ring-primary text-white"
                   placeholder="john@example.com"
                   data-testid="input-email"
                 />
@@ -217,7 +232,7 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
             <Button
               onClick={() => setCurrentStep(currentStep - 1)}
               variant="outline"
-              className="flex-1 h-12 font-body"
+              className="flex-1 h-12 font-body border-border hover:border-primary/50"
               data-testid="button-back"
             >
               <ChevronLeft className="w-4 h-4 mr-2" />
@@ -229,7 +244,7 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
             <Button
               onClick={() => setCurrentStep(currentStep + 1)}
               disabled={!canProceed()}
-              className={`flex-1 h-12 font-body bg-brand-orange hover:bg-brand-orange/90 ${
+              className={`flex-1 h-12 font-body bg-primary hover:bg-primary/90 glow-orange ${
                 currentStep === 1 ? 'w-full' : ''
               }`}
               data-testid="button-next"
@@ -241,7 +256,7 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
             <Button
               onClick={handleSubmit}
               disabled={!canProceed()}
-              className="flex-1 h-12 font-body bg-brand-orange hover:bg-brand-orange/90"
+              className="flex-1 h-12 font-body bg-primary hover:bg-primary/90 glow-orange"
               data-testid="button-submit"
             >
               Schedule Your Consultation

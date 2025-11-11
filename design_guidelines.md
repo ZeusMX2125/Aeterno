@@ -1,225 +1,227 @@
-# Aeterno Media Landing Page - Design Guidelines
+# Aeterno Media Landing Page - Design Guidelines (Dark Mode Edition)
 
 ## Design Approach & Philosophy
 
-**Selected Approach:** Reference-Based (Netflix/Airbnb-inspired narrative storytelling + Apple's minimalism)
+**Selected Approach:** Reference-Based (Netflix/Spotify dark premium aesthetic + Ryza template density)
 
-**Core Principle:** This is an "Impress-to-Quote" funnel using scroll-driven storytelling. Each scroll-locked section tells one part of the agency's story before revealing the full service catalog.
+**Core Principle:** Immersive scroll-driven storytelling with pure dark mode, tight spacing, oversized typography, and glass-morphism effects. Dense, image-heavy layout that feels premium and modern.
 
 ---
 
 ## Typography System
 
-**Primary Font (Titles):** Oswald (Google Fonts)
-- All H1, H2 headlines
-- Bold, uppercase for maximum impact
-- Sizes: Mobile 2.5rem, Desktop 4rem for H1; Mobile 2rem, Desktop 3rem for H2
+**Primary Font:** Oswald (Google Fonts)
+- All headlines: UPPERCASE, Bold
+- Sizes: H1 7xl-8xl (4.5rem mobile, 7rem desktop), H2 5xl-6xl (3rem mobile, 5rem desktop)
+- White text (#FFFFFF) for maximum contrast
 
-**Secondary Font (Body):** Inter (Google Fonts)
-- All paragraphs, buttons, UI text, lists
-- Weights: Regular (400) for body, Medium (500) for buttons, SemiBold (600) for emphasis
-- Sizes: Body 1rem (mobile) to 1.125rem (desktop); Buttons 1rem; Sub-headlines 1.25rem
+**Secondary Font:** Inter (Google Fonts)
+- Body, buttons, captions: Weights 400 (body), 500 (buttons), 600 (emphasis)
+- Sizes: Body 1rem, Sub-headlines 1.5rem, Captions 0.875rem
+- Light gray text (#B3B3B3) for body, white for headlines
 
 ---
 
 ## Color Palette
 
-**Primary Orange:** #F27A23 - Used for all CTAs, accent dividers, active states
-**Dark Blue:** #1E2A3A - Background for sections requiring contrast
-**Light Gray:** #D9D9D9 - Borders, subtle backgrounds, dividers
-**Dark Text:** #1A1A1A - All body text
-**White:** #FFFFFF - Headlines on dark backgrounds, button text
+**Backgrounds:**
+- Primary Black: #0A0A0A (main sections)
+- Dark Gray: #111111 (alternating sections, cards)
+- Darkest: #000000 (footer, overlays)
+
+**Text:**
+- Primary: #FFFFFF (headlines, emphasis)
+- Secondary: #B3B3B3 (body text, captions)
+
+**Accent:**
+- Orange: #F27A23 (CTAs, glow effects, progress indicators)
+
+**Glass Effects:**
+- Backdrop: bg-white/5 with backdrop-blur-xl
+- Border: border-white/10
 
 ---
 
 ## Layout & Spacing System
 
-**Tailwind Units:** Consistently use 4, 8, 12, 16, 20, 24 for spacing
-- Section padding: py-20 (desktop), py-12 (mobile)
-- Component gaps: gap-8 (desktop), gap-6 (mobile)
-- Button padding: px-8 py-4
+**Tight Spacing Strategy (Dense Layout):**
+- Section padding: py-12 (desktop), py-8 (mobile)
+- Component gaps: gap-4 (desktop), gap-3 (mobile)
+- Card padding: p-6 (desktop), p-4 (mobile)
+- Button padding: px-6 py-3
 
 **Container Strategy:**
-- Full-screen sections: min-h-screen, flex, justify-center, items-center
-- Standard sections: max-w-7xl mx-auto px-6
-- Modal content: max-w-2xl
+- Full-width sections: w-full, no max-width constraints
+- Content containers: max-w-7xl mx-auto px-4
+- Dense grid layouts: Minimize gap between elements
 
 ---
 
 ## Component Design Specifications
 
-### Hook Section (Hero)
-**Layout:** Full-screen, centered vertically and horizontally, dark background (#1E2A3A)
+### Hero Section
+**Layout:** Full-screen (min-h-screen), centered content over dark image overlay
 
-**Elements:**
-- Logo: Top-center, width 200px (mobile) to 300px (desktop)
-- Headline: Center, white text, Oswald, 4rem, max-width 900px
-- CTA Button: Primary orange background, white text, rounded-lg, shadow-lg, px-8 py-4, hover lift effect
+**Visual Structure:**
+- Background: Large hero image with dark overlay (bg-black/60)
+- Logo: Top-left, 250px width
+- Headline: Center, white, 8xl, max-width 1200px, dramatic statement
+- Sub-headline: 1.5rem, light gray, below headline
+- CTA Button: Orange background (#F27A23), white text, backdrop-blur-lg, shadow-2xl, shadow-orange/20
 
-**Animation Entry:** Fade-in sequence (logo → headline → button) with 0.3s stagger
+**Glass Card (Optional Variant):** Floating glass card with bg-white/5, backdrop-blur-xl, border-white/10, containing headline and CTA
 
 ---
 
-### Scene 1: Photography (Before/After Reveal)
-**Layout:** Full-screen, pin on scroll, two-image overlay system
+### Animated Marquee Scroller
+**Layout:** Full-width, py-8, infinite horizontal scroll
 
-**Visual Structure:**
-- Base layer: "Before" image (full-screen, slightly desaturated)
-- Divider: 4px wide, orange (#F27A23), vertical line
-- Top layer: "After" image (full-screen, vibrant colors, revealed via clip-path)
-- Text overlay: Bottom-left positioned, white text on semi-transparent dark backdrop (bg-black/40, backdrop-blur-sm)
-
-**Content Positioning:**
-- Headline + Sub-headline: Left-aligned, bottom 20% of screen, pl-12
-- CTA Button: Below text, orange background with blur backdrop
-
-**Image Specifications:**
-- Use professional photography showcase images
-- Before: Raw/unedited aesthetic
-- After: Color-graded, professionally edited
-- Both images should be the same subject for clear comparison
+**Content:** Repeating text/logos showcasing services or client brands
+- Text: 2xl, Oswald, uppercase, white text
+- Spacing: mx-12 between items
+- Speed: Smooth, continuous 30s loop
+- Background: #111111 or transparent over image
 
 ---
 
-### Scene 2: Web Development (Wireframe to Design)
-**Layout:** Full-screen, pin on scroll, centered laptop mockup
+### Scroll-Lock Storytelling Sections (3 Scenes)
 
-**Visual Structure:**
-- Laptop mockup: Center screen, width 70% viewport on desktop, 90% on mobile
-- Screen content: Wireframe → Final design transition
-- Cursor/interaction elements: SVG icons that traverse the screen
-- Text block: Right side on desktop (50% width), below on mobile
+**Scene 1: Photography Transformation**
+- Full-screen pin, before/after with vertical divider
+- Before: Grayscale image, left side
+- After: Full-color vibrant, right side revealed
+- Orange divider (4px) animated on scroll
+- Text overlay: Bottom-left, glass morphism container (bg-black/40, backdrop-blur-md), white text, orange CTA
 
-**Content Arrangement:**
-- Headline: Bold, dark text
-- Sub-headline: Lighter weight, 1.25rem
-- CTA Button: Orange, positioned below text
+**Scene 2: Web Development Evolution**
+- Full-screen pin, centered laptop mockup
+- Screen transitions: Wireframe → polished design
+- Floating code snippets/cursor elements around laptop
+- Text: Right side (desktop), glass card container, white headline, orange accents
 
-**Image Specifications:**
-- Laptop mockup: Modern, sleek device (MacBook-style)
-- Wireframe: Low-fidelity, gray-scale design sketch
-- Final design: Polished, colorful website screenshot
-- Ensure both screens fit within laptop frame
-
----
-
-### Scene 3: Social Media Marketing (Engagement Animation)
-**Layout:** Full-screen, pin on scroll, centered phone mockup
-
-**Visual Structure:**
-- Phone mockup: Center, width 40% viewport on desktop, 70% on mobile
-- Screen content: Instagram grid with professional posts
-- Floating hearts: Multiple SVG hearts (8-12) at various positions, orange color
-- Text block: Left side on desktop, below on mobile
-
-**Content Layout:**
-- Headline: Oswald, impactful messaging
-- Sub-headline: Benefit-focused copy
-- CTA Button: Orange, clear call-to-action
-
-**Image Specifications:**
-- Phone mockup: Modern smartphone (iPhone-style)
-- Screen content: Instagram-style grid (3 columns, 3-4 rows of images)
-- Use professional brand content examples (photography, graphics, lifestyle shots)
+**Scene 3: Social Media Growth**
+- Full-screen pin, centered phone mockup
+- Screen: Instagram grid with professional posts
+- Floating engagement icons: hearts, likes, comments (orange glow)
+- Text: Left side (desktop), glass morphism card, stats integration
 
 ---
 
-### Other Capabilities Section
-**Layout:** Standard width (max-w-6xl), grid-based, clean and organized
+### Statistics Display
+**Layout:** Full-width, py-12, grid 4 columns (desktop), 2 columns (mobile)
 
-**Visual Structure:**
-- Headline: Center-aligned, Oswald, 3rem
-- Service grid: 2 columns (desktop), 1 column (mobile)
-- Each service: Icon + title, clean card design with subtle border (border-light-gray)
+**Stat Card Design:**
+- Background: bg-white/5, backdrop-blur-xl, border-white/10
+- Number: 7xl, white, Oswald, glowing effect (text-shadow: 0 0 20px orange/30)
+- Label: 1rem, light gray, below number
+- Icon: Top-right corner, orange accent
+
+**Stats:** Clients served, projects completed, years experience, satisfaction rate
+
+---
+
+### Service Cards Grid
+**Layout:** max-w-7xl, grid 3 columns (desktop), 1 column (mobile), gap-4
 
 **Card Design:**
-- Background: White or very light gray
-- Padding: p-8
-- Border: 1px solid light-gray, rounded-lg
-- Hover: Subtle lift (shadow-md transition)
+- Background: #111111, p-6, rounded-xl
+- Hover: bg-white/5, shadow-xl, shadow-orange/10 (glow effect)
+- Icon: 3xl, orange, top-left
+- Title: 2xl, Oswald, white, uppercase
+- Description: 1rem, light gray, 2 lines max
 
-**Services List:**
-1. Photography
-2. Video Editing
-3. Image Editing
-4. Website Development
-5. App Development
-6. Social Media Marketing
-7. Graphic Design
-8. Copywriting
-
-Use icon library (Heroicons) for visual consistency
+**Services:** Photography, Video Editing, Web Development, App Development, Social Media Marketing, Graphic Design, Copywriting, Branding
 
 ---
 
-### Quote Intake Modal
-**Layout:** Fixed overlay, centered, dark backdrop with blur
+### Numbered Process Steps
+**Layout:** max-w-6xl, vertical timeline, py-16
 
-**Modal Container:**
-- Width: max-w-2xl
-- Background: White
-- Border radius: rounded-2xl
-- Padding: p-8 (mobile), p-12 (desktop)
-- Shadow: shadow-2xl
+**Step Design:**
+- Number: 6xl, Oswald, orange, left-aligned
+- Progress bar: Vertical line connecting steps, bg-white/10, active portion orange
+- Content: Glass card (bg-white/5, backdrop-blur-xl), pl-24, p-8
+- Title: 3xl, white, Oswald
+- Description: 1rem, light gray
 
-**Multi-Step Structure:**
-- Progress indicator: Top of modal, show current step (1/3, 2/3, 3/3)
-- Step 1 (Service): Grid of service buttons (2 columns on mobile, 3 on desktop), selected service has orange background
-- Step 2 (Budget): Range slider with orange track, display current value
-- Step 3 (Contact): Stacked input fields, full-width, border-light-gray
-
-**Button States:**
-- Primary (Next/Submit): Orange background, white text
-- Secondary (Back): Border only, dark text
-- Close (X): Top-right corner, dark icon
-
-**Form Fields:**
-- Input height: h-12
-- Border: 2px solid light-gray
-- Focus state: Border orange, ring-orange
-- Border radius: rounded-lg
+**Steps:** Discovery, Strategy, Design, Development, Launch (5 steps total)
 
 ---
 
-### Footer
-**Layout:** Full-width, dark background (#1E2A3A), py-12
+### Image Showcase Gallery
+**Layout:** Full-width masonry grid, 3 columns (desktop), 1 column (mobile), gap-2
+
+**Image Treatment:**
+- Aspect ratio: Varied (1:1, 16:9, 4:5 mix)
+- Hover: Scale 1.05, overlay with orange gradient
+- Caption: Absolute bottom, glass morphism bg, white text
+- Dense layout: Minimal gaps between images
+
+**Content:** Portfolio pieces, client work examples, behind-the-scenes photography
+
+---
+
+### Quote Modal
+**Layout:** Fixed overlay, centered, max-w-3xl
+
+**Modal Design:**
+- Background: #111111, rounded-2xl, p-12, shadow-2xl
+- Backdrop: bg-black/80, backdrop-blur-sm
+- Close button: Top-right, white icon
+
+**Multi-Step Form:**
+- Progress: Orange bar at top, segments for 3 steps
+- Step 1: Service selection grid, 3 columns, selected state orange background
+- Step 2: Budget range slider, orange track/thumb, large value display (3xl)
+- Step 3: Contact form, stacked inputs, bg-white/5, border-white/10, focus:border-orange
+
+**Buttons:** Orange primary, white/10 border secondary, full-width on mobile
+
+---
+
+## Images
+
+**Hero Image:** Yes - full-screen background image showing agency workspace, creative team, or dramatic brand imagery with dark overlay
+
+**Section Images:**
+- Scene 1: Professional photography before/after comparison (landscape/portrait subject)
+- Scene 2: Laptop mockup with wireframe and polished website screenshots
+- Scene 3: Phone mockup with Instagram grid (9-12 professional posts)
+- Gallery: 15-20 portfolio images showcasing varied work (photography, web designs, branding)
+
+All images: High-quality, dark-treated for cohesion, WebP format, lazy-loaded
+
+---
+
+## Glass-Morphism Effects
+
+**Standard Glass Pattern:**
+```
+background: bg-white/5 or bg-black/40
+backdrop-filter: backdrop-blur-xl
+border: border border-white/10
+shadow: shadow-xl (for depth)
+```
+
+**Use Cases:** Floating cards over images, text overlays, navigation, modal containers
+
+---
+
+## Footer
+**Layout:** Full-width, bg-black, py-12, border-top border-white/10
 
 **Content:**
-- Copyright: Center or left-aligned, light gray text
-- Privacy link: Underline on hover, light gray text
-- Spacing: Generous padding, clean separation from main content
+- Logo: Left side, 200px
+- Links: Center (Services, About, Contact), light gray, hover:white
+- Social icons: Right side, orange hover state
+- Copyright: Bottom, center, light gray text, 0.875rem
 
 ---
 
 ## Animation Principles
 
-**Scroll-Lock Scenes:** User must scroll ~1.5 viewport heights to complete each animation (provides control and engagement)
-
-**Timing:** All transitions use ease-out curves, 0.8-1.2s duration for smoothness
-
-**Stagger:** Multi-element animations stagger by 0.15-0.2s
-
-**Performance:** All animations use transform and opacity properties only (GPU-accelerated)
-
----
-
-## Hero Images
-
-**Large Hero Image:** Yes - The Hook section uses a full-screen background treatment (can be solid color, gradient, or subtle texture)
-
-**Section-Specific Images:**
-- Scene 1: Two full-screen images (before/after photography comparison)
-- Scene 2: Laptop mockup with embedded screen images
-- Scene 3: Phone mockup with embedded Instagram grid
-
-All images should be high-quality, professionally shot/designed, and optimized for web (WebP format, responsive srcsets)
-
----
-
-## Accessibility & Interaction
-
-- All CTAs maintain 4.5:1 contrast ratio
-- Focus states: 2px orange outline with offset
-- Interactive elements: Minimum 44px touch target
-- Modal: Trap focus, ESC key to close, click backdrop to close
-- Smooth scroll: Uses reduced-motion preference detection
+**GSAP Scroll-Lock:** Each scene requires 1.5 viewport scroll to complete animation
+**Marquee:** Continuous 30s loop, seamless infinite scroll
+**Glow Effects:** Subtle pulsing animation (2s duration) on stat numbers and service cards
+**Transitions:** All use ease-out, 0.6-0.8s duration
+**Performance:** Transform and opacity only, GPU-accelerated
