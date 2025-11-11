@@ -1,6 +1,6 @@
 import { Link } from 'wouter';
 import { Instagram, Twitter, Linkedin } from 'lucide-react';
-import logoImage from '@assets/AETERNO (2)_1762893208320.png';
+import logoImage from '@assets/AETERNO (3)_1762894919968.png';
 
 export default function Footer() {
   return (
@@ -11,10 +11,7 @@ export default function Footer() {
             <img 
               src={logoImage} 
               alt="Aeterno Media" 
-              className="w-16 h-auto"
-              style={{
-                filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(242, 122, 35, 0.2))',
-              }}
+              className="w-20 h-auto"
               data-testid="img-footer-logo"
             />
             <p className="font-title text-lg font-bold text-white uppercase">

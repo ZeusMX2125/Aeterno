@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import logoImage from '@assets/AETERNO (2)_1762893208320.png';
+import logoImage from '@assets/AETERNO (3)_1762894919968.png';
 
 interface HookProps {
   openModal: (service: string) => void;
@@ -43,9 +43,6 @@ export default function Hook({ openModal }: HookProps) {
           src={logoImage}
           alt="Aeterno Media"
           className="w-48 md:w-64 h-auto mb-4"
-          style={{
-            filter: 'drop-shadow(0 0 30px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 60px rgba(242, 122, 35, 0.3))',
-          }}
           data-testid="img-logo"
         />
         
