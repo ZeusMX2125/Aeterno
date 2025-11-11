@@ -1,0 +1,233 @@
+Understood, Project Manager.
+
+You need the final, "go-live" prompt that begins with a high-level summary. This will ensure the Replit agent (our developer) understands the why and the what before it dives into the how.
+
+Here is the complete, self-contained Master Blueprint for the Aeterno Media project, ready for you to use.
+
+SYSTEM PROMPT: Aeterno Media - Master Blueprint (v2.2)
+TO THE REPLIT AGENT: You are an expert full-stack developer. Your task is to build a high-performance, visually stunning landing page for a creative agency called "Aeterno Media."
+
+1. 📖 Project Overview & Core Concept
+
+Project: Aeterno Media Landing Page
+
+Goal: The primary goal is lead generation. We are not building a simple, static website. We are building a single-page, narrative-driven "Impress-to-Quote" funnel.
+
+The "Wow" Factor: The user's journey is a story. As they scroll, the page will "lock" (pin) at key sections to showcase a "wow" animation. This will tell a 3-part story about the agency's core services.
+
+The Conversion Funnel:
+
+Impress: The user is wowed by the "scroll-and-lock" animations.
+
+Inform: The user sees all 8 of the agency's services.
+
+Convert: The user clicks a "Get a Quote" button, which opens an interactive, multi-step modal form (not a separate page) to schedule a consultation.
+
+Your Task: Follow the detailed specifications below to build this experience. You will first scaffold all necessary files and then build them out, starting with Hook.jsx.
+
+2. 🏛️ Project Vitals & Tech Stack
+
+IDE: Replit
+
+Framework: Next.js (App Router)
+
+Styling: Tailwind CSS
+
+Animation: GSAP (GreenSock). You must install gsap (e.g., npm install gsap) and use its ScrollTrigger plugin for all scroll-based animations.
+
+3. 🎨 Branding & Asset Configuration
+
+Typography (Placeholders):
+
+Titles: Oswald (Google Font). To be used for all <h1>, <h1> headlines. Configure in Tailwind as font-title.
+
+Body: Inter (Google Font). To be used for all paragraphs, buttons, and UI text. Configure in Tailwind as font-body.
+
+Color Palette (from logo):
+
+primary-orange: #F27A23
+
+dark-blue: #1E2A3A
+
+light-gray: #D9D9D9
+
+dark-text: #1A1A1A
+
+4. 🏗️ Page & Component Architecture (File Scaffolding)
+
+You must first create this file structure:
+
+Main Page (app/page.jsx):
+
+Role: The "Assembler." This component imports all sections.
+
+State Management: This page must hold the master state for the quote modal:
+
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+const [selectedService, setSelectedService] = useState('');
+
+Functions: It will contain the handler functions (openModal, closeModal) that are passed down as props to all child components that need to trigger the modal.
+
+Utility Pages:
+
+app/privacy/page.jsx
+
+app/not-found.jsx
+
+Core Components (Create these files in app/components/):
+
+Hook.jsx (Artboard 1)
+
+Scene1_Photography.jsx (Artboard 2)
+
+Scene2_WebDev.jsx (Artboard 3)
+
+Scene3_SMM.jsx (Artboard 4)
+
+OtherCapabilities.jsx (Utility Section)
+
+QuoteIntake.jsx (Artboard 5 - Modal)
+
+Footer.jsx
+
+5. ⚙️ Artboard-by-Artboard Functional Specification
+
+After scaffolding, build each component's functionality as specified:
+
+Artboard 1: components/Hook.jsx
+Layout: Full-screen (min-h-screen), centered content (Flexbox justify-center, items-center).
+
+Elements:
+
+Logo: AETERNO (1).png (using next/image).
+
+Headline (<h1>): "We build the digital experiences your customers will remember." (Styled with font-title).
+
+CTA Button (<button>): "Start Your Project" (Styled with bg-primary-orange, font-body).
+
+Functionality:
+
+On-Load Animation: Uses GSAP on mount to fade in all elements (logo, headline, button) in a staggered sequence.
+
+Button onClick: Triggers a smooth-scroll (using window.scrollTo with behavior: 'smooth') to the top of the Scene1_Photography component.
+
+Artboard 2: components/Scene1_Photography.jsx
+Layout: Full-screen (min-h-screen).
+
+GSAP Functionality: This is the first "scroll-and-lock" scene.
+
+Trigger: The component's main container.
+
+Pin: pin: true.
+
+Scrub: scrub: 1 (Ties the animation directly to the scrollbar).
+
+Animation Specification (as user scrolls through this pinned section):
+
+A "before" image (placeholder-raw.jpg) is shown full-screen.
+
+A "divider" element (<div class="w-1 h-full bg-primary-orange">) animates from translateX: '-100%' to translateX: '100%'.
+
+An "after" image (placeholder-edited.jpg) is layered on top. Its clip-path property will be animated in sync with the divider, revealing the edited photo as the divider moves.
+
+The text elements (Headline, Sub-headline) will fade in after the clip-path animation is ~50% complete.
+
+Elements:
+
+Headline (<h2>): "It all starts with the perfect image." (font-title).
+
+Sub-headline (<p>): "We capture and refine the visuals that define your brand." (font-body).
+
+CTA Button (<button>): "Get a Quote for Visuals" (font-body).
+
+State Functionality: The button's onClick must call the openModal prop (passed from page.jsx) and will also pass the string "Photography" to the setSelectedService handler.
+
+Artboard 3: components/Scene2_WebDev.jsx
+Layout: Full-screen (min-h-screen).
+
+GSAP Functionality: "Scroll-and-lock" (Pin/Scrub) as in Scene 1.
+
+Animation Specification:
+
+A laptop mockup (laptop.png) is centered.
+
+Its screen is initially filled with a "wireframe" (wireframe.svg).
+
+As the user scrolls, a "final design" (design-final.jpg) animates opacity from 0 to 1 over the wireframe.
+
+Simultaneously, SVG elements (like a cursor icon) will animate across the screen to imply interactivity.
+
+Text elements fade in.
+
+Elements:
+
+Headline (<h2>): "We build your brand's digital home." (font-title).
+
+Sub-headline (<p>): "A stunning website is your #1 salesperson. We build experiences that convert." (font-body).
+
+CTA Button (<button>): "Get a Quote for a Website" (font-body).
+
+State Functionality: onClick must call openModal and pass "Web Development" to setSelectedService.
+
+Artboard 4: components/Scene3_SMM.jsx
+Layout: Full-screen (min-h-screen).
+
+GSAP Functionality: "Scroll-and-lock" (Pin/Scrub).
+
+Animation Specification:
+
+A phone mockup (phone.png) is centered, showing a static "Instagram grid" image.
+
+As the user scrolls, multiple SVG "like" hearts will animate from opacity: 0, y: 20 to opacity: 1, y: -20 (fading in and floating up).
+
+Text elements fade in.
+
+Elements:
+
+Headline (<h2>): "Then, we tell the world." (font-title).
+
+Sub-headline (<p>): "We turn your assets into a community. Strategic SMM that grows your audience." (font-body).
+
+CTA Button (<button>): "Get a Quote for Socials" (font-body).
+
+State Functionality: onClick must call openModal and pass "Social Media Marketing" to setSelectedService.
+
+Artboard 5 (Section): components/OtherCapabilities.jsx
+Layout: Standard, non-animated, non-fullscreen section. Use a simple, clean grid layout.
+
+Elements:
+
+Headline (<h2>): "Our Full Capabilities" (font-title).
+
+List (<ul>): A list of all 8 services (Photography, Video Editing, Image Editing, Website Development, App Development, Social Media Marketing and Management, Graphic Design, Copywriting for Businesses). All text styled with font-body.
+
+Artboard 6 (Modal): components/QuoteIntake.jsx
+Layout: position: fixed, inset: 0, z-index: 50. A backdrop (bg-black/70, backdrop-blur-sm) fills the screen with a centered modal div on top.
+
+State & Props:
+
+Receives isModalOpen prop. The component's root element is conditionally rendered based on this.
+
+Receives closeModal prop (a function) to be attached to a "Close" (X) icon button.
+
+Receives selectedService prop.
+
+Maintains its own internal state: const [currentStep, setCurrentStep] = useState(1);
+
+Maintains form data state: const [formData, setFormData] = useState({ ... });
+
+Functionality (Multi-Step Form):
+
+Step 1 (Service): Renders when currentStep === 1. Shows buttons for all services. It must read the selectedService prop and apply a "pre-selected" style to the corresponding button.
+
+Step 2 (Budget): Renders when currentStep === 2. Shows an <input type="range"> slider.
+
+Step 3 (Contact): Renders when currentStep === 3. Shows <input type="text" name="name"> and <input type="email" name="email">.
+
+Submission: The final "Schedule Your Consultation" button, on onClick, will console.log(formData), reset all states, and call the closeModal prop.
+
+Artboard 7 (Footer): components/Footer.jsx
+Layout: Simple, bottom-of-page footer.
+
+Elements: Copyright text and a <Link> (from next/link) to the /privacy page.
