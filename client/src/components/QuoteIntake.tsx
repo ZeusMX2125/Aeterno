@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,15 +25,15 @@ const services = [
 export default function QuoteIntake({ isModalOpen, closeModal, selectedService }: QuoteIntakeProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    service: selectedService || '',
+    services: [] as string[],
     budget: 5000,
     name: '',
     email: '',
   });
 
   useEffect(() => {
-    if (selectedService) {
-      setFormData((prev) => ({ ...prev, service: selectedService }));
+    if (selectedService && !formData.services.includes(selectedService)) {
+      setFormData((prev) => ({ ...prev, services: [selectedService] }));
     }
   }, [selectedService]);
 
@@ -43,8 +43,16 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
     }
   }, [isModalOpen]);
 
-  const handleServiceSelect = (service: string) => {
-    setFormData({ ...formData, service });
+  const handleServiceToggle = (service: string) => {
+    setFormData((prev) => {
+      const isSelected = prev.services.includes(service);
+      return {
+        ...prev,
+        services: isSelected
+          ? prev.services.filter((s) => s !== service)
+          : [...prev.services, service],
+      };
+    });
   };
 
   const handleBudgetChange = (value: number[]) => {
@@ -59,7 +67,7 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
   const handleSubmit = () => {
     console.log('Quote Form Submitted:', formData);
     setFormData({
-      service: '',
+      services: [],
       budget: 5000,
       name: '',
       email: '',
@@ -69,7 +77,7 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
   };
 
   const canProceed = () => {
-    if (currentStep === 1) return formData.service !== '';
+    if (currentStep === 1) return formData.services.length > 0;
     if (currentStep === 2) return true;
     if (currentStep === 3) return formData.name !== '' && formData.email !== '';
     return false;
@@ -117,28 +125,39 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
           <div className="space-y-6">
             <div className="text-center mb-6">
               <p className="text-primary font-body text-xs uppercase tracking-wider mb-2">
-                SELECT SERVICE
+                SELECT SERVICES
               </p>
               <h3 className="font-title text-3xl md:text-4xl font-bold text-white uppercase">
-                What service do you need?
+                What services do you need?
               </h3>
+              {formData.services.length > 0 && (
+                <p className="text-muted-foreground text-sm mt-3">
+                  {formData.services.length} service{formData.services.length !== 1 ? 's' : ''} selected
+                </p>
+              )}
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {services.map((service) => (
-                <button
-                  key={service}
-                  onClick={() => handleServiceSelect(service)}
-                  className={`font-body text-sm py-3 px-4 rounded-xl border transition-all ${
-                    formData.service === service
-                      ? 'bg-primary text-white border-primary glow-orange'
-                      : 'bg-background text-white border-border hover:border-primary/50 hover-elevate'
-                  }`}
-                  data-testid={`button-service-${service.toLowerCase().replace(/\s+/g, '-')}`}
-                >
-                  {service}
-                </button>
-              ))}
+              {services.map((service) => {
+                const isSelected = formData.services.includes(service);
+                return (
+                  <button
+                    key={service}
+                    onClick={() => handleServiceToggle(service)}
+                    className={`font-body text-sm py-3 px-4 rounded-xl border transition-all relative ${
+                      isSelected
+                        ? 'bg-primary text-white border-primary glow-orange'
+                        : 'bg-background text-white border-border hover:border-primary/50 hover-elevate'
+                    }`}
+                    data-testid={`button-service-${service.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    {isSelected && (
+                      <Check className="w-4 h-4 absolute top-2 right-2" />
+                    )}
+                    {service}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -222,6 +241,21 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
                   placeholder="john@example.com"
                   data-testid="input-email"
                 />
+              </div>
+
+              {/* Summary of selected services */}
+              <div className="glass rounded-xl p-4 mt-6">
+                <p className="text-white text-sm font-semibold mb-2">Selected Services:</p>
+                <div className="flex flex-wrap gap-2">
+                  {formData.services.map((service) => (
+                    <span
+                      key={service}
+                      className="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full border border-primary/30"
+                    >
+                      {service}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

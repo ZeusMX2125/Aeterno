@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import phoneImage from '@assets/generated_images/Phone_Instagram_mockup_657ad6c9.png';
-import { Heart } from 'lucide-react';
+import instagramScreenImage from '@assets/generated_images/Instagram_feed_preview_8cd8e59f.png';
+import { Heart, MessageCircle, Send } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,6 +14,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const heartsRef = useRef<(HTMLDivElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement>(null);
+  const phoneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -27,19 +28,32 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
         },
       });
 
+      tl.fromTo(
+        phoneRef.current,
+        { rotateY: -25, rotateX: 5, scale: 0.9 },
+        {
+          rotateY: 0,
+          rotateX: 0,
+          scale: 1,
+          duration: 0.5,
+          ease: 'power2.out',
+        }
+      );
+
       heartsRef.current.forEach((heart, index) => {
         if (heart) {
           tl.fromTo(
             heart,
-            { opacity: 0, y: 20, scale: 0.5 },
+            { opacity: 0, y: 20, scale: 0.5, z: -50 },
             {
               opacity: 1,
-              y: -20,
+              y: -30,
               scale: 1,
+              z: index % 2 === 0 ? 50 : 20,
               duration: 0.4,
               ease: 'power2.out',
             },
-            0.2 + index * 0.1
+            0.3 + index * 0.08
           );
         }
       });
@@ -52,7 +66,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
           x: 0,
           duration: 0.5,
         },
-        0.5
+        0.6
       );
     });
 
@@ -60,14 +74,12 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
   }, []);
 
   const heartPositions = [
-    { top: '15%', right: '20%' },
-    { top: '25%', right: '35%' },
-    { top: '40%', right: '15%' },
-    { top: '55%', right: '28%' },
-    { top: '70%', right: '18%' },
-    { top: '30%', right: '10%' },
-    { top: '50%', right: '40%' },
-    { top: '65%', right: '38%' },
+    { top: '15%', right: '-5%' },
+    { top: '25%', right: '5%' },
+    { top: '40%', right: '-8%' },
+    { top: '55%', right: '2%' },
+    { top: '70%', right: '-3%' },
+    { top: '30%', right: '-15%' },
   ];
 
   return (
@@ -104,23 +116,104 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
           </button>
         </div>
 
-        <div className="relative flex items-center justify-center order-1 md:order-2">
-          <img
-            src={phoneImage}
-            alt="Phone mockup"
-            className="w-56 md:w-72 lg:w-80 h-auto relative z-10"
-          />
-
-          {heartPositions.map((position, index) => (
+        {/* 3D Phone Mockup */}
+        <div className="relative flex items-center justify-center order-1 md:order-2 perspective-container-far">
+          <div
+            ref={phoneRef}
+            className="preserve-3d relative"
+            style={{
+              width: '280px',
+              height: '570px',
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            {/* Phone Frame/Bezel */}
             <div
-              key={index}
-              ref={(el) => (heartsRef.current[index] = el)}
-              className="absolute z-20"
-              style={position}
+              className="absolute inset-0 bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] rounded-[3rem] border-[12px] border-[#1A1A1A] preserve-3d"
+              style={{
+                transform: 'translateZ(5px)',
+                boxShadow: '0 0 50px rgba(242, 122, 35, 0.15), inset 0 0 20px rgba(0,0,0,0.5)',
+              }}
             >
-              <Heart className="w-6 h-6 md:w-8 md:h-8 text-primary fill-primary drop-shadow-[0_0_10px_rgba(242,122,35,0.6)]" />
+              {/* Screen */}
+              <div className="absolute inset-2 bg-black rounded-[2.5rem] overflow-hidden">
+                {/* Instagram Content */}
+                <div className="w-full h-full bg-gradient-to-b from-purple-900/20 to-pink-900/20">
+                  {/* Status Bar */}
+                  <div className="h-8 bg-black/40 backdrop-blur-sm flex items-center justify-between px-4 text-white text-xs">
+                    <span>9:41</span>
+                    <div className="flex gap-1">
+                      <div className="w-4 h-4 border border-white rounded-sm" />
+                      <div className="w-4 h-4 border border-white rounded-sm" />
+                      <div className="w-4 h-4 border border-white rounded-sm" />
+                    </div>
+                  </div>
+
+                  {/* Instagram Post Preview */}
+                  <div className="p-3 space-y-3">
+                    {/* Post Header */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-pink-500" />
+                      <span className="text-white text-sm font-semibold">aeterno.media</span>
+                    </div>
+
+                    {/* Post Image Placeholder */}
+                    <div className="aspect-square bg-gradient-to-br from-primary/30 to-purple-500/30 rounded-lg flex items-center justify-center">
+                      <div className="text-white/50 text-4xl">📸</div>
+                    </div>
+
+                    {/* Engagement Icons */}
+                    <div className="flex gap-4 text-white">
+                      <Heart className="w-6 h-6" />
+                      <MessageCircle className="w-6 h-6" />
+                      <Send className="w-6 h-6" />
+                    </div>
+
+                    {/* Likes */}
+                    <div className="text-white text-sm font-semibold">
+                      29,431 likes
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Screen Glow */}
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none" />
+              </div>
+
+              {/* Phone Notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-3xl" />
+              
+              {/* Screen Reflection */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-[3rem] pointer-events-none" />
             </div>
-          ))}
+
+            {/* Floating Hearts in 3D Space */}
+            {heartPositions.map((position, index) => (
+              <div
+                key={index}
+                ref={(el) => (heartsRef.current[index] = el)}
+                className="absolute preserve-3d"
+                style={{
+                  ...position,
+                  transformStyle: 'preserve-3d',
+                }}
+              >
+                <Heart 
+                  className="w-8 h-8 text-primary fill-primary" 
+                  style={{
+                    filter: 'drop-shadow(0 0 15px rgba(242,122,35,0.8))',
+                    transform: `translateZ(${index % 2 === 0 ? '40px' : '20px'})`,
+                  }}
+                />
+              </div>
+            ))}
+
+            {/* Shadow */}
+            <div
+              className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[70%] h-4 bg-black/40 blur-xl rounded-full"
+              style={{ transform: 'translateZ(-20px)' }}
+            />
+          </div>
         </div>
       </div>
     </section>
