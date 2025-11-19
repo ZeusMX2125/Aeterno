@@ -1,0 +1,17 @@
+.parallax {
+  overflow: hidden;
+  display: flex;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.scroller {
+  display: flex;
+  white-space: nowrap;
+  gap: 1rem;
+}
+
+.scroller span {
+  display: inline-block;
+  white-space: nowrap;
+}

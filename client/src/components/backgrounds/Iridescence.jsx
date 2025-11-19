@@ -54,7 +54,7 @@ export default function Iridescence({ color = [1.0, 0.27, 0.0], speed = 1.0, amp
     if (!ctnDom.current) return;
     const ctn = ctnDom.current;
     
-    let renderer, gl, animateId;
+    let renderer, gl, animateId, program;
     try {
       renderer = new Renderer();
       gl = renderer.gl;
@@ -64,71 +64,69 @@ export default function Iridescence({ color = [1.0, 0.27, 0.0], speed = 1.0, amp
       }
       gl.clearColor(1, 1, 1, 1);
 
-    let program;
-
-    function resize() {
-      const scale = 1;
-      renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
-      if (program) {
-        program.uniforms.uResolution.value = new Color(
-          gl.canvas.width,
-          gl.canvas.height,
-          gl.canvas.width / gl.canvas.height
-        );
+      function resize() {
+        const scale = 1;
+        renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
+        if (program) {
+          program.uniforms.uResolution.value = new Color(
+            gl.canvas.width,
+            gl.canvas.height,
+            gl.canvas.width / gl.canvas.height
+          );
+        }
       }
-    }
-    window.addEventListener('resize', resize, false);
-    resize();
+      window.addEventListener('resize', resize, false);
+      resize();
 
-    const geometry = new Triangle(gl);
-    program = new Program(gl, {
-      vertex: vertexShader,
-      fragment: fragmentShader,
-      uniforms: {
-        uTime: { value: 0 },
-        uColor: { value: new Color(...color) },
-        uResolution: {
-          value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height)
-        },
-        uMouse: { value: new Float32Array([mousePos.current.x, mousePos.current.y]) },
-        uAmplitude: { value: amplitude },
-        uSpeed: { value: speed }
+      const geometry = new Triangle(gl);
+      program = new Program(gl, {
+        vertex: vertexShader,
+        fragment: fragmentShader,
+        uniforms: {
+          uTime: { value: 0 },
+          uColor: { value: new Color(...color) },
+          uResolution: {
+            value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height)
+          },
+          uMouse: { value: new Float32Array([mousePos.current.x, mousePos.current.y]) },
+          uAmplitude: { value: amplitude },
+          uSpeed: { value: speed }
+        }
+      });
+
+      const mesh = new Mesh(gl, { geometry, program });
+
+      function update(t) {
+        animateId = requestAnimationFrame(update);
+        program.uniforms.uTime.value = t * 0.001;
+        renderer.render({ scene: mesh });
       }
-    });
-
-    const mesh = new Mesh(gl, { geometry, program });
-
-    function update(t) {
       animateId = requestAnimationFrame(update);
-      program.uniforms.uTime.value = t * 0.001;
-      renderer.render({ scene: mesh });
-    }
-    animateId = requestAnimationFrame(update);
-    ctn.appendChild(gl.canvas);
+      ctn.appendChild(gl.canvas);
 
-    function handleMouseMove(e) {
-      const rect = ctn.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = 1.0 - (e.clientY - rect.top) / rect.height;
-      mousePos.current = { x, y };
-      program.uniforms.uMouse.value[0] = x;
-      program.uniforms.uMouse.value[1] = y;
-    }
-    if (mouseReact) {
-      ctn.addEventListener('mousemove', handleMouseMove);
-    }
-
-    return () => {
-      if (animateId) cancelAnimationFrame(animateId);
-      window.removeEventListener('resize', resize);
+      function handleMouseMove(e) {
+        const rect = ctn.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = 1.0 - (e.clientY - rect.top) / rect.height;
+        mousePos.current = { x, y };
+        program.uniforms.uMouse.value[0] = x;
+        program.uniforms.uMouse.value[1] = y;
+      }
       if (mouseReact) {
-        ctn.removeEventListener('mousemove', handleMouseMove);
+        ctn.addEventListener('mousemove', handleMouseMove);
       }
-      if (gl && gl.canvas && gl.canvas.parentElement === ctn) {
-        ctn.removeChild(gl.canvas);
-      }
-      if (gl) gl.getExtension('WEBGL_lose_context')?.loseContext();
-    };
+
+      return () => {
+        if (animateId) cancelAnimationFrame(animateId);
+        window.removeEventListener('resize', resize);
+        if (mouseReact) {
+          ctn.removeEventListener('mousemove', handleMouseMove);
+        }
+        if (gl && gl.canvas && gl.canvas.parentElement === ctn) {
+          ctn.removeChild(gl.canvas);
+        }
+        if (gl) gl.getExtension('WEBGL_lose_context')?.loseContext();
+      };
     } catch (error) {
       console.warn('Iridescence: Failed to initialize WebGL background', error);
       return () => {}; // Empty cleanup function

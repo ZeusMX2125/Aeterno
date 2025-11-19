@@ -27,7 +27,11 @@ Preferred communication style: Simple, everyday language.
 - Secondary (body): Inter from Google Fonts
 - Configured as font-title and font-body in Tailwind
 
-**Animation Strategy**: GSAP (GreenSock Animation Platform) with ScrollTrigger plugin for scroll-locked, narrative storytelling animations. Each "scene" component pins content while scrolling to create cinematic transitions.
+**Animation Strategy**: 
+- GSAP (GreenSock Animation Platform) with ScrollTrigger plugin for scroll-locked, narrative storytelling animations
+- Each "scene" component pins content while scrolling to create cinematic transitions
+- Text animation components: TextType (typewriter effect), ShinyText (gradient shimmer), CurvedLoop (curved marquee text), ScrollFloat (character-by-character reveal), ScrollVelocity (velocity-based scrolling text)
+- Framer Motion for advanced physics-based animations in ScrollVelocity component
 
 ### Design Philosophy
 
@@ -118,3 +122,14 @@ Not currently implemented. The codebase includes user schema and storage interfa
 
 ### Asset Management
 Custom Vite alias configuration resolves `@assets` to `attached_assets` directory for generated images used in scene components.
+
+### Text Animation Components
+Located in `client/src/components/animations/`:
+
+1. **TextType**: Typewriter effect with customizable typing/deleting speeds, cursor blinking, variable speed, multiple text arrays, color cycling
+2. **ShinyText**: Animated gradient shimmer effect across text, configurable speed and disable state
+3. **CurvedLoop**: SVG-based curved marquee text with interactive drag, customizable curve amount and direction
+4. **ScrollFloat**: GSAP-powered character-by-character scroll reveal with scale/opacity transitions
+5. **ScrollVelocity**: Framer Motion velocity-based parallax scrolling text with physics-based damping and stiffness
+
+All components include corresponding CSS files and are fully typed with TypeScript.
