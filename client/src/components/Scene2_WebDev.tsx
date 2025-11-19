@@ -165,7 +165,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
           {/* Card 1: Wireframe to Final */}
           <TiltCard className="floating-card perspective-container group">
-            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
               <div className="aspect-[4/3] relative overflow-hidden">
                 <img
                   src={wireframeImage}
@@ -188,7 +188,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
 
           {/* Card 2: Laptop Mockup */}
           <TiltCard className="floating-card perspective-container group">
-            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
               <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex items-center justify-center p-6 md:p-8">
                 <img
                   src={laptopMockup}
@@ -212,7 +212,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
 
           {/* Card 3: Final Design */}
           <TiltCard className="floating-card perspective-container group">
-            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
               <div className="aspect-[4/3] relative overflow-hidden">
                 <img
                   src={finalDesignImage}

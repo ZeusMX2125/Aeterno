@@ -164,7 +164,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
           {/* Card 1: Phone Mockup */}
           <TiltCard className="floating-card perspective-container group">
-            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
               <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex items-center justify-center p-4 md:p-6">
                 <img
                   src={phoneMockup}
@@ -188,7 +188,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
 
           {/* Card 2: Engagement Growth */}
           <TiltCard className="floating-card perspective-container group">
-            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
               <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex flex-col items-center justify-center p-6 md:p-8">
                 <TrendingUp className="w-16 h-16 md:w-20 md:h-20 text-primary mb-3 md:mb-4" strokeWidth={1.5} />
                 <div className="text-center space-y-2">
@@ -210,7 +210,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
 
           {/* Card 3: Strategic Content */}
           <TiltCard className="floating-card perspective-container group">
-            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
               <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex flex-col items-center justify-center p-6 md:p-8 text-center">
                 <div className="grid grid-cols-3 gap-1.5 md:gap-2 mb-3 md:mb-4">
                   {[...Array(9)].map((_, i) => (

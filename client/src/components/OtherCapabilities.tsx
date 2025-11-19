@@ -199,7 +199,7 @@ export default function OtherCapabilities() {
                   className="preserve-3d relative"
                   data-testid={`card-service-${index}`}
                 >
-                  <div className="glass rounded-2xl p-5 md:p-6 border border-white/10 transition-all duration-300 hover:border-primary/30 h-full">
+                  <div className="glass rounded-2xl p-5 md:p-6 border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover h-full">
                     <div className="flex flex-col gap-3 md:gap-4">
                       <div className="relative">
                         <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/20 rounded-xl flex items-center justify-center shadow-lg border border-primary/30">
