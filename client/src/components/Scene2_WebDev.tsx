@@ -178,7 +178,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
           </p>
           
           <button
-            onClick={() => openModal('Website Development')}
+            onClick={() => openModal('Website Development (using Replit)')}
             className="bg-primary text-white font-body font-semibold text-sm md:text-base px-6 py-3 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95"
             data-testid="button-quote-website"
           >

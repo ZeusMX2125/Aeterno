@@ -18,13 +18,8 @@ const services = [
   },
   {
     icon: Globe,
-    title: 'Website Development',
+    title: 'Website Development (using Replit)',
     description: 'Custom websites built to convert visitors into customers',
-  },
-  {
-    icon: Smartphone,
-    title: 'App Development',
-    description: 'Mobile apps that engage and delight users',
   },
   {
     icon: Share2,

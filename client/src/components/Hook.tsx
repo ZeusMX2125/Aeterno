@@ -57,11 +57,11 @@ export default function Hook({ openModal }: HookProps) {
           ref={sublineRef}
           className="text-muted-foreground text-lg md:text-xl max-w-2xl font-body"
           data-testid="text-subline"
-        >Creative agency specializing in photography, video editing, and social media marketing</p>
+        >Creative agency specializing in photography, web development, and social media marketing</p>
         
         <button
           ref={buttonRef}
-          onClick={() => openModal('Website Development')}
+          onClick={() => openModal('Website Development (using Replit)')}
           className="bg-primary text-white font-body font-semibold text-base md:text-lg px-10 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all duration-300 hover:scale-105 active:scale-95 mt-4"
           data-testid="button-start-project"
         >
