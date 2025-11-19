@@ -1,0 +1,38 @@
+I need to fix the structural layout, spacing, and functionality issues in the current build, and URGENTLY implement the missing animated background. Please execute the following strict refinements:
+
+1. IMPLEMENT ANIMATED GRADIENT BACKGROUND (Priority):
+   - The background is currently static. I need a "Moving Futuristic Gradient" effect on the HTML `body` or a fixed background container.
+   - CSS Implementation Strategy:
+     - Use a `linear-gradient` with an angle (e.g., -45deg).
+     - Colors: Deep Black (#000000), Dark Grey (#1a1a1a), and a VERY subtle deep orange (#4a1a00) or deep purple. It must remain dark, not bright.
+     - Set `background-size: 400% 400%`.
+     - Create a CSS `@keyframes` animation that moves the `background-position` from 0% 50% to 100% 50% and back.
+     - Animation duration: 15s infinite ease.
+   - This must cover the entire viewport fixed behind the content.
+
+2. FIX THE NAVIGATION BAR (Sticky Header):
+   - The Navigation Bar (Logo, Links, 'Let's Talk' button) is currently bugged and floating in the middle of the page body (above the 'What We Do Best' section).
+   - Move this entire Navigation Bar element to the very top of the HTML structure.
+   - Set its CSS to: `position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;`
+   - Add a dark glassmorphism background to it (`rgba(0,0,0,0.8)` with blur) so it is legible as the user scrolls.
+
+3. FIX NAVIGATION FUNCTIONALITY (Smooth Scroll):
+   - Ensure the Nav Links work as "Anchor Links" for a Single Page Application experience.
+   - "Work" link -> smooth-scrolls to the "Visual Storytelling" section ID.
+   - "Services" link -> smooth-scrolls to the "What We Do Best" section ID.
+   - "Contact" / "Let's Talk" -> smooth-scrolls to the footer or contact form.
+
+4. FIX CARD READABILITY & TEXT OVERLAP:
+   - In the "Web Development" and "Social Media" cards, white text is unreadable against light images.
+   - Implement a "Gradient Scrim" overlay: Add a `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.9) 100%)` that sits *behind* the text but *in front* of the background image.
+   - Add `padding: 24px;` inside all cards. Text must not touch the edges.
+
+5. STANDARDIZE VERTICAL SPACING (Rhythm):
+   - Create a global CSS variable for section spacing (e.g., `--section-padding: 120px`).
+   - Apply `padding-top: var(--section-padding)` and `padding-bottom: var(--section-padding)` strictly to EVERY major section container to fix the inconsistent gaps.
+
+6. FOOTER/NAV CLEANUP:
+   - Remove the duplicate Nav bar that was floating in the middle of the page.
+   - Ensure the Footer stays at the bottom.
+
+Maintain the current color palette (Black, White, Safety Orange) and font choices.
