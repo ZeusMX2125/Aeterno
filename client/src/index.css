@@ -57,6 +57,8 @@
   --shadow-2xl: 0px 25px 50px -12px rgba(0, 0, 0, 0.8);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  --section-padding: 120px;
+  --section-padding-mobile: 60px;
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -94,7 +96,30 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+    position: relative;
+    /* Moving futuristic gradient background - applied globally */
+    background: linear-gradient(
+      135deg,
+      #000000 0%,
+      #0a0a0a 25%,
+      rgba(255, 69, 0, 0.03) 50%,
+      #0a0a0a 75%,
+      #000000 100%
+    );
+    background-size: 400% 400%;
+    animation: moving-gradient 15s ease infinite;
+  }
+
+  /* Noise texture overlay for body - premium film-like quality */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
   }
 }
 
@@ -449,6 +474,26 @@
     .animate-float-delayed,
     .animate-float-slow {
       animation: none !important;
+    }
+  }
+
+  /* Section spacing - standardized vertical rhythm */
+  .section-spacing {
+    padding-top: var(--section-padding-mobile);
+    padding-bottom: var(--section-padding-mobile);
+  }
+
+  @media (min-width: 768px) {
+    .section-spacing {
+      padding-top: calc(var(--section-padding-mobile) * 1.33);
+      padding-bottom: calc(var(--section-padding-mobile) * 1.33);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-spacing {
+      padding-top: var(--section-padding);
+      padding-bottom: var(--section-padding);
     }
   }
 }

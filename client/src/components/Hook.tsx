@@ -37,9 +37,8 @@ export default function Hook({ openModal }: HookProps) {
   }, []);
 
   return (
-    <section className="relative min-h-[100svh] bg-black flex flex-col items-center justify-center px-4 py-12 overflow-hidden noise-texture">
-      {/* Moving futuristic gradient background - MASTER DESIGN */}
-      <div className="absolute inset-0 moving-gradient" />
+    <section className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 py-12 overflow-hidden">
+      {/* Gradient overlay for depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gray-950/30 to-transparent" />
       
       {/* Moving gradient orbs - reduced for cleaner mobile */}

@@ -132,7 +132,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
   return (
     <section
       ref={containerRef}
-      className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center py-12 md:py-16 lg:py-24"
+      className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center section-spacing"
       data-testid="section-smm"
     >
       {/* Subtle animated gradient - Safety Orange accent */}

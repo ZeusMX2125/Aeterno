@@ -203,7 +203,7 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
         <div className="absolute bottom-1/4 left-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 section-spacing">
         {/* Header */}
         <div ref={headlineRef} className="text-center mb-8 md:mb-12 lg:mb-16">
           <p className="text-primary font-body text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3 opacity-80">

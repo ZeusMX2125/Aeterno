@@ -163,7 +163,7 @@ export default function OtherCapabilities() {
   }, []);
 
   return (
-    <section ref={containerRef} className="py-12 md:py-16 lg:py-24 bg-black relative overflow-hidden" data-testid="section-capabilities">
+    <section ref={containerRef} className="section-spacing bg-black relative overflow-hidden" data-testid="section-capabilities">
       {/* Subtle animated gradient - Safety Orange accent */}
       <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-950/50 to-black" />
       <div className="absolute inset-0 opacity-30">
