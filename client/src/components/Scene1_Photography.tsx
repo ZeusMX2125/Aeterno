@@ -202,9 +202,9 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-red-950/30 to-black" />
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-orange-500/15 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute top-1/4 right-1/4 bg-pink-500/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 left-1/4 bg-primary/20 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 left-1/2 bg-orange-500/15 rounded-full blur-3xl animate-float-slow" />
       </div>
       
       {/* Grid overlay */}

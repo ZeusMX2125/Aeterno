@@ -93,8 +93,8 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
       <div className="absolute inset-0 bg-gradient-to-tl from-red-950/20 via-transparent to-primary/10" />
       
       {/* Moving gradient orbs */}
-      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-500/15 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-float-delayed" />
+      <div className="absolute top-1/3 right-1/4 bg-orange-500/15 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-1/3 left-1/4 bg-primary/15 rounded-full blur-3xl animate-float-delayed" />
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}

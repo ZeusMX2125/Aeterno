@@ -339,16 +339,16 @@
     transform-style: preserve-3d;
   }
 
-  /* Smooth floating animations for gradient orbs */
+  /* Smooth floating animations for gradient orbs - with responsive sizing */
   @keyframes float {
     0%, 100% {
       transform: translate(0, 0) scale(1);
     }
     33% {
-      transform: translate(30px, -30px) scale(1.1);
+      transform: translate(clamp(15px, 5vw, 30px), clamp(-15px, -5vw, -30px)) scale(1.1);
     }
     66% {
-      transform: translate(-20px, 20px) scale(0.95);
+      transform: translate(clamp(-10px, -3vw, -20px), clamp(10px, 3vw, 20px)) scale(0.95);
     }
   }
 
@@ -357,10 +357,10 @@
       transform: translate(0, 0) scale(1);
     }
     33% {
-      transform: translate(-25px, 25px) scale(1.05);
+      transform: translate(clamp(-12px, -4vw, -25px), clamp(12px, 4vw, 25px)) scale(1.05);
     }
     66% {
-      transform: translate(20px, -25px) scale(0.98);
+      transform: translate(clamp(10px, 3vw, 20px), clamp(-12px, -4vw, -25px)) scale(0.98);
     }
   }
 
@@ -369,20 +369,26 @@
       transform: translate(0, 0) scale(1);
     }
     50% {
-      transform: translate(-15px, -20px) scale(1.08);
+      transform: translate(clamp(-8px, -2vw, -15px), clamp(-10px, -3vw, -20px)) scale(1.08);
     }
   }
 
   .animate-float {
     animation: float 20s ease-in-out infinite;
+    width: clamp(200px, 24rem, 384px);
+    height: clamp(200px, 24rem, 384px);
   }
 
   .animate-float-delayed {
     animation: float-delayed 25s ease-in-out infinite;
+    width: clamp(180px, 20rem, 320px);
+    height: clamp(180px, 20rem, 320px);
   }
 
   .animate-float-slow {
     animation: float-slow 30s ease-in-out infinite;
+    width: clamp(160px, 16rem, 256px);
+    height: clamp(160px, 16rem, 256px);
   }
 
   /* Disable animations if user prefers reduced motion */

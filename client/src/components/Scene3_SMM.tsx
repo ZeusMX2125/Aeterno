@@ -92,8 +92,8 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
       <div className="absolute inset-0 bg-gradient-to-tr from-red-950/20 via-transparent to-orange-950/20" />
       
       {/* Moving gradient orbs */}
-      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-pink-500/15 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-float-slow" />
+      <div className="absolute top-1/4 left-1/3 bg-pink-500/15 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-1/4 right-1/3 bg-primary/15 rounded-full blur-3xl animate-float-slow" />
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
