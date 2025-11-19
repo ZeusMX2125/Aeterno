@@ -35,7 +35,6 @@ export default function Hook({ openModal }: HookProps) {
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0A0A0A] to-black opacity-100" />
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-primary/5 opacity-50" />
-      
       {/* Content */}
       <div className="relative z-10 max-w-6xl w-full flex flex-col items-center text-center gap-8">
         <img
@@ -58,9 +57,7 @@ export default function Hook({ openModal }: HookProps) {
           ref={sublineRef}
           className="text-muted-foreground text-lg md:text-xl max-w-2xl font-body"
           data-testid="text-subline"
-        >
-          Creative agency specializing in photography, web development, and social media marketing
-        </p>
+        >Creative agency specializing in photography, video editing, and social media marketing</p>
         
         <button
           ref={buttonRef}
@@ -71,7 +68,6 @@ export default function Hook({ openModal }: HookProps) {
           Start Your Project
         </button>
       </div>
-
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
     </section>
