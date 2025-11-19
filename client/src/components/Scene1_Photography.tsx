@@ -199,11 +199,20 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
       className="min-h-screen w-full relative overflow-hidden bg-black flex items-center justify-center"
       data-testid="section-photography"
     >
-      {/* Background gradients */}
+      {/* Futuristic tech gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-indigo-950 to-black" />
       <div className="absolute inset-0">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
       </div>
+      
+      {/* Tech grid overlay */}
+      <div className="absolute inset-0 opacity-5" style={{
+        backgroundImage: `linear-gradient(rgba(0, 200, 255, 0.1) 1px, transparent 1px),
+                         linear-gradient(90deg, rgba(0, 200, 255, 0.1) 1px, transparent 1px)`,
+        backgroundSize: '40px 40px',
+      }} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-16">
         {/* Header */}

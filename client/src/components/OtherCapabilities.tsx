@@ -40,9 +40,13 @@ const services = [
 
 export default function OtherCapabilities() {
   return (
-    <section className="py-16 md:py-24 bg-black relative" data-testid="section-capabilities">
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+    <section className="py-16 md:py-24 bg-black relative overflow-hidden" data-testid="section-capabilities">
+      {/* Futuristic tech gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-indigo-950 to-black" />
+      <div className="absolute inset-0">
+        <div className="absolute top-1/3 left-1/5 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute bottom-1/3 right-1/5 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.8s' }} />
+      </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-12">

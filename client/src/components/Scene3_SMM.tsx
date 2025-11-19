@@ -88,8 +88,13 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
       className="min-h-screen w-full relative bg-black flex items-center justify-center overflow-hidden"
       data-testid="section-smm"
     >
-      {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-bl from-primary/5 via-transparent to-transparent" />
+      {/* Futuristic tech gradient */}
+      <div className="absolute inset-0 bg-gradient-to-bl from-black via-purple-950 to-black" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-pink-950/20 via-transparent to-cyan-950/20" />
+      
+      {/* Animated gradient orbs */}
+      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.4s' }} />
       
       <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
         <div ref={textContainerRef} className="space-y-4 md:space-y-6 order-2 md:order-1 glass rounded-2xl p-6 md:p-8">
