@@ -112,18 +112,18 @@ function StatCard({ stat, index }: { stat: typeof stats[0]; index: number }) {
 export default function Statistics() {
   return (
     <section className="py-20 md:py-32 bg-black relative overflow-hidden">
-      {/* Futuristic tech gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-slate-950 to-black" />
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-orange-950/20 to-black" />
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 right-1/2 w-80 h-80 bg-purple-500/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.6s' }} />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 right-1/2 w-80 h-80 bg-red-500/8 rounded-full blur-3xl animate-float-slow" />
       </div>
       
-      {/* Tech grid overlay */}
+      {/* Grid overlay */}
       <div className="absolute inset-0 opacity-3" style={{
-        backgroundImage: `linear-gradient(rgba(0, 200, 255, 0.05) 1px, transparent 1px),
-                         linear-gradient(90deg, rgba(0, 200, 255, 0.05) 1px, transparent 1px)`,
+        backgroundImage: `linear-gradient(rgba(242, 122, 35, 0.05) 1px, transparent 1px),
+                         linear-gradient(90deg, rgba(242, 122, 35, 0.05) 1px, transparent 1px)`,
         backgroundSize: '60px 60px',
       }} />
       
