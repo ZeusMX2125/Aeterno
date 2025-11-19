@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Navigation from '@/components/Navigation';
 import Hook from '@/components/Hook';
 import Marquee from '@/components/Marquee';
 import Scene1_Photography from '@/components/Scene1_Photography';
@@ -25,14 +26,23 @@ export default function Home() {
 
   return (
     <div className="w-full overflow-x-hidden bg-black">
+      <Navigation openModal={openModal} />
       <Hook openModal={openModal} />
       <Marquee />
-      <Scene1_Photography openModal={openModal} />
-      <Scene2_WebDev openModal={openModal} />
+      <div id="services">
+        <Scene1_Photography openModal={openModal} />
+      </div>
+      <div id="work">
+        <Scene2_WebDev openModal={openModal} />
+      </div>
       <Scene3_SMM openModal={openModal} />
-      <Statistics />
+      <div id="about">
+        <Statistics />
+      </div>
       <OtherCapabilities />
-      <Footer />
+      <div id="contact">
+        <Footer />
+      </div>
       
       <QuoteIntake
         isModalOpen={isModalOpen}
