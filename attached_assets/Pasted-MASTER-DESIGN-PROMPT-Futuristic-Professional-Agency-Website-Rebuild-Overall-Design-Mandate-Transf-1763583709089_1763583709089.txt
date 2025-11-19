@@ -1,0 +1,155 @@
+MASTER DESIGN PROMPT: Futuristic Professional Agency Website Rebuild
+
+Overall Design Mandate: Transform the current agency website into a cohesive, high-end, futuristic, and professional showcase. Prioritize elegant dark UI, subtle dynamism, unified visual language, and clear user journeys. Every element should feel premium and intentional.
+
+GLOBAL STYLING & CORE AESTHETICS:
+Color Palette:
+
+Primary: #000000 (Pure Black) for background.
+
+Accent: #FF4500 (Safety Orange) - used for primary CTAs, active states, subtle glows, and key text highlights.
+
+Secondary Text/Details: White (#FFFFFF) and light grey (#CCCCCC) for readability.
+
+Glassmorphism Effect: A dark, semi-transparent background (e.g., rgba(18, 18, 18, 0.6)) with a backdrop-filter: blur(10px); and a very subtle 1px white or light grey border (rgba(255, 255, 255, 0.1)).
+
+Typography:
+
+Font Family: Use a modern, highly legible variable sans-serif font (e.g., Inter or Plus Jakarta Sans from Google Fonts) to allow for precise weight control.
+
+Headlines: Bold, strong weights for impact.
+
+Body Text: Optimized for readability on a dark background.
+
+Subtext/Descriptions: Slightly increased size for improved legibility compared to current.
+
+Background Dynamic (Hero & Select Sections):
+
+Moving Futuristic Gradient: Implement a subtle, slow-panning, multi-directional gradient background, primarily within the black/dark grey spectrum with hints of the Safety Orange or a deep blue/purple. This should be achieved via CSS keyframe animations on a large background element (e.g., a ::before pseudo-element on the hero section). The movement should be almost imperceptible until consciously observed, adding depth without distraction.
+
+Subtle Noise Texture: Overlay a highly transparent (3-5% opacity) grainy noise texture (background-image: url('noise.png');) across the entire site to prevent banding and add a premium, film-like quality.
+
+Interaction Design (Hover/Active States):
+
+All interactive elements (buttons, cards, links) should have smooth, subtle transitions and hover effects.
+
+Hover effects should utilize the Safety Orange for highlights, text color changes, or soft glows.
+
+HEADER & NAVIGATION:
+Top Navigation Bar (New Addition):
+
+Persistent & Transparent: A discreet, transparent navigation bar fixed to the top of the viewport.
+
+Left: Agency Logo (clean, monochromatic version of current logo).
+
+Right: Primary Navigation Links (e.g., "Services," "Work," "About," "Contact") and a prominent "Let's Talk" button (Safety Orange fill, white text).
+
+Hover Effect: Links subtly glow orange on hover.
+
+Service Ticker:
+
+Keep the existing ticker style.
+
+Positioning: Ensure it sits logically, providing immediate context below the main hero headline.
+
+SECTION-BY-SECTION REDESIGN:
+A. Hero Section:
+Headline: "DIGITAL EXPERIENCES WORTH REMEMBERING" (Current excellent).
+
+Sub-headline: "Creative agency specializing in photography, web development, and digital marketing services." (Increase font size slightly for readability).
+
+CTA Button: "Start Your Project" (Primary Safety Orange button).
+
+Background: Incorporate the Moving Futuristic Gradient as described above, ensuring it adds depth without detracting from the text.
+
+Atmosphere: A subtle, very slow-moving particle or ethereal fog effect using an HTML5 Canvas or CSS (if performant enough) to enhance the "alive" feeling of the dark space.
+
+B. "IT ALL STARTS WITH THE PERFECT CAPTURE" (Visual Storytelling Grid):
+Headline: "IT ALL STARTS WITH THE PERFECT CAPTURE" (Current excellent).
+
+Sub-Headline: "Click for more details." (Update text to reflect interaction).
+
+Card Design (OVERHAUL):
+
+Glassmorphism Style: Replace current solid gradient cards with dark, semi-transparent backgrounds (rgba(18, 18, 18, 0.6)), backdrop-filter: blur(10px);, and a 1px rgba(255, 255, 255, 0.1) border.
+
+Color Use: Instead of solid background colors, use the Safety Orange as a subtle glow around the card on hover or a very subtle gradient within the card background on hover. The default state should be dark/glassmorphic.
+
+Content: Keep the icon and text (e.g., "Brand Videos").
+
+Interaction (CRITICAL):
+
+Hover for Dynamic Preview:
+
+Brand Videos: On hover, the card's background animates to play a very short (3-second), muted, looping video clip demonstrating a brand video.
+
+Product Photography: On hover, the card's background zooms slowly into a high-resolution, compelling product photo.
+
+Lifestyle Sessions: Similar to product photography, showcase a lifestyle shot.
+
+Live Sessions / Social Content / Event Coverage / Portrait Sessions: On hover, the card reveals a dynamic, quickly rotating carousel of 2-3 relevant high-quality images within the card's background area.
+
+C. "WE BUILD YOUR BRAND'S DIGITAL HOME" (Website Development Section):
+Headline: "WE BUILD YOUR BRAND'S DIGITAL HOME" (Current excellent).
+
+Card Design: Apply the Glassmorphism Style from the Visual Storytelling section for consistency.
+
+Card Content (OVERHAUL):
+
+"Strategic Planning" (Current good): Keep.
+
+"Polished & Professional" (Placeholder Text, Update): Change to "Conversion Focused Design".
+
+"Responsive Design" (Weak, Update): Change to "Performance First Development".
+
+Visuals (OVERHAUL):
+
+Device Mockups: Instead of flat screenshots, use sleek, 3D-rendered device mockups (laptop, tablet, phone) that appear to be subtly floating or layered in the foreground. These mockups should contain placeholder website screens that reflect a modern, dark UI aesthetic.
+
+Subtle Animation: The mockups could have a very slight, slow translateY animation to give them a "floating" feel.
+
+CTA Button: Change "Get a Quote for a Website" to a more general "View Our Web Work" or "Explore Our Process" – deferring a direct quote request until later.
+
+D. "THEN, WE TELL THE WORLD" (Social Media Marketing Section):
+Headline: "THEN, WE TELL THE WORLD" (Current excellent).
+
+Card Design: Apply the Glassmorphism Style from other sections for consistency.
+
+Card Content:
+
+"Mobile First": Keep.
+
+"Audience Engagement": Keep.
+
+"Strategic Planning": Keep.
+
+Visuals: Maintain the existing dark, clean aesthetic but ensure the placeholder images within the cards are visually engaging and consistent with the overall futuristic brand.
+
+CTA Button: Change "Get a Quote for Socials" to "View Our Marketing Results" or "Discover Our Strategy."
+
+E. "PROVEN RESULTS" Section:
+Design: Maintain the current clean, minimalist, dark card style for this section; it works well.
+
+Interactivity (CRITICAL):
+
+Number Animations: When the user scrolls this section into view, the numbers (500+, 120+, 2.5M+, 98%) must dynamically count up from 0 to their final value. This adds a powerful, engaging element.
+
+F. "WHAT WE DO BEST" Section:
+Design: Maintain the current clean, minimalist card style.
+
+Icons: Ensure the icons are consistent with the overall brand aesthetic (monochromatic, clean lines).
+
+Content: Ensure descriptions are concise and impactful.
+
+G. Footer:
+Maintain existing clean, minimalist footer design.
+
+Ensure social icons are consistently styled (e.g., white or orange on hover).
+
+CONVERSION STRATEGY (Simplified CTA Flow):
+
+Primary CTA (Sticky Header & Hero): "Start Your Project" / "Let's Talk" - leading to a unified contact form.
+
+Section CTAs: Re-purpose "Get a Quote" buttons to "Explore Our Work," "View Our Process," or "See Case Studies." These should guide users deeper into specific service pages or a portfolio, rather than immediately demanding a quote.
+
+Unified Contact Form: A single, comprehensive contact form at the bottom of the site or on a dedicated contact page. This form should include a dropdown or checkboxes for "What services are you interested in?" (Photography, Web Development, Social Media Marketing, etc.).
