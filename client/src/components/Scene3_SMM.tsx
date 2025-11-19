@@ -137,10 +137,10 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
       className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center section-spacing"
       data-testid="section-smm"
     >
-      {/* WebGL Background - Temporarily disabled pending error handling */}
-      {/* <div className="absolute inset-0 z-0">
+      {/* WebGL Background */}
+      <div className="absolute inset-0 z-0">
         <LiquidEther colors={['#000000', '#111111', '#220a00']} />
-      </div> */}
+      </div>
       
       {/* Subtle animated gradient - Safety Orange accent */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />

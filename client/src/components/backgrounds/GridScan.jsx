@@ -421,6 +421,7 @@ export const GridScan = ({
     const container = containerRef.current;
     if (!container) return;
 
+    try {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     rendererRef.current = renderer;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -568,6 +569,10 @@ export const GridScan = ({
       renderer.dispose();
       container.removeChild(renderer.domElement);
     };
+    } catch (error) {
+      console.warn('GridScan: Failed to initialize WebGL background', error);
+      return () => {};
+    }
   }, [
     sensitivity,
     lineThickness,

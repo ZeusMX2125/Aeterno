@@ -204,6 +204,9 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
           blindCount={10} 
           gradientColors={['#000000', '#050505', '#220a00']} 
           noise={0.5}
+          mouseDampening={0.05}
+          spotlightOpacity={2}
+          spotlightRadius={0.7}
         />
       </div>
       

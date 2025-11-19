@@ -33,6 +33,7 @@ export default function LiquidEther({
 
   useEffect(() => {
     if (!mountRef.current) return;
+    try {
 
     function makePaletteTexture(stops) {
       let arr;
@@ -1093,6 +1094,10 @@ export default function LiquidEther({
       }
       webglRef.current = null;
     };
+    } catch (error) {
+      console.warn('LiquidEther: Failed to initialize WebGL background', error);
+      return () => {};
+    }
   }, [
     BFECC,
     cursorSize,

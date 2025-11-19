@@ -138,15 +138,15 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
       className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center section-spacing"
       data-testid="section-webdev"
     >
-      {/* WebGL Background - Temporarily disabled pending error handling */}
-      {/* <div className="absolute inset-0 z-0">
+      {/* WebGL Background */}
+      <div className="absolute inset-0 z-0">
         <GridScan 
           gridScale={0.05} 
           scanColor='#FF4500' 
           linesColor='#1a1a1a' 
           enableWebcam={false}
         />
-      </div> */}
+      </div>
       
       {/* Subtle animated gradient - Safety Orange accent */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
