@@ -1,6 +1,8 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import logoImage from '@assets/AETERNO (3)_1762894919968.png';
+// @ts-ignore - WebGL component without TypeScript definitions
+import Iridescence from './backgrounds/Iridescence';
 
 interface HookProps {
   openModal: (service: string) => void;
@@ -38,6 +40,11 @@ export default function Hook({ openModal }: HookProps) {
 
   return (
     <section className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 py-12 overflow-hidden">
+      {/* WebGL Background */}
+      <div className="absolute inset-0 z-0" style={{ opacity: 0.4 }}>
+        <Iridescence color={[1, 0.27, 0]} mouseReact={true} amplitude={0.1} speed={0.7} />
+      </div>
+      
       {/* Gradient overlay for depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gray-950/30 to-transparent" />
       

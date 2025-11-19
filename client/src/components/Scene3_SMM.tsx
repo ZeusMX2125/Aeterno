@@ -3,6 +3,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import phoneMockup from '@assets/generated_images/Phone_Instagram_mockup_657ad6c9.png';
 import { Heart, MessageCircle, Share2, TrendingUp } from 'lucide-react';
+// @ts-ignore - WebGL component without TypeScript definitions
+import LiquidEther from './backgrounds/LiquidEther';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -135,6 +137,11 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
       className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center section-spacing"
       data-testid="section-smm"
     >
+      {/* WebGL Background - Temporarily disabled pending error handling */}
+      {/* <div className="absolute inset-0 z-0">
+        <LiquidEther colors={['#000000', '#111111', '#220a00']} />
+      </div> */}
+      
       {/* Subtle animated gradient - Safety Orange accent */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
       <div className="absolute inset-0 opacity-30">

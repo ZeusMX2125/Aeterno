@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef, useState, useCallback, memo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Play, Camera, Video, Image as ImageIcon, Film, Aperture, Clapperboard } from 'lucide-react';
+// @ts-ignore - WebGL component without TypeScript definitions
+import GradientBlinds from './backgrounds/GradientBlinds';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -196,6 +198,15 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
       className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center"
       data-testid="section-photography"
     >
+      {/* WebGL Background */}
+      <div className="absolute inset-0 z-0">
+        <GradientBlinds 
+          blindCount={10} 
+          gradientColors={['#000000', '#050505', '#220a00']} 
+          noise={0.5}
+        />
+      </div>
+      
       {/* Subtle animated gradient - Safety Orange accent */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
       <div className="absolute inset-0 opacity-30">

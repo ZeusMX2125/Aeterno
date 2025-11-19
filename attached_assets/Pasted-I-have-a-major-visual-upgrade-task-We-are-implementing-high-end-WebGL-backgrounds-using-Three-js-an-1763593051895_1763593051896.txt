@@ -1,0 +1,2614 @@
+I have a major visual upgrade task. We are implementing high-end WebGL backgrounds using Three.js and OGL. 
+
+Please follow these steps sequentially. Do not skip the installation phase.
+
+### PHASE 1: INSTALL DEPENDENCIES
+First, install the necessary libraries for these effects to run:
+`npm install three ogl postprocessing face-api.js`
+
+### PHASE 2: CREATE BACKGROUND COMPONENTS
+Create a folder `src/components/backgrounds` (or `components/ui/backgrounds`) and create the following 4 files. 
+
+**IMPORTANT:** For all files below, I have provided the raw code. You must copy the code EXACTLY, but you must updated the default "Props" or "Colors" in the implementation to match my Brand Theme:
+- Background: #000000
+- Accent: #FF4500 (Safety Orange)
+- Text: #FFFFFF
+
+#### 1. Create `LiquidEther.jsx` & `LiquidEther.css`
+Paste the provided code for Liquid Ether.
+* **CSS file:** Ensure `.liquid-ether-container` has `z-index: 0; position: absolute; top: 0; left: 0;`
+* **Usage Config:** When we use this, set the default `colors` prop to `['#000000', '#1a1a1a', '#333333']` (Dark, oily fluid look).
+
+#### 2. Create `GradientBlinds.jsx` & `GradientBlinds.css`
+Paste the provided code for Gradient Blinds.
+* **Usage Config:** When we use this, set `gradientColors` to `['#000000', '#111111', '#FF4500']` (Black to slight Orange).
+
+#### 3. Create `GridScan.jsx` & `GridScan.css`
+Paste the provided code for Grid Scan.
+* **Usage Config:** - Set `linesColor` to `"#222222"` (Very subtle dark grey grid).
+    - Set `scanColor` to `"#FF4500"` (Bright Orange scanline).
+    - Set `enableWebcam` to `false` (Crucial: Do not ask for camera).
+
+#### 4. Create `Iridescence.jsx` & `Iridescence.css`
+Paste the provided code for Iridescence.
+* **Usage Config:** Set `color` to `[1.0, 0.27, 0.0]` (This is the normalized RGB float for #FF4500 Orange).
+
+---
+
+### PHASE 3: IMPLEMENTATION (The "Aeterno" Layout)
+Now, integrate these backgrounds into the main `App.jsx` (or `Page.jsx`). The layout should be:
+
+1.  **Hero Section ("Digital Experiences..."):**
+    - **Effect:** `<Iridescence />`
+    - **Settings:** `color={[1, 0.27, 0]} mouseReact={true} amplitude={0.1} speed={0.7}`
+    - **Styling:** The background should be `opacity: 0.4` so the text pops.
+
+2.  **Visual Storytelling Section ("Perfect Capture"):**
+    - **Effect:** `<GradientBlinds />`
+    - **Settings:** `blindCount={10} gradientColors={['#000000', '#050505', '#220a00']} noise={0.5}`
+    - **Vibe:** A dark, cinematic transition.
+
+3.  **Web Development Section ("Digital Home"):**
+    - **Effect:** `<GridScan />`
+    - **Settings:** `gridScale={0.05} scanColor="#FF4500" linesColor="#1a1a1a" enableWebcam={false}`
+    - **Vibe:** Highly technical, architectural feel.
+
+4.  **Social Media Section ("Tell The World"):**
+    - **Effect:** `<LiquidEther />`
+    - **Settings:** `colors={['#000000', '#111111', '#220a00']}`
+    - **Vibe:** Fluid, dynamic movement representing social flow.
+
+**CRITICAL CSS RULES FOR ALL SECTIONS:**
+1.  Every Section (Hero, Web, Social, etc.) must have `position: relative; overflow: hidden;`.
+2.  The Background Component must be placed as the *first* child of the section.
+3.  The Background Component wrapper must have: `position: absolute; inset: 0; z-index: 0;`.
+4.  All Text/Buttons/Cards in the section must be wrapped in a container with `position: relative; z-index: 10;` to ensure they sit ON TOP of the background.
+
+LiquidEther:
+
+import { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import './LiquidEther.css';
+
+export default function LiquidEther({
+  mouseForce = 20,
+  cursorSize = 100,
+  isViscous = false,
+  viscous = 30,
+  iterationsViscous = 32,
+  iterationsPoisson = 32,
+  dt = 0.014,
+  BFECC = true,
+  resolution = 0.5,
+  isBounce = false,
+  colors = ['#5227FF', '#FF9FFC', '#B19EEF'],
+  style = {},
+  className = '',
+  autoDemo = true,
+  autoSpeed = 0.5,
+  autoIntensity = 2.2,
+  takeoverDuration = 0.25,
+  autoResumeDelay = 1000,
+  autoRampDuration = 0.6
+}) {
+  const mountRef = useRef(null);
+  const webglRef = useRef(null);
+  const resizeObserverRef = useRef(null);
+  const rafRef = useRef(null);
+  const intersectionObserverRef = useRef(null);
+  const isVisibleRef = useRef(true);
+  const resizeRafRef = useRef(null);
+
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    function makePaletteTexture(stops) {
+      let arr;
+      if (Array.isArray(stops) && stops.length > 0) {
+        if (stops.length === 1) {
+          arr = [stops[0], stops[0]];
+        } else {
+          arr = stops;
+        }
+      } else {
+        arr = ['#ffffff', '#ffffff'];
+      }
+      const w = arr.length;
+      const data = new Uint8Array(w * 4);
+      for (let i = 0; i < w; i++) {
+        const c = new THREE.Color(arr[i]);
+        data[i * 4 + 0] = Math.round(c.r * 255);
+        data[i * 4 + 1] = Math.round(c.g * 255);
+        data[i * 4 + 2] = Math.round(c.b * 255);
+        data[i * 4 + 3] = 255;
+      }
+      const tex = new THREE.DataTexture(data, w, 1, THREE.RGBAFormat);
+      tex.magFilter = THREE.LinearFilter;
+      tex.minFilter = THREE.LinearFilter;
+      tex.wrapS = THREE.ClampToEdgeWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.generateMipmaps = false;
+      tex.needsUpdate = true;
+      return tex;
+    }
+
+    const paletteTex = makePaletteTexture(colors);
+    const bgVec4 = new THREE.Vector4(0, 0, 0, 0); // always transparent
+
+    class CommonClass {
+      constructor() {
+        this.width = 0;
+        this.height = 0;
+        this.aspect = 1;
+        this.pixelRatio = 1;
+        this.isMobile = false;
+        this.breakpoint = 768;
+        this.fboWidth = null;
+        this.fboHeight = null;
+        this.time = 0;
+        this.delta = 0;
+        this.container = null;
+        this.renderer = null;
+        this.clock = null;
+      }
+      init(container) {
+        this.container = container;
+        this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        this.resize();
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer.autoClear = false;
+        this.renderer.setClearColor(new THREE.Color(0x000000), 0);
+        this.renderer.setPixelRatio(this.pixelRatio);
+        this.renderer.setSize(this.width, this.height);
+        this.renderer.domElement.style.width = '100%';
+        this.renderer.domElement.style.height = '100%';
+        this.renderer.domElement.style.display = 'block';
+        this.clock = new THREE.Clock();
+        this.clock.start();
+      }
+      resize() {
+        if (!this.container) return;
+        const rect = this.container.getBoundingClientRect();
+        this.width = Math.max(1, Math.floor(rect.width));
+        this.height = Math.max(1, Math.floor(rect.height));
+        this.aspect = this.width / this.height;
+        if (this.renderer) this.renderer.setSize(this.width, this.height, false);
+      }
+      update() {
+        this.delta = this.clock.getDelta();
+        this.time += this.delta;
+      }
+    }
+    const Common = new CommonClass();
+
+    class MouseClass {
+      constructor() {
+        this.mouseMoved = false;
+        this.coords = new THREE.Vector2();
+        this.coords_old = new THREE.Vector2();
+        this.diff = new THREE.Vector2();
+        this.timer = null;
+        this.container = null;
+        this.docTarget = null;
+        this.listenerTarget = null;
+        this.isHoverInside = false;
+        this.hasUserControl = false;
+        this.isAutoActive = false;
+        this.autoIntensity = 2.0;
+        this.takeoverActive = false;
+        this.takeoverStartTime = 0;
+        this.takeoverDuration = 0.25;
+        this.takeoverFrom = new THREE.Vector2();
+        this.takeoverTo = new THREE.Vector2();
+        this.onInteract = null;
+        this._onMouseMove = this.onDocumentMouseMove.bind(this);
+        this._onTouchStart = this.onDocumentTouchStart.bind(this);
+        this._onTouchMove = this.onDocumentTouchMove.bind(this);
+        this._onTouchEnd = this.onTouchEnd.bind(this);
+        this._onDocumentLeave = this.onDocumentLeave.bind(this);
+      }
+      init(container) {
+        this.container = container;
+        this.docTarget = container.ownerDocument || null;
+        const defaultView =
+          (this.docTarget && this.docTarget.defaultView) || (typeof window !== 'undefined' ? window : null);
+        if (!defaultView) return;
+        this.listenerTarget = defaultView;
+        this.listenerTarget.addEventListener('mousemove', this._onMouseMove);
+        this.listenerTarget.addEventListener('touchstart', this._onTouchStart, { passive: true });
+        this.listenerTarget.addEventListener('touchmove', this._onTouchMove, { passive: true });
+        this.listenerTarget.addEventListener('touchend', this._onTouchEnd);
+        if (this.docTarget) {
+          this.docTarget.addEventListener('mouseleave', this._onDocumentLeave);
+        }
+      }
+      dispose() {
+        if (this.listenerTarget) {
+          this.listenerTarget.removeEventListener('mousemove', this._onMouseMove);
+          this.listenerTarget.removeEventListener('touchstart', this._onTouchStart);
+          this.listenerTarget.removeEventListener('touchmove', this._onTouchMove);
+          this.listenerTarget.removeEventListener('touchend', this._onTouchEnd);
+        }
+        if (this.docTarget) {
+          this.docTarget.removeEventListener('mouseleave', this._onDocumentLeave);
+        }
+        this.listenerTarget = null;
+        this.docTarget = null;
+        this.container = null;
+      }
+      isPointInside(clientX, clientY) {
+        if (!this.container) return false;
+        const rect = this.container.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return false;
+        return clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
+      }
+      updateHoverState(clientX, clientY) {
+        this.isHoverInside = this.isPointInside(clientX, clientY);
+        return this.isHoverInside;
+      }
+      setCoords(x, y) {
+        if (!this.container) return;
+        if (this.timer) window.clearTimeout(this.timer);
+        const rect = this.container.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        const nx = (x - rect.left) / rect.width;
+        const ny = (y - rect.top) / rect.height;
+        this.coords.set(nx * 2 - 1, -(ny * 2 - 1));
+        this.mouseMoved = true;
+        this.timer = window.setTimeout(() => {
+          this.mouseMoved = false;
+        }, 100);
+      }
+      setNormalized(nx, ny) {
+        this.coords.set(nx, ny);
+        this.mouseMoved = true;
+      }
+      onDocumentMouseMove(event) {
+        if (!this.updateHoverState(event.clientX, event.clientY)) return;
+        if (this.onInteract) this.onInteract();
+        if (this.isAutoActive && !this.hasUserControl && !this.takeoverActive) {
+          if (!this.container) return;
+          const rect = this.container.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) return;
+          const nx = (event.clientX - rect.left) / rect.width;
+          const ny = (event.clientY - rect.top) / rect.height;
+          this.takeoverFrom.copy(this.coords);
+          this.takeoverTo.set(nx * 2 - 1, -(ny * 2 - 1));
+          this.takeoverStartTime = performance.now();
+          this.takeoverActive = true;
+          this.hasUserControl = true;
+          this.isAutoActive = false;
+          return;
+        }
+        this.setCoords(event.clientX, event.clientY);
+        this.hasUserControl = true;
+      }
+      onDocumentTouchStart(event) {
+        if (event.touches.length !== 1) return;
+        const t = event.touches[0];
+        if (!this.updateHoverState(t.clientX, t.clientY)) return;
+        if (this.onInteract) this.onInteract();
+        this.setCoords(t.clientX, t.clientY);
+        this.hasUserControl = true;
+      }
+      onDocumentTouchMove(event) {
+        if (event.touches.length !== 1) return;
+        const t = event.touches[0];
+        if (!this.updateHoverState(t.clientX, t.clientY)) return;
+        if (this.onInteract) this.onInteract();
+        this.setCoords(t.clientX, t.clientY);
+      }
+      onTouchEnd() {
+        this.isHoverInside = false;
+      }
+      onDocumentLeave() {
+        this.isHoverInside = false;
+      }
+      update() {
+        if (this.takeoverActive) {
+          const t = (performance.now() - this.takeoverStartTime) / (this.takeoverDuration * 1000);
+          if (t >= 1) {
+            this.takeoverActive = false;
+            this.coords.copy(this.takeoverTo);
+            this.coords_old.copy(this.coords);
+            this.diff.set(0, 0);
+          } else {
+            const k = t * t * (3 - 2 * t);
+            this.coords.copy(this.takeoverFrom).lerp(this.takeoverTo, k);
+          }
+        }
+        this.diff.subVectors(this.coords, this.coords_old);
+        this.coords_old.copy(this.coords);
+        if (this.coords_old.x === 0 && this.coords_old.y === 0) this.diff.set(0, 0);
+        if (this.isAutoActive && !this.takeoverActive) this.diff.multiplyScalar(this.autoIntensity);
+      }
+    }
+    const Mouse = new MouseClass();
+
+    class AutoDriver {
+      constructor(mouse, manager, opts) {
+        this.mouse = mouse;
+        this.manager = manager;
+        this.enabled = opts.enabled;
+        this.speed = opts.speed; // normalized units/sec
+        this.resumeDelay = opts.resumeDelay || 3000; // ms
+        this.rampDurationMs = (opts.rampDuration || 0) * 1000;
+        this.active = false;
+        this.current = new THREE.Vector2(0, 0);
+        this.target = new THREE.Vector2();
+        this.lastTime = performance.now();
+        this.activationTime = 0;
+        this.margin = 0.2;
+        this._tmpDir = new THREE.Vector2(); // reuse temp vector to avoid per-frame alloc
+        this.pickNewTarget();
+      }
+      pickNewTarget() {
+        const r = Math.random;
+        this.target.set((r() * 2 - 1) * (1 - this.margin), (r() * 2 - 1) * (1 - this.margin));
+      }
+      forceStop() {
+        this.active = false;
+        this.mouse.isAutoActive = false;
+      }
+      update() {
+        if (!this.enabled) return;
+        const now = performance.now();
+        const idle = now - this.manager.lastUserInteraction;
+        if (idle < this.resumeDelay) {
+          if (this.active) this.forceStop();
+          return;
+        }
+        if (this.mouse.isHoverInside) {
+          if (this.active) this.forceStop();
+          return;
+        }
+        if (!this.active) {
+          this.active = true;
+          this.current.copy(this.mouse.coords);
+          this.lastTime = now;
+          this.activationTime = now;
+        }
+        if (!this.active) return;
+        this.mouse.isAutoActive = true;
+        let dtSec = (now - this.lastTime) / 1000;
+        this.lastTime = now;
+        if (dtSec > 0.2) dtSec = 0.016;
+        const dir = this._tmpDir.subVectors(this.target, this.current);
+        const dist = dir.length();
+        if (dist < 0.01) {
+          this.pickNewTarget();
+          return;
+        }
+        dir.normalize();
+        let ramp = 1;
+        if (this.rampDurationMs > 0) {
+          const t = Math.min(1, (now - this.activationTime) / this.rampDurationMs);
+          ramp = t * t * (3 - 2 * t);
+        }
+        const step = this.speed * dtSec * ramp;
+        const move = Math.min(step, dist);
+        this.current.addScaledVector(dir, move);
+        this.mouse.setNormalized(this.current.x, this.current.y);
+      }
+    }
+
+    const face_vert = `
+  attribute vec3 position;
+  uniform vec2 px;
+  uniform vec2 boundarySpace;
+  varying vec2 uv;
+  precision highp float;
+  void main(){
+  vec3 pos = position;
+  vec2 scale = 1.0 - boundarySpace * 2.0;
+  pos.xy = pos.xy * scale;
+  uv = vec2(0.5)+(pos.xy)*0.5;
+  gl_Position = vec4(pos, 1.0);
+}
+`;
+    const line_vert = `
+  attribute vec3 position;
+  uniform vec2 px;
+  precision highp float;
+  varying vec2 uv;
+  void main(){
+  vec3 pos = position;
+  uv = 0.5 + pos.xy * 0.5;
+  vec2 n = sign(pos.xy);
+  pos.xy = abs(pos.xy) - px * 1.0;
+  pos.xy *= n;
+  gl_Position = vec4(pos, 1.0);
+}
+`;
+    const mouse_vert = `
+    precision highp float;
+    attribute vec3 position;
+    attribute vec2 uv;
+    uniform vec2 center;
+    uniform vec2 scale;
+    uniform vec2 px;
+    varying vec2 vUv;
+    void main(){
+    vec2 pos = position.xy * scale * 2.0 * px + center;
+    vUv = uv;
+    gl_Position = vec4(pos, 0.0, 1.0);
+}
+`;
+    const advection_frag = `
+    precision highp float;
+    uniform sampler2D velocity;
+    uniform float dt;
+    uniform bool isBFECC;
+    uniform vec2 fboSize;
+    uniform vec2 px;
+    varying vec2 uv;
+    void main(){
+    vec2 ratio = max(fboSize.x, fboSize.y) / fboSize;
+    if(isBFECC == false){
+        vec2 vel = texture2D(velocity, uv).xy;
+        vec2 uv2 = uv - vel * dt * ratio;
+        vec2 newVel = texture2D(velocity, uv2).xy;
+        gl_FragColor = vec4(newVel, 0.0, 0.0);
+    } else {
+        vec2 spot_new = uv;
+        vec2 vel_old = texture2D(velocity, uv).xy;
+        vec2 spot_old = spot_new - vel_old * dt * ratio;
+        vec2 vel_new1 = texture2D(velocity, spot_old).xy;
+        vec2 spot_new2 = spot_old + vel_new1 * dt * ratio;
+        vec2 error = spot_new2 - spot_new;
+        vec2 spot_new3 = spot_new - error / 2.0;
+        vec2 vel_2 = texture2D(velocity, spot_new3).xy;
+        vec2 spot_old2 = spot_new3 - vel_2 * dt * ratio;
+        vec2 newVel2 = texture2D(velocity, spot_old2).xy; 
+        gl_FragColor = vec4(newVel2, 0.0, 0.0);
+    }
+}
+`;
+    const color_frag = `
+    precision highp float;
+    uniform sampler2D velocity;
+    uniform sampler2D palette;
+    uniform vec4 bgColor;
+    varying vec2 uv;
+    void main(){
+    vec2 vel = texture2D(velocity, uv).xy;
+    float lenv = clamp(length(vel), 0.0, 1.0);
+    vec3 c = texture2D(palette, vec2(lenv, 0.5)).rgb;
+    vec3 outRGB = mix(bgColor.rgb, c, lenv);
+    float outA = mix(bgColor.a, 1.0, lenv);
+    gl_FragColor = vec4(outRGB, outA);
+}
+`;
+    const divergence_frag = `
+    precision highp float;
+    uniform sampler2D velocity;
+    uniform float dt;
+    uniform vec2 px;
+    varying vec2 uv;
+    void main(){
+    float x0 = texture2D(velocity, uv-vec2(px.x, 0.0)).x;
+    float x1 = texture2D(velocity, uv+vec2(px.x, 0.0)).x;
+    float y0 = texture2D(velocity, uv-vec2(0.0, px.y)).y;
+    float y1 = texture2D(velocity, uv+vec2(0.0, px.y)).y;
+    float divergence = (x1 - x0 + y1 - y0) / 2.0;
+    gl_FragColor = vec4(divergence / dt);
+}
+`;
+    const externalForce_frag = `
+    precision highp float;
+    uniform vec2 force;
+    uniform vec2 center;
+    uniform vec2 scale;
+    uniform vec2 px;
+    varying vec2 vUv;
+    void main(){
+    vec2 circle = (vUv - 0.5) * 2.0;
+    float d = 1.0 - min(length(circle), 1.0);
+    d *= d;
+    gl_FragColor = vec4(force * d, 0.0, 1.0);
+}
+`;
+    const poisson_frag = `
+    precision highp float;
+    uniform sampler2D pressure;
+    uniform sampler2D divergence;
+    uniform vec2 px;
+    varying vec2 uv;
+    void main(){
+    float p0 = texture2D(pressure, uv + vec2(px.x * 2.0, 0.0)).r;
+    float p1 = texture2D(pressure, uv - vec2(px.x * 2.0, 0.0)).r;
+    float p2 = texture2D(pressure, uv + vec2(0.0, px.y * 2.0)).r;
+    float p3 = texture2D(pressure, uv - vec2(0.0, px.y * 2.0)).r;
+    float div = texture2D(divergence, uv).r;
+    float newP = (p0 + p1 + p2 + p3) / 4.0 - div;
+    gl_FragColor = vec4(newP);
+}
+`;
+    const pressure_frag = `
+    precision highp float;
+    uniform sampler2D pressure;
+    uniform sampler2D velocity;
+    uniform vec2 px;
+    uniform float dt;
+    varying vec2 uv;
+    void main(){
+    float step = 1.0;
+    float p0 = texture2D(pressure, uv + vec2(px.x * step, 0.0)).r;
+    float p1 = texture2D(pressure, uv - vec2(px.x * step, 0.0)).r;
+    float p2 = texture2D(pressure, uv + vec2(0.0, px.y * step)).r;
+    float p3 = texture2D(pressure, uv - vec2(0.0, px.y * step)).r;
+    vec2 v = texture2D(velocity, uv).xy;
+    vec2 gradP = vec2(p0 - p1, p2 - p3) * 0.5;
+    v = v - gradP * dt;
+    gl_FragColor = vec4(v, 0.0, 1.0);
+}
+`;
+    const viscous_frag = `
+    precision highp float;
+    uniform sampler2D velocity;
+    uniform sampler2D velocity_new;
+    uniform float v;
+    uniform vec2 px;
+    uniform float dt;
+    varying vec2 uv;
+    void main(){
+    vec2 old = texture2D(velocity, uv).xy;
+    vec2 new0 = texture2D(velocity_new, uv + vec2(px.x * 2.0, 0.0)).xy;
+    vec2 new1 = texture2D(velocity_new, uv - vec2(px.x * 2.0, 0.0)).xy;
+    vec2 new2 = texture2D(velocity_new, uv + vec2(0.0, px.y * 2.0)).xy;
+    vec2 new3 = texture2D(velocity_new, uv - vec2(0.0, px.y * 2.0)).xy;
+    vec2 newv = 4.0 * old + v * dt * (new0 + new1 + new2 + new3);
+    newv /= 4.0 * (1.0 + v * dt);
+    gl_FragColor = vec4(newv, 0.0, 0.0);
+}
+`;
+
+    class ShaderPass {
+      constructor(props) {
+        this.props = props || {};
+        this.uniforms = this.props.material?.uniforms;
+        this.scene = null;
+        this.camera = null;
+        this.material = null;
+        this.geometry = null;
+        this.plane = null;
+      }
+      init() {
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.Camera();
+        if (this.uniforms) {
+          this.material = new THREE.RawShaderMaterial(this.props.material);
+          this.geometry = new THREE.PlaneGeometry(2.0, 2.0);
+          this.plane = new THREE.Mesh(this.geometry, this.material);
+          this.scene.add(this.plane);
+        }
+      }
+      update() {
+        Common.renderer.setRenderTarget(this.props.output || null);
+        Common.renderer.render(this.scene, this.camera);
+        Common.renderer.setRenderTarget(null);
+      }
+    }
+
+    class Advection extends ShaderPass {
+      constructor(simProps) {
+        super({
+          material: {
+            vertexShader: face_vert,
+            fragmentShader: advection_frag,
+            uniforms: {
+              boundarySpace: { value: simProps.cellScale },
+              px: { value: simProps.cellScale },
+              fboSize: { value: simProps.fboSize },
+              velocity: { value: simProps.src.texture },
+              dt: { value: simProps.dt },
+              isBFECC: { value: true }
+            }
+          },
+          output: simProps.dst
+        });
+        this.uniforms = this.props.material.uniforms;
+        this.init();
+      }
+      init() {
+        super.init();
+        this.createBoundary();
+      }
+      createBoundary() {
+        const boundaryG = new THREE.BufferGeometry();
+        const vertices_boundary = new Float32Array([
+          -1, -1, 0, -1, 1, 0, -1, 1, 0, 1, 1, 0, 1, 1, 0, 1, -1, 0, 1, -1, 0, -1, -1, 0
+        ]);
+        boundaryG.setAttribute('position', new THREE.BufferAttribute(vertices_boundary, 3));
+        const boundaryM = new THREE.RawShaderMaterial({
+          vertexShader: line_vert,
+          fragmentShader: advection_frag,
+          uniforms: this.uniforms
+        });
+        this.line = new THREE.LineSegments(boundaryG, boundaryM);
+        this.scene.add(this.line);
+      }
+      update({ dt, isBounce, BFECC }) {
+        this.uniforms.dt.value = dt;
+        this.line.visible = isBounce;
+        this.uniforms.isBFECC.value = BFECC;
+        super.update();
+      }
+    }
+
+    class ExternalForce extends ShaderPass {
+      constructor(simProps) {
+        super({ output: simProps.dst });
+        this.init(simProps);
+      }
+      init(simProps) {
+        super.init();
+        const mouseG = new THREE.PlaneGeometry(1, 1);
+        const mouseM = new THREE.RawShaderMaterial({
+          vertexShader: mouse_vert,
+          fragmentShader: externalForce_frag,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          uniforms: {
+            px: { value: simProps.cellScale },
+            force: { value: new THREE.Vector2(0.0, 0.0) },
+            center: { value: new THREE.Vector2(0.0, 0.0) },
+            scale: { value: new THREE.Vector2(simProps.cursor_size, simProps.cursor_size) }
+          }
+        });
+        this.mouse = new THREE.Mesh(mouseG, mouseM);
+        this.scene.add(this.mouse);
+      }
+      update(props) {
+        const forceX = (Mouse.diff.x / 2) * props.mouse_force;
+        const forceY = (Mouse.diff.y / 2) * props.mouse_force;
+        const cursorSizeX = props.cursor_size * props.cellScale.x;
+        const cursorSizeY = props.cursor_size * props.cellScale.y;
+        const centerX = Math.min(
+          Math.max(Mouse.coords.x, -1 + cursorSizeX + props.cellScale.x * 2),
+          1 - cursorSizeX - props.cellScale.x * 2
+        );
+        const centerY = Math.min(
+          Math.max(Mouse.coords.y, -1 + cursorSizeY + props.cellScale.y * 2),
+          1 - cursorSizeY - props.cellScale.y * 2
+        );
+        const uniforms = this.mouse.material.uniforms;
+        uniforms.force.value.set(forceX, forceY);
+        uniforms.center.value.set(centerX, centerY);
+        uniforms.scale.value.set(props.cursor_size, props.cursor_size);
+        super.update();
+      }
+    }
+
+    class Viscous extends ShaderPass {
+      constructor(simProps) {
+        super({
+          material: {
+            vertexShader: face_vert,
+            fragmentShader: viscous_frag,
+            uniforms: {
+              boundarySpace: { value: simProps.boundarySpace },
+              velocity: { value: simProps.src.texture },
+              velocity_new: { value: simProps.dst_.texture },
+              v: { value: simProps.viscous },
+              px: { value: simProps.cellScale },
+              dt: { value: simProps.dt }
+            }
+          },
+          output: simProps.dst,
+          output0: simProps.dst_,
+          output1: simProps.dst
+        });
+        this.init();
+      }
+      update({ viscous, iterations, dt }) {
+        let fbo_in, fbo_out;
+        this.uniforms.v.value = viscous;
+        for (let i = 0; i < iterations; i++) {
+          if (i % 2 === 0) {
+            fbo_in = this.props.output0;
+            fbo_out = this.props.output1;
+          } else {
+            fbo_in = this.props.output1;
+            fbo_out = this.props.output0;
+          }
+          this.uniforms.velocity_new.value = fbo_in.texture;
+          this.props.output = fbo_out;
+          this.uniforms.dt.value = dt;
+          super.update();
+        }
+        return fbo_out;
+      }
+    }
+
+    class Divergence extends ShaderPass {
+      constructor(simProps) {
+        super({
+          material: {
+            vertexShader: face_vert,
+            fragmentShader: divergence_frag,
+            uniforms: {
+              boundarySpace: { value: simProps.boundarySpace },
+              velocity: { value: simProps.src.texture },
+              px: { value: simProps.cellScale },
+              dt: { value: simProps.dt }
+            }
+          },
+          output: simProps.dst
+        });
+        this.init();
+      }
+      update({ vel }) {
+        this.uniforms.velocity.value = vel.texture;
+        super.update();
+      }
+    }
+
+    class Poisson extends ShaderPass {
+      constructor(simProps) {
+        super({
+          material: {
+            vertexShader: face_vert,
+            fragmentShader: poisson_frag,
+            uniforms: {
+              boundarySpace: { value: simProps.boundarySpace },
+              pressure: { value: simProps.dst_.texture },
+              divergence: { value: simProps.src.texture },
+              px: { value: simProps.cellScale }
+            }
+          },
+          output: simProps.dst,
+          output0: simProps.dst_,
+          output1: simProps.dst
+        });
+        this.init();
+      }
+      update({ iterations }) {
+        let p_in, p_out;
+        for (let i = 0; i < iterations; i++) {
+          if (i % 2 === 0) {
+            p_in = this.props.output0;
+            p_out = this.props.output1;
+          } else {
+            p_in = this.props.output1;
+            p_out = this.props.output0;
+          }
+          this.uniforms.pressure.value = p_in.texture;
+          this.props.output = p_out;
+          super.update();
+        }
+        return p_out;
+      }
+    }
+
+    class Pressure extends ShaderPass {
+      constructor(simProps) {
+        super({
+          material: {
+            vertexShader: face_vert,
+            fragmentShader: pressure_frag,
+            uniforms: {
+              boundarySpace: { value: simProps.boundarySpace },
+              pressure: { value: simProps.src_p.texture },
+              velocity: { value: simProps.src_v.texture },
+              px: { value: simProps.cellScale },
+              dt: { value: simProps.dt }
+            }
+          },
+          output: simProps.dst
+        });
+        this.init();
+      }
+      update({ vel, pressure }) {
+        this.uniforms.velocity.value = vel.texture;
+        this.uniforms.pressure.value = pressure.texture;
+        super.update();
+      }
+    }
+
+    class Simulation {
+      constructor(options) {
+        this.options = {
+          iterations_poisson: 32,
+          iterations_viscous: 32,
+          mouse_force: 20,
+          resolution: 0.5,
+          cursor_size: 100,
+          viscous: 30,
+          isBounce: false,
+          dt: 0.014,
+          isViscous: false,
+          BFECC: true,
+          ...options
+        };
+        this.fbos = {
+          vel_0: null,
+          vel_1: null,
+          vel_viscous0: null,
+          vel_viscous1: null,
+          div: null,
+          pressure_0: null,
+          pressure_1: null
+        };
+        this.fboSize = new THREE.Vector2();
+        this.cellScale = new THREE.Vector2();
+        this.boundarySpace = new THREE.Vector2();
+        this.init();
+      }
+      init() {
+        this.calcSize();
+        this.createAllFBO();
+        this.createShaderPass();
+      }
+      getFloatType() {
+        const isIOS = /(iPad|iPhone|iPod)/i.test(navigator.userAgent);
+        return isIOS ? THREE.HalfFloatType : THREE.FloatType;
+      }
+      createAllFBO() {
+        const type = this.getFloatType();
+        const opts = {
+          type,
+          depthBuffer: false,
+          stencilBuffer: false,
+          minFilter: THREE.LinearFilter,
+          magFilter: THREE.LinearFilter,
+          wrapS: THREE.ClampToEdgeWrapping,
+          wrapT: THREE.ClampToEdgeWrapping
+        };
+        for (let key in this.fbos) {
+          this.fbos[key] = new THREE.WebGLRenderTarget(this.fboSize.x, this.fboSize.y, opts);
+        }
+      }
+      createShaderPass() {
+        this.advection = new Advection({
+          cellScale: this.cellScale,
+          fboSize: this.fboSize,
+          dt: this.options.dt,
+          src: this.fbos.vel_0,
+          dst: this.fbos.vel_1
+        });
+        this.externalForce = new ExternalForce({
+          cellScale: this.cellScale,
+          cursor_size: this.options.cursor_size,
+          dst: this.fbos.vel_1
+        });
+        this.viscous = new Viscous({
+          cellScale: this.cellScale,
+          boundarySpace: this.boundarySpace,
+          viscous: this.options.viscous,
+          src: this.fbos.vel_1,
+          dst: this.fbos.vel_viscous1,
+          dst_: this.fbos.vel_viscous0,
+          dt: this.options.dt
+        });
+        this.divergence = new Divergence({
+          cellScale: this.cellScale,
+          boundarySpace: this.boundarySpace,
+          src: this.fbos.vel_viscous0,
+          dst: this.fbos.div,
+          dt: this.options.dt
+        });
+        this.poisson = new Poisson({
+          cellScale: this.cellScale,
+          boundarySpace: this.boundarySpace,
+          src: this.fbos.div,
+          dst: this.fbos.pressure_1,
+          dst_: this.fbos.pressure_0
+        });
+        this.pressure = new Pressure({
+          cellScale: this.cellScale,
+          boundarySpace: this.boundarySpace,
+          src_p: this.fbos.pressure_0,
+          src_v: this.fbos.vel_viscous0,
+          dst: this.fbos.vel_0,
+          dt: this.options.dt
+        });
+      }
+      calcSize() {
+        const width = Math.max(1, Math.round(this.options.resolution * Common.width));
+        const height = Math.max(1, Math.round(this.options.resolution * Common.height));
+        const px_x = 1.0 / width;
+        const px_y = 1.0 / height;
+        this.cellScale.set(px_x, px_y);
+        this.fboSize.set(width, height);
+      }
+      resize() {
+        this.calcSize();
+        for (let key in this.fbos) {
+          this.fbos[key].setSize(this.fboSize.x, this.fboSize.y);
+        }
+      }
+      update() {
+        if (this.options.isBounce) {
+          this.boundarySpace.set(0, 0);
+        } else {
+          this.boundarySpace.copy(this.cellScale);
+        }
+        this.advection.update({
+          dt: this.options.dt,
+          isBounce: this.options.isBounce,
+          BFECC: this.options.BFECC
+        });
+        this.externalForce.update({
+          cursor_size: this.options.cursor_size,
+          mouse_force: this.options.mouse_force,
+          cellScale: this.cellScale
+        });
+        let vel = this.fbos.vel_1;
+        if (this.options.isViscous) {
+          vel = this.viscous.update({
+            viscous: this.options.viscous,
+            iterations: this.options.iterations_viscous,
+            dt: this.options.dt
+          });
+        }
+        this.divergence.update({ vel });
+        const pressure = this.poisson.update({
+          iterations: this.options.iterations_poisson
+        });
+        this.pressure.update({ vel, pressure });
+      }
+    }
+
+    class Output {
+      constructor() {
+        this.init();
+      }
+      init() {
+        this.simulation = new Simulation();
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.Camera();
+        this.output = new THREE.Mesh(
+          new THREE.PlaneGeometry(2, 2),
+          new THREE.RawShaderMaterial({
+            vertexShader: face_vert,
+            fragmentShader: color_frag,
+            transparent: true,
+            depthWrite: false,
+            uniforms: {
+              velocity: { value: this.simulation.fbos.vel_0.texture },
+              boundarySpace: { value: new THREE.Vector2() },
+              palette: { value: paletteTex },
+              bgColor: { value: bgVec4 }
+            }
+          })
+        );
+        this.scene.add(this.output);
+      }
+      addScene(mesh) {
+        this.scene.add(mesh);
+      }
+      resize() {
+        this.simulation.resize();
+      }
+      render() {
+        Common.renderer.setRenderTarget(null);
+        Common.renderer.render(this.scene, this.camera);
+      }
+      update() {
+        this.simulation.update();
+        this.render();
+      }
+    }
+
+    class WebGLManager {
+      constructor(props) {
+        this.props = props;
+        Common.init(props.$wrapper);
+        Mouse.init(props.$wrapper);
+        Mouse.autoIntensity = props.autoIntensity;
+        Mouse.takeoverDuration = props.takeoverDuration;
+        this.lastUserInteraction = performance.now();
+        Mouse.onInteract = () => {
+          this.lastUserInteraction = performance.now();
+          if (this.autoDriver) this.autoDriver.forceStop();
+        };
+        this.autoDriver = new AutoDriver(Mouse, this, {
+          enabled: props.autoDemo,
+          speed: props.autoSpeed,
+          resumeDelay: props.autoResumeDelay,
+          rampDuration: props.autoRampDuration
+        });
+        this.init();
+        this._loop = this.loop.bind(this);
+        this._resize = this.resize.bind(this);
+        window.addEventListener('resize', this._resize);
+        this._onVisibility = () => {
+          const hidden = document.hidden;
+          if (hidden) {
+            this.pause();
+          } else if (isVisibleRef.current) {
+            this.start();
+          }
+        };
+        document.addEventListener('visibilitychange', this._onVisibility);
+        this.running = false;
+      }
+      init() {
+        this.props.$wrapper.prepend(Common.renderer.domElement);
+        this.output = new Output();
+      }
+      resize() {
+        Common.resize();
+        this.output.resize();
+      }
+      render() {
+        if (this.autoDriver) this.autoDriver.update();
+        Mouse.update();
+        Common.update();
+        this.output.update();
+      }
+      loop() {
+        if (!this.running) return; // safety
+        this.render();
+        rafRef.current = requestAnimationFrame(this._loop);
+      }
+      start() {
+        if (this.running) return;
+        this.running = true;
+        this._loop();
+      }
+      pause() {
+        this.running = false;
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      }
+      dispose() {
+        try {
+          window.removeEventListener('resize', this._resize);
+          document.removeEventListener('visibilitychange', this._onVisibility);
+          Mouse.dispose();
+          if (Common.renderer) {
+            const canvas = Common.renderer.domElement;
+            if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
+            Common.renderer.dispose();
+          }
+        } catch (e) {
+          void 0;
+        }
+      }
+    }
+
+    const container = mountRef.current;
+    container.style.position = container.style.position || 'relative';
+    container.style.overflow = container.style.overflow || 'hidden';
+
+    const webgl = new WebGLManager({
+      $wrapper: container,
+      autoDemo,
+      autoSpeed,
+      autoIntensity,
+      takeoverDuration,
+      autoResumeDelay,
+      autoRampDuration
+    });
+    webglRef.current = webgl;
+
+    const applyOptionsFromProps = () => {
+      if (!webglRef.current) return;
+      const sim = webglRef.current.output?.simulation;
+      if (!sim) return;
+      const prevRes = sim.options.resolution;
+      Object.assign(sim.options, {
+        mouse_force: mouseForce,
+        cursor_size: cursorSize,
+        isViscous,
+        viscous,
+        iterations_viscous: iterationsViscous,
+        iterations_poisson: iterationsPoisson,
+        dt,
+        BFECC,
+        resolution,
+        isBounce
+      });
+      if (resolution !== prevRes) {
+        sim.resize();
+      }
+    };
+    applyOptionsFromProps();
+
+    webgl.start();
+
+    // IntersectionObserver to pause rendering when not visible
+    const io = new IntersectionObserver(
+      entries => {
+        const entry = entries[0];
+        const isVisible = entry.isIntersecting && entry.intersectionRatio > 0;
+        isVisibleRef.current = isVisible;
+        if (!webglRef.current) return;
+        if (isVisible && !document.hidden) {
+          webglRef.current.start();
+        } else {
+          webglRef.current.pause();
+        }
+      },
+      { threshold: [0, 0.01, 0.1] }
+    );
+    io.observe(container);
+    intersectionObserverRef.current = io;
+
+    const ro = new ResizeObserver(() => {
+      if (!webglRef.current) return;
+      if (resizeRafRef.current) cancelAnimationFrame(resizeRafRef.current);
+      resizeRafRef.current = requestAnimationFrame(() => {
+        if (!webglRef.current) return;
+        webglRef.current.resize();
+      });
+    });
+    ro.observe(container);
+    resizeObserverRef.current = ro;
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (resizeObserverRef.current) {
+        try {
+          resizeObserverRef.current.disconnect();
+        } catch (e) {
+          void 0;
+        }
+      }
+      if (intersectionObserverRef.current) {
+        try {
+          intersectionObserverRef.current.disconnect();
+        } catch (e) {
+          void 0;
+        }
+      }
+      if (webglRef.current) {
+        webglRef.current.dispose();
+      }
+      webglRef.current = null;
+    };
+  }, [
+    BFECC,
+    cursorSize,
+    dt,
+    isBounce,
+    isViscous,
+    iterationsPoisson,
+    iterationsViscous,
+    mouseForce,
+    resolution,
+    viscous,
+    colors,
+    autoDemo,
+    autoSpeed,
+    autoIntensity,
+    takeoverDuration,
+    autoResumeDelay,
+    autoRampDuration
+  ]);
+
+  useEffect(() => {
+    const webgl = webglRef.current;
+    if (!webgl) return;
+    const sim = webgl.output?.simulation;
+    if (!sim) return;
+    const prevRes = sim.options.resolution;
+    Object.assign(sim.options, {
+      mouse_force: mouseForce,
+      cursor_size: cursorSize,
+      isViscous,
+      viscous,
+      iterations_viscous: iterationsViscous,
+      iterations_poisson: iterationsPoisson,
+      dt,
+      BFECC,
+      resolution,
+      isBounce
+    });
+    if (webgl.autoDriver) {
+      webgl.autoDriver.enabled = autoDemo;
+      webgl.autoDriver.speed = autoSpeed;
+      webgl.autoDriver.resumeDelay = autoResumeDelay;
+      webgl.autoDriver.rampDurationMs = autoRampDuration * 1000;
+      if (webgl.autoDriver.mouse) {
+        webgl.autoDriver.mouse.autoIntensity = autoIntensity;
+        webgl.autoDriver.mouse.takeoverDuration = takeoverDuration;
+      }
+    }
+    if (resolution !== prevRes) {
+      sim.resize();
+    }
+  }, [
+    mouseForce,
+    cursorSize,
+    isViscous,
+    viscous,
+    iterationsViscous,
+    iterationsPoisson,
+    dt,
+    BFECC,
+    resolution,
+    isBounce,
+    autoDemo,
+    autoSpeed,
+    autoIntensity,
+    takeoverDuration,
+    autoResumeDelay,
+    autoRampDuration
+  ]);
+
+  return <div ref={mountRef} className={`liquid-ether-container ${className || ''}`} style={style} />;
+}
+
+GradientBlinds:
+
+import { useEffect, useRef } from 'react';
+import { Renderer, Program, Mesh, Triangle } from 'ogl';
+import './GradientBlinds.css';
+
+const MAX_COLORS = 8;
+const hexToRGB = hex => {
+  const c = hex.replace('#', '').padEnd(6, '0');
+  const r = parseInt(c.slice(0, 2), 16) / 255;
+  const g = parseInt(c.slice(2, 4), 16) / 255;
+  const b = parseInt(c.slice(4, 6), 16) / 255;
+  return [r, g, b];
+};
+const prepStops = stops => {
+  const base = (stops && stops.length ? stops : ['#FF9FFC', '#5227FF']).slice(0, MAX_COLORS);
+  if (base.length === 1) base.push(base[0]);
+  while (base.length < MAX_COLORS) base.push(base[base.length - 1]);
+  const arr = [];
+  for (let i = 0; i < MAX_COLORS; i++) arr.push(hexToRGB(base[i]));
+  const count = Math.max(2, Math.min(MAX_COLORS, stops?.length ?? 2));
+  return { arr, count };
+};
+
+const GradientBlinds = ({
+  className,
+  dpr,
+  paused = false,
+  gradientColors,
+  angle = 0,
+  noise = 0.3,
+  blindCount = 16,
+  blindMinWidth = 60,
+  mouseDampening = 0.15,
+  mirrorGradient = false,
+  spotlightRadius = 0.5,
+  spotlightSoftness = 1,
+  spotlightOpacity = 1,
+  distortAmount = 0,
+  shineDirection = 'left',
+  mixBlendMode = 'lighten'
+}) => {
+  const containerRef = useRef(null);
+  const rafRef = useRef(null);
+  const programRef = useRef(null);
+  const meshRef = useRef(null);
+  const geometryRef = useRef(null);
+  const rendererRef = useRef(null);
+  const mouseTargetRef = useRef([0, 0]);
+  const lastTimeRef = useRef(0);
+  const firstResizeRef = useRef(true);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const renderer = new Renderer({
+      dpr: dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1),
+      alpha: true,
+      antialias: true
+    });
+    rendererRef.current = renderer;
+    const gl = renderer.gl;
+    const canvas = gl.canvas;
+
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.display = 'block';
+    container.appendChild(canvas);
+
+    const vertex = `
+attribute vec2 position;
+attribute vec2 uv;
+varying vec2 vUv;
+
+void main() {
+  vUv = uv;
+  gl_Position = vec4(position, 0.0, 1.0);
+}
+`;
+
+    const fragment = `
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec3  iResolution;
+uniform vec2  iMouse;
+uniform float iTime;
+
+uniform float uAngle;
+uniform float uNoise;
+uniform float uBlindCount;
+uniform float uSpotlightRadius;
+uniform float uSpotlightSoftness;
+uniform float uSpotlightOpacity;
+uniform float uMirror;
+uniform float uDistort;
+uniform float uShineFlip;
+uniform vec3  uColor0;
+uniform vec3  uColor1;
+uniform vec3  uColor2;
+uniform vec3  uColor3;
+uniform vec3  uColor4;
+uniform vec3  uColor5;
+uniform vec3  uColor6;
+uniform vec3  uColor7;
+uniform int   uColorCount;
+
+varying vec2 vUv;
+
+float rand(vec2 co){
+  return fract(sin(dot(co, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec2 rotate2D(vec2 p, float a){
+  float c = cos(a);
+  float s = sin(a);
+  return mat2(c, -s, s, c) * p;
+}
+
+vec3 getGradientColor(float t){
+  float tt = clamp(t, 0.0, 1.0);
+  int count = uColorCount;
+  if (count < 2) count = 2;
+  float scaled = tt * float(count - 1);
+  float seg = floor(scaled);
+  float f = fract(scaled);
+
+  if (seg < 1.0) return mix(uColor0, uColor1, f);
+  if (seg < 2.0 && count > 2) return mix(uColor1, uColor2, f);
+  if (seg < 3.0 && count > 3) return mix(uColor2, uColor3, f);
+  if (seg < 4.0 && count > 4) return mix(uColor3, uColor4, f);
+  if (seg < 5.0 && count > 5) return mix(uColor4, uColor5, f);
+  if (seg < 6.0 && count > 6) return mix(uColor5, uColor6, f);
+  if (seg < 7.0 && count > 7) return mix(uColor6, uColor7, f);
+  if (count > 7) return uColor7;
+  if (count > 6) return uColor6;
+  if (count > 5) return uColor5;
+  if (count > 4) return uColor4;
+  if (count > 3) return uColor3;
+  if (count > 2) return uColor2;
+  return uColor1;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 uv0 = fragCoord.xy / iResolution.xy;
+
+    float aspect = iResolution.x / iResolution.y;
+    vec2 p = uv0 * 2.0 - 1.0;
+    p.x *= aspect;
+    vec2 pr = rotate2D(p, uAngle);
+    pr.x /= aspect;
+    vec2 uv = pr * 0.5 + 0.5;
+
+    vec2 uvMod = uv;
+    if (uDistort > 0.0) {
+      float a = uvMod.y * 6.0;
+      float b = uvMod.x * 6.0;
+      float w = 0.01 * uDistort;
+      uvMod.x += sin(a) * w;
+      uvMod.y += cos(b) * w;
+    }
+    float t = uvMod.x;
+    if (uMirror > 0.5) {
+      t = 1.0 - abs(1.0 - 2.0 * fract(t));
+    }
+    vec3 base = getGradientColor(t);
+
+    vec2 offset = vec2(iMouse.x/iResolution.x, iMouse.y/iResolution.y);
+  float d = length(uv0 - offset);
+  float r = max(uSpotlightRadius, 1e-4);
+  float dn = d / r;
+  float spot = (1.0 - 2.0 * pow(dn, uSpotlightSoftness)) * uSpotlightOpacity;
+  vec3 cir = vec3(spot);
+  float stripe = fract(uvMod.x * max(uBlindCount, 1.0));
+  if (uShineFlip > 0.5) stripe = 1.0 - stripe;
+    vec3 ran = vec3(stripe);
+
+    vec3 col = cir + base - ran;
+    col += (rand(gl_FragCoord.xy + iTime) - 0.5) * uNoise;
+
+    fragColor = vec4(col, 1.0);
+}
+
+void main() {
+    vec4 color;
+    mainImage(color, vUv * iResolution.xy);
+    gl_FragColor = color;
+}
+`;
+
+    const { arr: colorArr, count: colorCount } = prepStops(gradientColors);
+    const uniforms = {
+      iResolution: {
+        value: [gl.drawingBufferWidth, gl.drawingBufferHeight, 1]
+      },
+      iMouse: { value: [0, 0] },
+      iTime: { value: 0 },
+      uAngle: { value: (angle * Math.PI) / 180 },
+      uNoise: { value: noise },
+      uBlindCount: { value: Math.max(1, blindCount) },
+      uSpotlightRadius: { value: spotlightRadius },
+      uSpotlightSoftness: { value: spotlightSoftness },
+      uSpotlightOpacity: { value: spotlightOpacity },
+      uMirror: { value: mirrorGradient ? 1 : 0 },
+      uDistort: { value: distortAmount },
+      uShineFlip: { value: shineDirection === 'right' ? 1 : 0 },
+      uColor0: { value: colorArr[0] },
+      uColor1: { value: colorArr[1] },
+      uColor2: { value: colorArr[2] },
+      uColor3: { value: colorArr[3] },
+      uColor4: { value: colorArr[4] },
+      uColor5: { value: colorArr[5] },
+      uColor6: { value: colorArr[6] },
+      uColor7: { value: colorArr[7] },
+      uColorCount: { value: colorCount }
+    };
+
+    const program = new Program(gl, {
+      vertex,
+      fragment,
+      uniforms
+    });
+    programRef.current = program;
+
+    const geometry = new Triangle(gl);
+    geometryRef.current = geometry;
+    const mesh = new Mesh(gl, { geometry, program });
+    meshRef.current = mesh;
+
+    const resize = () => {
+      const rect = container.getBoundingClientRect();
+      renderer.setSize(rect.width, rect.height);
+      uniforms.iResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight, 1];
+
+      if (blindMinWidth && blindMinWidth > 0) {
+        const maxByMinWidth = Math.max(1, Math.floor(rect.width / blindMinWidth));
+
+        const effective = blindCount ? Math.min(blindCount, maxByMinWidth) : maxByMinWidth;
+        uniforms.uBlindCount.value = Math.max(1, effective);
+      } else {
+        uniforms.uBlindCount.value = Math.max(1, blindCount);
+      }
+
+      if (firstResizeRef.current) {
+        firstResizeRef.current = false;
+        const cx = gl.drawingBufferWidth / 2;
+        const cy = gl.drawingBufferHeight / 2;
+        uniforms.iMouse.value = [cx, cy];
+        mouseTargetRef.current = [cx, cy];
+      }
+    };
+
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(container);
+
+    const onPointerMove = e => {
+      const rect = canvas.getBoundingClientRect();
+      const scale = renderer.dpr || 1;
+      const x = (e.clientX - rect.left) * scale;
+      const y = (rect.height - (e.clientY - rect.top)) * scale;
+      mouseTargetRef.current = [x, y];
+      if (mouseDampening <= 0) {
+        uniforms.iMouse.value = [x, y];
+      }
+    };
+    canvas.addEventListener('pointermove', onPointerMove);
+
+    const loop = t => {
+      rafRef.current = requestAnimationFrame(loop);
+      uniforms.iTime.value = t * 0.001;
+      if (mouseDampening > 0) {
+        if (!lastTimeRef.current) lastTimeRef.current = t;
+        const dt = (t - lastTimeRef.current) / 1000;
+        lastTimeRef.current = t;
+        const tau = Math.max(1e-4, mouseDampening);
+        let factor = 1 - Math.exp(-dt / tau);
+        if (factor > 1) factor = 1;
+        const target = mouseTargetRef.current;
+        const cur = uniforms.iMouse.value;
+        cur[0] += (target[0] - cur[0]) * factor;
+        cur[1] += (target[1] - cur[1]) * factor;
+      } else {
+        lastTimeRef.current = t;
+      }
+      if (!paused && programRef.current && meshRef.current) {
+        try {
+          renderer.render({ scene: meshRef.current });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    rafRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      canvas.removeEventListener('pointermove', onPointerMove);
+      ro.disconnect();
+      if (canvas.parentElement === container) {
+        container.removeChild(canvas);
+      }
+      const callIfFn = (obj, key) => {
+        if (obj && typeof obj[key] === 'function') {
+          obj[key].call(obj);
+        }
+      };
+      callIfFn(programRef.current, 'remove');
+      callIfFn(geometryRef.current, 'remove');
+      callIfFn(meshRef.current, 'remove');
+      callIfFn(rendererRef.current, 'destroy');
+      programRef.current = null;
+      geometryRef.current = null;
+      meshRef.current = null;
+      rendererRef.current = null;
+    };
+  }, [
+    dpr,
+    paused,
+    gradientColors,
+    angle,
+    noise,
+    blindCount,
+    blindMinWidth,
+    mouseDampening,
+    mirrorGradient,
+    spotlightRadius,
+    spotlightSoftness,
+    spotlightOpacity,
+    distortAmount,
+    shineDirection
+  ]);
+
+  return (
+    <div
+      ref={containerRef}
+      className={`gradient-blinds-container ${className}`}
+      style={{
+        ...(mixBlendMode && {
+          mixBlendMode: mixBlendMode
+        })
+      }}
+    />
+  );
+};
+
+export default GradientBlinds;
+
+GridScan:
+
+import { useEffect, useRef, useState } from 'react';
+import { EffectComposer, RenderPass, EffectPass, BloomEffect, ChromaticAberrationEffect } from 'postprocessing';
+import * as THREE from 'three';
+import * as faceapi from 'face-api.js';
+import './GridScan.css';
+
+const vert = `
+varying vec2 vUv;
+void main(){
+  vUv = uv;
+  gl_Position = vec4(position.xy, 0.0, 1.0);
+}
+`;
+
+const frag = `
+precision highp float;
+uniform vec3 iResolution;
+uniform float iTime;
+uniform vec2 uSkew;
+uniform float uTilt;
+uniform float uYaw;
+uniform float uLineThickness;
+uniform vec3 uLinesColor;
+uniform vec3 uScanColor;
+uniform float uGridScale;
+uniform float uLineStyle;
+uniform float uLineJitter;
+uniform float uScanOpacity;
+uniform float uScanDirection;
+uniform float uNoise;
+uniform float uBloomOpacity;
+uniform float uScanGlow;
+uniform float uScanSoftness;
+uniform float uPhaseTaper;
+uniform float uScanDuration;
+uniform float uScanDelay;
+varying vec2 vUv;
+
+uniform float uScanStarts[8];
+uniform float uScanCount;
+
+const int MAX_SCANS = 8;
+
+float smoother01(float a, float b, float x){
+  float t = clamp((x - a) / max(1e-5, (b - a)), 0.0, 1.0);
+  return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(vec3(p, 2.0));
+
+    float cR = cos(uTilt), sR = sin(uTilt);
+    rd.xy = mat2(cR, -sR, sR, cR) * rd.xy;
+
+    float cY = cos(uYaw), sY = sin(uYaw);
+    rd.xz = mat2(cY, -sY, sY, cY) * rd.xz;
+
+    vec2 skew = clamp(uSkew, vec2(-0.7), vec2(0.7));
+    rd.xy += skew * rd.z;
+
+    vec3 color = vec3(0.0);
+  float minT = 1e20;
+  float gridScale = max(1e-5, uGridScale);
+    float fadeStrength = 2.0;
+    vec2 gridUV = vec2(0.0);
+
+  float hitIsY = 1.0;
+    for (int i = 0; i < 4; i++)
+    {
+        float isY = float(i < 2);
+        float pos = mix(-0.2, 0.2, float(i)) * isY + mix(-0.5, 0.5, float(i - 2)) * (1.0 - isY);
+        float num = pos - (isY * ro.y + (1.0 - isY) * ro.x);
+        float den = isY * rd.y + (1.0 - isY) * rd.x;
+        float t = num / den;
+        vec3 h = ro + rd * t;
+
+        float depthBoost = smoothstep(0.0, 3.0, h.z);
+        h.xy += skew * 0.15 * depthBoost;
+
+    bool use = t > 0.0 && t < minT;
+    gridUV = use ? mix(h.zy, h.xz, isY) / gridScale : gridUV;
+    minT = use ? t : minT;
+    hitIsY = use ? isY : hitIsY;
+    }
+
+    vec3 hit = ro + rd * minT;
+    float dist = length(hit - ro);
+
+  float jitterAmt = clamp(uLineJitter, 0.0, 1.0);
+  if (jitterAmt > 0.0) {
+    vec2 j = vec2(
+      sin(gridUV.y * 2.7 + iTime * 1.8),
+      cos(gridUV.x * 2.3 - iTime * 1.6)
+    ) * (0.15 * jitterAmt);
+    gridUV += j;
+  }
+  float fx = fract(gridUV.x);
+  float fy = fract(gridUV.y);
+  float ax = min(fx, 1.0 - fx);
+  float ay = min(fy, 1.0 - fy);
+  float wx = fwidth(gridUV.x);
+  float wy = fwidth(gridUV.y);
+  float halfPx = max(0.0, uLineThickness) * 0.5;
+
+  float tx = halfPx * wx;
+  float ty = halfPx * wy;
+
+  float aax = wx;
+  float aay = wy;
+
+  float lineX = 1.0 - smoothstep(tx, tx + aax, ax);
+  float lineY = 1.0 - smoothstep(ty, ty + aay, ay);
+  if (uLineStyle > 0.5) {
+    float dashRepeat = 4.0;
+    float dashDuty = 0.5;
+    float vy = fract(gridUV.y * dashRepeat);
+    float vx = fract(gridUV.x * dashRepeat);
+    float dashMaskY = step(vy, dashDuty);
+    float dashMaskX = step(vx, dashDuty);
+    if (uLineStyle < 1.5) {
+      lineX *= dashMaskY;
+      lineY *= dashMaskX;
+    } else {
+      float dotRepeat = 6.0;
+      float dotWidth = 0.18;
+      float cy = abs(fract(gridUV.y * dotRepeat) - 0.5);
+      float cx = abs(fract(gridUV.x * dotRepeat) - 0.5);
+      float dotMaskY = 1.0 - smoothstep(dotWidth, dotWidth + fwidth(gridUV.y * dotRepeat), cy);
+      float dotMaskX = 1.0 - smoothstep(dotWidth, dotWidth + fwidth(gridUV.x * dotRepeat), cx);
+      lineX *= dotMaskY;
+      lineY *= dotMaskX;
+    }
+  }
+  float primaryMask = max(lineX, lineY);
+
+  vec2 gridUV2 = (hitIsY > 0.5 ? hit.xz : hit.zy) / gridScale;
+  if (jitterAmt > 0.0) {
+    vec2 j2 = vec2(
+      cos(gridUV2.y * 2.1 - iTime * 1.4),
+      sin(gridUV2.x * 2.5 + iTime * 1.7)
+    ) * (0.15 * jitterAmt);
+    gridUV2 += j2;
+  }
+  float fx2 = fract(gridUV2.x);
+  float fy2 = fract(gridUV2.y);
+  float ax2 = min(fx2, 1.0 - fx2);
+  float ay2 = min(fy2, 1.0 - fy2);
+  float wx2 = fwidth(gridUV2.x);
+  float wy2 = fwidth(gridUV2.y);
+  float tx2 = halfPx * wx2;
+  float ty2 = halfPx * wy2;
+  float aax2 = wx2;
+  float aay2 = wy2;
+  float lineX2 = 1.0 - smoothstep(tx2, tx2 + aax2, ax2);
+  float lineY2 = 1.0 - smoothstep(ty2, ty2 + aay2, ay2);
+  if (uLineStyle > 0.5) {
+    float dashRepeat2 = 4.0;
+    float dashDuty2 = 0.5;
+    float vy2m = fract(gridUV2.y * dashRepeat2);
+    float vx2m = fract(gridUV2.x * dashRepeat2);
+    float dashMaskY2 = step(vy2m, dashDuty2);
+    float dashMaskX2 = step(vx2m, dashDuty2);
+    if (uLineStyle < 1.5) {
+      lineX2 *= dashMaskY2;
+      lineY2 *= dashMaskX2;
+    } else {
+      float dotRepeat2 = 6.0;
+      float dotWidth2 = 0.18;
+      float cy2 = abs(fract(gridUV2.y * dotRepeat2) - 0.5);
+      float cx2 = abs(fract(gridUV2.x * dotRepeat2) - 0.5);
+      float dotMaskY2 = 1.0 - smoothstep(dotWidth2, dotWidth2 + fwidth(gridUV2.y * dotRepeat2), cy2);
+      float dotMaskX2 = 1.0 - smoothstep(dotWidth2, dotWidth2 + fwidth(gridUV2.x * dotRepeat2), cx2);
+      lineX2 *= dotMaskY2;
+      lineY2 *= dotMaskX2;
+    }
+  }
+    float altMask = max(lineX2, lineY2);
+
+    float edgeDistX = min(abs(hit.x - (-0.5)), abs(hit.x - 0.5));
+    float edgeDistY = min(abs(hit.y - (-0.2)), abs(hit.y - 0.2));
+    float edgeDist = mix(edgeDistY, edgeDistX, hitIsY);
+    float edgeGate = 1.0 - smoothstep(gridScale * 0.5, gridScale * 2.0, edgeDist);
+    altMask *= edgeGate;
+
+  float lineMask = max(primaryMask, altMask);
+
+    float fade = exp(-dist * fadeStrength);
+
+    float dur = max(0.05, uScanDuration);
+    float del = max(0.0, uScanDelay);
+    float scanZMax = 2.0;
+    float widthScale = max(0.1, uScanGlow);
+    float sigma = max(0.001, 0.18 * widthScale * uScanSoftness);
+    float sigmaA = sigma * 2.0;
+
+    float combinedPulse = 0.0;
+    float combinedAura = 0.0;
+
+    float cycle = dur + del;
+    float tCycle = mod(iTime, cycle);
+    float scanPhase = clamp((tCycle - del) / dur, 0.0, 1.0);
+    float phase = scanPhase;
+    if (uScanDirection > 0.5 && uScanDirection < 1.5) {
+      phase = 1.0 - phase;
+    } else if (uScanDirection > 1.5) {
+      float t2 = mod(max(0.0, iTime - del), 2.0 * dur);
+      phase = (t2 < dur) ? (t2 / dur) : (1.0 - (t2 - dur) / dur);
+    }
+    float scanZ = phase * scanZMax;
+    float dz = abs(hit.z - scanZ);
+    float lineBand = exp(-0.5 * (dz * dz) / (sigma * sigma));
+    float taper = clamp(uPhaseTaper, 0.0, 0.49);
+    float headW = taper;
+    float tailW = taper;
+    float headFade = smoother01(0.0, headW, phase);
+    float tailFade = 1.0 - smoother01(1.0 - tailW, 1.0, phase);
+    float phaseWindow = headFade * tailFade;
+    float pulseBase = lineBand * phaseWindow;
+    combinedPulse += pulseBase * clamp(uScanOpacity, 0.0, 1.0);
+    float auraBand = exp(-0.5 * (dz * dz) / (sigmaA * sigmaA));
+    combinedAura += (auraBand * 0.25) * phaseWindow * clamp(uScanOpacity, 0.0, 1.0);
+
+    for (int i = 0; i < MAX_SCANS; i++) {
+      if (float(i) >= uScanCount) break;
+      float tActiveI = iTime - uScanStarts[i];
+      float phaseI = clamp(tActiveI / dur, 0.0, 1.0);
+      if (uScanDirection > 0.5 && uScanDirection < 1.5) {
+        phaseI = 1.0 - phaseI;
+      } else if (uScanDirection > 1.5) {
+        phaseI = (phaseI < 0.5) ? (phaseI * 2.0) : (1.0 - (phaseI - 0.5) * 2.0);
+      }
+      float scanZI = phaseI * scanZMax;
+      float dzI = abs(hit.z - scanZI);
+      float lineBandI = exp(-0.5 * (dzI * dzI) / (sigma * sigma));
+      float headFadeI = smoother01(0.0, headW, phaseI);
+      float tailFadeI = 1.0 - smoother01(1.0 - tailW, 1.0, phaseI);
+      float phaseWindowI = headFadeI * tailFadeI;
+      combinedPulse += lineBandI * phaseWindowI * clamp(uScanOpacity, 0.0, 1.0);
+      float auraBandI = exp(-0.5 * (dzI * dzI) / (sigmaA * sigmaA));
+      combinedAura += (auraBandI * 0.25) * phaseWindowI * clamp(uScanOpacity, 0.0, 1.0);
+    }
+
+  float lineVis = lineMask;
+  vec3 gridCol = uLinesColor * lineVis * fade;
+  vec3 scanCol = uScanColor * combinedPulse;
+  vec3 scanAura = uScanColor * combinedAura;
+
+    color = gridCol + scanCol + scanAura;
+
+  float n = fract(sin(dot(gl_FragCoord.xy + vec2(iTime * 123.4), vec2(12.9898,78.233))) * 43758.5453123);
+  color += (n - 0.5) * uNoise;
+  color = clamp(color, 0.0, 1.0);
+  float alpha = clamp(max(lineVis, combinedPulse), 0.0, 1.0);
+  float gx = 1.0 - smoothstep(tx * 2.0, tx * 2.0 + aax * 2.0, ax);
+  float gy = 1.0 - smoothstep(ty * 2.0, ty * 2.0 + aay * 2.0, ay);
+  float halo = max(gx, gy) * fade;
+  alpha = max(alpha, halo * clamp(uBloomOpacity, 0.0, 1.0));
+  fragColor = vec4(color, alpha);
+}
+
+void main(){
+  vec4 c;
+  mainImage(c, vUv * iResolution.xy);
+  gl_FragColor = c;
+}
+`;
+
+export const GridScan = ({
+  enableWebcam = false,
+  showPreview = false,
+  modelsPath = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights',
+  sensitivity = 0.55,
+  lineThickness = 1,
+  linesColor = '#392e4e',
+  scanColor = '#FF9FFC',
+  scanOpacity = 0.4,
+  gridScale = 0.1,
+  lineStyle = 'solid',
+  lineJitter = 0.1,
+  scanDirection = 'pingpong',
+  enablePost = true,
+  bloomIntensity = 0,
+  bloomThreshold = 0,
+  bloomSmoothing = 0,
+  chromaticAberration = 0.002,
+  noiseIntensity = 0.01,
+  scanGlow = 0.5,
+  scanSoftness = 2,
+  scanPhaseTaper = 0.9,
+  scanDuration = 2.0,
+  scanDelay = 2.0,
+  enableGyro = false,
+  scanOnClick = false,
+  snapBackDelay = 250,
+  className,
+  style
+}) => {
+  const containerRef = useRef(null);
+  const videoRef = useRef(null);
+
+  const rendererRef = useRef(null);
+  const materialRef = useRef(null);
+  const composerRef = useRef(null);
+  const bloomRef = useRef(null);
+  const chromaRef = useRef(null);
+  const rafRef = useRef(null);
+
+  const [modelsReady, setModelsReady] = useState(false);
+  const [uiFaceActive, setUiFaceActive] = useState(false);
+
+  const lookTarget = useRef(new THREE.Vector2(0, 0));
+  const tiltTarget = useRef(0);
+  const yawTarget = useRef(0);
+
+  const lookCurrent = useRef(new THREE.Vector2(0, 0));
+  const lookVel = useRef(new THREE.Vector2(0, 0));
+  const tiltCurrent = useRef(0);
+  const tiltVel = useRef(0);
+  const yawCurrent = useRef(0);
+  const yawVel = useRef(0);
+
+  const MAX_SCANS = 8;
+  const scanStartsRef = useRef([]);
+
+  const pushScan = t => {
+    const arr = scanStartsRef.current.slice();
+    if (arr.length >= MAX_SCANS) arr.shift();
+    arr.push(t);
+    scanStartsRef.current = arr;
+    if (materialRef.current) {
+      const u = materialRef.current.uniforms;
+      const buf = new Array(MAX_SCANS).fill(0);
+      for (let i = 0; i < arr.length && i < MAX_SCANS; i++) buf[i] = arr[i];
+      u.uScanStarts.value = buf;
+      u.uScanCount.value = arr.length;
+    }
+  };
+
+  const bufX = useRef([]);
+  const bufY = useRef([]);
+  const bufT = useRef([]);
+  const bufYaw = useRef([]);
+
+  const s = THREE.MathUtils.clamp(sensitivity, 0, 1);
+  const skewScale = THREE.MathUtils.lerp(0.06, 0.2, s);
+  const tiltScale = THREE.MathUtils.lerp(0.12, 0.3, s);
+  const yawScale = THREE.MathUtils.lerp(0.1, 0.28, s);
+  const depthResponse = THREE.MathUtils.lerp(0.25, 0.45, s);
+  const smoothTime = THREE.MathUtils.lerp(0.45, 0.12, s);
+  const maxSpeed = Infinity;
+
+  const yBoost = THREE.MathUtils.lerp(1.2, 1.6, s);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    let leaveTimer = null;
+    const onMove = e => {
+      if (uiFaceActive) return;
+      if (leaveTimer) {
+        clearTimeout(leaveTimer);
+        leaveTimer = null;
+      }
+      const rect = el.getBoundingClientRect();
+      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      lookTarget.current.set(nx, ny);
+    };
+    const onClick = async () => {
+      const nowSec = performance.now() / 1000;
+      if (scanOnClick) pushScan(nowSec);
+      if (
+        enableGyro &&
+        typeof window !== 'undefined' &&
+        window.DeviceOrientationEvent &&
+        DeviceOrientationEvent.requestPermission
+      ) {
+        try {
+          await DeviceOrientationEvent.requestPermission();
+        } catch {
+          // noop
+        }
+      }
+    };
+    const onEnter = () => {
+      if (leaveTimer) {
+        clearTimeout(leaveTimer);
+        leaveTimer = null;
+      }
+    };
+    const onLeave = () => {
+      if (uiFaceActive) return;
+      if (leaveTimer) clearTimeout(leaveTimer);
+      leaveTimer = window.setTimeout(
+        () => {
+          lookTarget.current.set(0, 0);
+          tiltTarget.current = 0;
+          yawTarget.current = 0;
+        },
+        Math.max(0, snapBackDelay || 0)
+      );
+    };
+    el.addEventListener('mousemove', onMove);
+    el.addEventListener('mouseenter', onEnter);
+    if (scanOnClick) el.addEventListener('click', onClick);
+    el.addEventListener('mouseleave', onLeave);
+    return () => {
+      el.removeEventListener('mousemove', onMove);
+      el.removeEventListener('mouseenter', onEnter);
+      el.removeEventListener('mouseleave', onLeave);
+      if (scanOnClick) el.removeEventListener('click', onClick);
+      if (leaveTimer) clearTimeout(leaveTimer);
+    };
+  }, [uiFaceActive, snapBackDelay, scanOnClick, enableGyro]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    rendererRef.current = renderer;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.NoToneMapping;
+    renderer.autoClear = false;
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
+
+    const uniforms = {
+      iResolution: {
+        value: new THREE.Vector3(container.clientWidth, container.clientHeight, renderer.getPixelRatio())
+      },
+      iTime: { value: 0 },
+      uSkew: { value: new THREE.Vector2(0, 0) },
+      uTilt: { value: 0 },
+      uYaw: { value: 0 },
+      uLineThickness: { value: lineThickness },
+      uLinesColor: { value: srgbColor(linesColor) },
+      uScanColor: { value: srgbColor(scanColor) },
+      uGridScale: { value: gridScale },
+      uLineStyle: { value: lineStyle === 'dashed' ? 1 : lineStyle === 'dotted' ? 2 : 0 },
+      uLineJitter: { value: Math.max(0, Math.min(1, lineJitter || 0)) },
+      uScanOpacity: { value: scanOpacity },
+      uNoise: { value: noiseIntensity },
+      uBloomOpacity: { value: bloomIntensity },
+      uScanGlow: { value: scanGlow },
+      uScanSoftness: { value: scanSoftness },
+      uPhaseTaper: { value: scanPhaseTaper },
+      uScanDuration: { value: scanDuration },
+      uScanDelay: { value: scanDelay },
+      uScanDirection: { value: scanDirection === 'backward' ? 1 : scanDirection === 'pingpong' ? 2 : 0 },
+      uScanStarts: { value: new Array(MAX_SCANS).fill(0) },
+      uScanCount: { value: 0 }
+    };
+
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: vert,
+      fragmentShader: frag,
+      transparent: true,
+      depthWrite: false,
+      depthTest: false
+    });
+    materialRef.current = material;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+    scene.add(quad);
+
+    let composer = null;
+    if (enablePost) {
+      composer = new EffectComposer(renderer);
+      composerRef.current = composer;
+      const renderPass = new RenderPass(scene, camera);
+      composer.addPass(renderPass);
+
+      const bloom = new BloomEffect({
+        intensity: 1.0,
+        luminanceThreshold: bloomThreshold,
+        luminanceSmoothing: bloomSmoothing
+      });
+      bloom.blendMode.opacity.value = Math.max(0, bloomIntensity);
+      bloomRef.current = bloom;
+
+      const chroma = new ChromaticAberrationEffect({
+        offset: new THREE.Vector2(chromaticAberration, chromaticAberration),
+        radialModulation: true,
+        modulationOffset: 0.0
+      });
+      chromaRef.current = chroma;
+
+      const effectPass = new EffectPass(camera, bloom, chroma);
+      effectPass.renderToScreen = true;
+      composer.addPass(effectPass);
+    }
+
+    const onResize = () => {
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      material.uniforms.iResolution.value.set(container.clientWidth, container.clientHeight, renderer.getPixelRatio());
+      if (composerRef.current) composerRef.current.setSize(container.clientWidth, container.clientHeight);
+    };
+    window.addEventListener('resize', onResize);
+
+    let last = performance.now();
+    const tick = () => {
+      const now = performance.now();
+      const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
+      last = now;
+
+      lookCurrent.current.copy(
+        smoothDampVec2(lookCurrent.current, lookTarget.current, lookVel.current, smoothTime, maxSpeed, dt)
+      );
+
+      const tiltSm = smoothDampFloat(
+        tiltCurrent.current,
+        tiltTarget.current,
+        { v: tiltVel.current },
+        smoothTime,
+        maxSpeed,
+        dt
+      );
+      tiltCurrent.current = tiltSm.value;
+      tiltVel.current = tiltSm.v;
+
+      const yawSm = smoothDampFloat(
+        yawCurrent.current,
+        yawTarget.current,
+        { v: yawVel.current },
+        smoothTime,
+        maxSpeed,
+        dt
+      );
+      yawCurrent.current = yawSm.value;
+      yawVel.current = yawSm.v;
+
+      const skew = new THREE.Vector2(lookCurrent.current.x * skewScale, -lookCurrent.current.y * yBoost * skewScale);
+      material.uniforms.uSkew.value.set(skew.x, skew.y);
+      material.uniforms.uTilt.value = tiltCurrent.current * tiltScale;
+      material.uniforms.uYaw.value = THREE.MathUtils.clamp(yawCurrent.current * yawScale, -0.6, 0.6);
+
+      material.uniforms.iTime.value = now / 1000;
+      renderer.clear(true, true, true);
+      if (composerRef.current) {
+        composerRef.current.render(dt);
+      } else {
+        renderer.render(scene, camera);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      window.removeEventListener('resize', onResize);
+      material.dispose();
+      quad.geometry.dispose();
+
+      if (composerRef.current) {
+        composerRef.current.dispose();
+        composerRef.current = null;
+      }
+      renderer.dispose();
+      container.removeChild(renderer.domElement);
+    };
+  }, [
+    sensitivity,
+    lineThickness,
+    linesColor,
+    scanColor,
+    scanOpacity,
+    gridScale,
+    lineStyle,
+    lineJitter,
+    scanDirection,
+    enablePost,
+    noiseIntensity,
+    bloomIntensity,
+    scanGlow,
+    scanSoftness,
+    scanPhaseTaper,
+    scanDuration,
+    scanDelay,
+    bloomThreshold,
+    bloomSmoothing,
+    chromaticAberration,
+    smoothTime,
+    maxSpeed,
+    skewScale,
+    yBoost,
+    tiltScale,
+    yawScale
+  ]);
+
+  useEffect(() => {
+    const m = materialRef.current;
+    if (m) {
+      const u = m.uniforms;
+      u.uLineThickness.value = lineThickness;
+      u.uLinesColor.value.copy(srgbColor(linesColor));
+      u.uScanColor.value.copy(srgbColor(scanColor));
+      u.uGridScale.value = gridScale;
+      u.uLineStyle.value = lineStyle === 'dashed' ? 1 : lineStyle === 'dotted' ? 2 : 0;
+      u.uLineJitter.value = Math.max(0, Math.min(1, lineJitter || 0));
+      u.uBloomOpacity.value = Math.max(0, bloomIntensity);
+      u.uNoise.value = Math.max(0, noiseIntensity);
+      u.uScanGlow.value = scanGlow;
+      u.uScanOpacity.value = Math.max(0, Math.min(1, scanOpacity));
+      u.uScanDirection.value = scanDirection === 'backward' ? 1 : scanDirection === 'pingpong' ? 2 : 0;
+      u.uScanSoftness.value = scanSoftness;
+      u.uPhaseTaper.value = scanPhaseTaper;
+      u.uScanDuration.value = Math.max(0.05, scanDuration);
+      u.uScanDelay.value = Math.max(0.0, scanDelay);
+    }
+    if (bloomRef.current) {
+      bloomRef.current.blendMode.opacity.value = Math.max(0, bloomIntensity);
+      bloomRef.current.luminanceMaterial.threshold = bloomThreshold;
+      bloomRef.current.luminanceMaterial.smoothing = bloomSmoothing;
+    }
+    if (chromaRef.current) {
+      chromaRef.current.offset.set(chromaticAberration, chromaticAberration);
+    }
+  }, [
+    lineThickness,
+    linesColor,
+    scanColor,
+    gridScale,
+    lineStyle,
+    lineJitter,
+    bloomIntensity,
+    bloomThreshold,
+    bloomSmoothing,
+    chromaticAberration,
+    noiseIntensity,
+    scanGlow,
+    scanOpacity,
+    scanDirection,
+    scanSoftness,
+    scanPhaseTaper,
+    scanDuration,
+    scanDelay
+  ]);
+
+  useEffect(() => {
+    if (!enableGyro) return;
+    const handler = e => {
+      if (uiFaceActive) return;
+      const gamma = e.gamma ?? 0;
+      const beta = e.beta ?? 0;
+      const nx = THREE.MathUtils.clamp(gamma / 45, -1, 1);
+      const ny = THREE.MathUtils.clamp(-beta / 30, -1, 1);
+      lookTarget.current.set(nx, ny);
+      tiltTarget.current = THREE.MathUtils.degToRad(gamma) * 0.4;
+    };
+    window.addEventListener('deviceorientation', handler);
+    return () => {
+      window.removeEventListener('deviceorientation', handler);
+    };
+  }, [enableGyro, uiFaceActive]);
+
+  useEffect(() => {
+    let canceled = false;
+    const load = async () => {
+      try {
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath),
+          faceapi.nets.faceLandmark68TinyNet.loadFromUri(modelsPath)
+        ]);
+        if (!canceled) setModelsReady(true);
+      } catch {
+        if (!canceled) setModelsReady(false);
+      }
+    };
+    load();
+    return () => {
+      canceled = true;
+    };
+  }, [modelsPath]);
+
+  useEffect(() => {
+    let stop = false;
+    let lastDetect = 0;
+    const video = videoRef.current;
+
+    const start = async () => {
+      if (!enableWebcam || !modelsReady) return;
+      if (!video) return;
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
+        video.srcObject = stream;
+        await video.play();
+      } catch {
+        return;
+      }
+
+      const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 });
+
+      const detect = async ts => {
+        if (stop) return;
+
+        if (ts - lastDetect >= 33) {
+          lastDetect = ts;
+          try {
+            const res = await faceapi.detectSingleFace(video, opts).withFaceLandmarks(true);
+            if (res && res.detection) {
+              const det = res.detection;
+              const box = det.box;
+              const vw = video.videoWidth || 1;
+              const vh = video.videoHeight || 1;
+
+              const cx = box.x + box.width * 0.5;
+              const cy = box.y + box.height * 0.5;
+              const nx = (cx / vw) * 2 - 1;
+              const ny = (cy / vh) * 2 - 1;
+              medianPush(bufX.current, nx, 5);
+              medianPush(bufY.current, ny, 5);
+              const nxm = median(bufX.current);
+              const nym = median(bufY.current);
+
+              const look = new THREE.Vector2(Math.tanh(nxm), Math.tanh(nym));
+
+              const faceSize = Math.min(1, Math.hypot(box.width / vw, box.height / vh));
+              const depthScale = 1 + depthResponse * (faceSize - 0.25);
+              lookTarget.current.copy(look.multiplyScalar(depthScale));
+
+              const leftEye = res.landmarks.getLeftEye();
+              const rightEye = res.landmarks.getRightEye();
+              const lc = centroid(leftEye);
+              const rc = centroid(rightEye);
+              const tilt = Math.atan2(rc.y - lc.y, rc.x - lc.x);
+              medianPush(bufT.current, tilt, 5);
+              tiltTarget.current = median(bufT.current);
+
+              const nose = res.landmarks.getNose();
+              const tip = nose[nose.length - 1] || nose[Math.floor(nose.length / 2)];
+              const jaw = res.landmarks.getJawOutline();
+              const leftCheek = jaw[3] || jaw[2];
+              const rightCheek = jaw[13] || jaw[14];
+              const dL = dist2(tip, leftCheek);
+              const dR = dist2(tip, rightCheek);
+              const eyeDist = Math.hypot(rc.x - lc.x, rc.y - lc.y) + 1e-6;
+              let yawSignal = THREE.MathUtils.clamp((dR - dL) / (eyeDist * 1.6), -1, 1);
+              yawSignal = Math.tanh(yawSignal);
+              medianPush(bufYaw.current, yawSignal, 5);
+              yawTarget.current = median(bufYaw.current);
+
+              setUiFaceActive(true);
+            } else {
+              setUiFaceActive(false);
+            }
+          } catch {
+            setUiFaceActive(false);
+          }
+        }
+
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+          video.requestVideoFrameCallback(() => detect(performance.now()));
+        } else {
+          requestAnimationFrame(detect);
+        }
+      };
+
+      requestAnimationFrame(detect);
+    };
+
+    start();
+
+    return () => {
+      stop = true;
+      if (video) {
+        const stream = video.srcObject;
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        video.pause();
+        video.srcObject = null;
+      }
+    };
+  }, [enableWebcam, modelsReady, depthResponse]);
+
+  return (
+    <div ref={containerRef} className={`gridscan${className ? ` ${className}` : ''}`} style={style}>
+      {showPreview && (
+        <div className="gridscan__preview">
+          <video ref={videoRef} muted playsInline autoPlay className="gridscan__video" />
+          <div className="gridscan__badge">
+            {enableWebcam
+              ? modelsReady
+                ? uiFaceActive
+                  ? 'Face: tracking'
+                  : 'Face: searching'
+                : 'Loading models'
+              : 'Webcam disabled'}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+function srgbColor(hex) {
+  const c = new THREE.Color(hex);
+  return c.convertSRGBToLinear();
+}
+
+function smoothDampVec2(current, target, currentVelocity, smoothTime, maxSpeed, deltaTime) {
+  const out = current.clone();
+  smoothTime = Math.max(0.0001, smoothTime);
+  const omega = 2 / smoothTime;
+  const x = omega * deltaTime;
+  const exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+
+  let change = current.clone().sub(target);
+  const originalTo = target.clone();
+
+  const maxChange = maxSpeed * smoothTime;
+  if (change.length() > maxChange) change.setLength(maxChange);
+
+  target = current.clone().sub(change);
+  const temp = currentVelocity.clone().addScaledVector(change, omega).multiplyScalar(deltaTime);
+  currentVelocity.sub(temp.clone().multiplyScalar(omega));
+  currentVelocity.multiplyScalar(exp);
+
+  out.copy(target.clone().add(change.add(temp).multiplyScalar(exp)));
+
+  const origMinusCurrent = originalTo.clone().sub(current);
+  const outMinusOrig = out.clone().sub(originalTo);
+  if (origMinusCurrent.dot(outMinusOrig) > 0) {
+    out.copy(originalTo);
+    currentVelocity.set(0, 0);
+  }
+  return out;
+}
+
+function smoothDampFloat(current, target, velRef, smoothTime, maxSpeed, deltaTime) {
+  smoothTime = Math.max(0.0001, smoothTime);
+  const omega = 2 / smoothTime;
+  const x = omega * deltaTime;
+  const exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+
+  let change = current - target;
+  const originalTo = target;
+
+  const maxChange = maxSpeed * smoothTime;
+  change = Math.sign(change) * Math.min(Math.abs(change), maxChange);
+
+  target = current - change;
+  const temp = (velRef.v + omega * change) * deltaTime;
+  velRef.v = (velRef.v - omega * temp) * exp;
+
+  let out = target + (change + temp) * exp;
+
+  const origMinusCurrent = originalTo - current;
+  const outMinusOrig = out - originalTo;
+  if (origMinusCurrent * outMinusOrig > 0) {
+    out = originalTo;
+    velRef.v = 0;
+  }
+  return { value: out, v: velRef.v };
+}
+
+function medianPush(buf, v, maxLen) {
+  buf.push(v);
+  if (buf.length > maxLen) buf.shift();
+}
+
+function median(buf) {
+  if (buf.length === 0) return 0;
+  const a = [...buf].sort((x, y) => x - y);
+  const mid = Math.floor(a.length / 2);
+  return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) * 0.5;
+}
+
+function centroid(points) {
+  let x = 0,
+    y = 0;
+  const n = points.length || 1;
+  for (const p of points) {
+    x += p.x;
+    y += p.y;
+  }
+  return { x: x / n, y: y / n };
+}
+
+function dist2(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+Iridescence:
+
+import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import { useEffect, useRef } from 'react';
+
+import './Iridescence.css';
+
+const vertexShader = `
+attribute vec2 uv;
+attribute vec2 position;
+
+varying vec2 vUv;
+
+void main() {
+  vUv = uv;
+  gl_Position = vec4(position, 0, 1);
+}
+`;
+
+const fragmentShader = `
+precision highp float;
+
+uniform float uTime;
+uniform vec3 uColor;
+uniform vec3 uResolution;
+uniform vec2 uMouse;
+uniform float uAmplitude;
+uniform float uSpeed;
+
+varying vec2 vUv;
+
+void main() {
+  float mr = min(uResolution.x, uResolution.y);
+  vec2 uv = (vUv.xy * 2.0 - 1.0) * uResolution.xy / mr;
+
+  uv += (uMouse - vec2(0.5)) * uAmplitude;
+
+  float d = -uTime * 0.5 * uSpeed;
+  float a = 0.0;
+  for (float i = 0.0; i < 8.0; ++i) {
+    a += cos(i - d - a * uv.x);
+    d += sin(uv.y * i + a);
+  }
+  d += uTime * 0.5 * uSpeed;
+  vec3 col = vec3(cos(uv * vec2(d, a)) * 0.6 + 0.4, cos(a + d) * 0.5 + 0.5);
+  col = cos(col * cos(vec3(d, a, 2.5)) * 0.5 + 0.5) * uColor;
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+export default function Iridescence({ color = [1, 1, 1], speed = 1.0, amplitude = 0.1, mouseReact = true, ...rest }) {
+  const ctnDom = useRef(null);
+  const mousePos = useRef({ x: 0.5, y: 0.5 });
+
+  useEffect(() => {
+    if (!ctnDom.current) return;
+    const ctn = ctnDom.current;
+    const renderer = new Renderer();
+    const gl = renderer.gl;
+    gl.clearColor(1, 1, 1, 1);
+
+    let program;
+
+    function resize() {
+      const scale = 1;
+      renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
+      if (program) {
+        program.uniforms.uResolution.value = new Color(
+          gl.canvas.width,
+          gl.canvas.height,
+          gl.canvas.width / gl.canvas.height
+        );
+      }
+    }
+    window.addEventListener('resize', resize, false);
+    resize();
+
+    const geometry = new Triangle(gl);
+    program = new Program(gl, {
+      vertex: vertexShader,
+      fragment: fragmentShader,
+      uniforms: {
+        uTime: { value: 0 },
+        uColor: { value: new Color(...color) },
+        uResolution: {
+          value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height)
+        },
+        uMouse: { value: new Float32Array([mousePos.current.x, mousePos.current.y]) },
+        uAmplitude: { value: amplitude },
+        uSpeed: { value: speed }
+      }
+    });
+
+    const mesh = new Mesh(gl, { geometry, program });
+    let animateId;
+
+    function update(t) {
+      animateId = requestAnimationFrame(update);
+      program.uniforms.uTime.value = t * 0.001;
+      renderer.render({ scene: mesh });
+    }
+    animateId = requestAnimationFrame(update);
+    ctn.appendChild(gl.canvas);
+
+    function handleMouseMove(e) {
+      const rect = ctn.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = 1.0 - (e.clientY - rect.top) / rect.height;
+      mousePos.current = { x, y };
+      program.uniforms.uMouse.value[0] = x;
+      program.uniforms.uMouse.value[1] = y;
+    }
+    if (mouseReact) {
+      ctn.addEventListener('mousemove', handleMouseMove);
+    }
+
+    return () => {
+      cancelAnimationFrame(animateId);
+      window.removeEventListener('resize', resize);
+      if (mouseReact) {
+        ctn.removeEventListener('mousemove', handleMouseMove);
+      }
+      ctn.removeChild(gl.canvas);
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [color, speed, amplitude, mouseReact]);
+
+  return <div ref={ctnDom} className="iridescence-container" {...rest} />;
+}

@@ -4,6 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import laptopMockup from '@assets/generated_images/Laptop_mockup_device_5ea35f15.png';
 import wireframeImage from '@assets/generated_images/Wireframe_design_sketch_da0c3a05.png';
 import finalDesignImage from '@assets/generated_images/Final_website_design_03e22cfd.png';
+// @ts-ignore - WebGL component without TypeScript definitions
+import GridScan from './backgrounds/GridScan';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -136,6 +138,16 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
       className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center section-spacing"
       data-testid="section-webdev"
     >
+      {/* WebGL Background - Temporarily disabled pending error handling */}
+      {/* <div className="absolute inset-0 z-0">
+        <GridScan 
+          gridScale={0.05} 
+          scanColor='#FF4500' 
+          linesColor='#1a1a1a' 
+          enableWebcam={false}
+        />
+      </div> */}
+      
       {/* Subtle animated gradient - Safety Orange accent */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
       <div className="absolute inset-0 opacity-30">

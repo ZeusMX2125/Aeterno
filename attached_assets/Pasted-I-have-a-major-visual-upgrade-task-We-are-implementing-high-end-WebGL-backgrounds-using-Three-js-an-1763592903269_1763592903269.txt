@@ -1,0 +1,67 @@
+I have a major visual upgrade task. We are implementing high-end WebGL backgrounds using Three.js and OGL. 
+
+Please follow these steps sequentially. Do not skip the installation phase.
+
+### PHASE 1: INSTALL DEPENDENCIES
+First, install the necessary libraries for these effects to run:
+`npm install three ogl postprocessing face-api.js`
+
+### PHASE 2: CREATE BACKGROUND COMPONENTS
+Create a folder `src/components/backgrounds` (or `components/ui/backgrounds`) and create the following 4 files. 
+
+**IMPORTANT:** For all files below, I have provided the raw code. You must copy the code EXACTLY, but you must updated the default "Props" or "Colors" in the implementation to match my Brand Theme:
+- Background: #000000
+- Accent: #FF4500 (Safety Orange)
+- Text: #FFFFFF
+
+#### 1. Create `LiquidEther.jsx` & `LiquidEther.css`
+Paste the provided code for Liquid Ether.
+* **CSS file:** Ensure `.liquid-ether-container` has `z-index: 0; position: absolute; top: 0; left: 0;`
+* **Usage Config:** When we use this, set the default `colors` prop to `['#000000', '#1a1a1a', '#333333']` (Dark, oily fluid look).
+
+#### 2. Create `GradientBlinds.jsx` & `GradientBlinds.css`
+Paste the provided code for Gradient Blinds.
+* **Usage Config:** When we use this, set `gradientColors` to `['#000000', '#111111', '#FF4500']` (Black to slight Orange).
+
+#### 3. Create `GridScan.jsx` & `GridScan.css`
+Paste the provided code for Grid Scan.
+* **Usage Config:** - Set `linesColor` to `"#222222"` (Very subtle dark grey grid).
+    - Set `scanColor` to `"#FF4500"` (Bright Orange scanline).
+    - Set `enableWebcam` to `false` (Crucial: Do not ask for camera).
+
+#### 4. Create `Iridescence.jsx` & `Iridescence.css`
+Paste the provided code for Iridescence.
+* **Usage Config:** Set `color` to `[1.0, 0.27, 0.0]` (This is the normalized RGB float for #FF4500 Orange).
+
+---
+
+### PHASE 3: IMPLEMENTATION (The "Aeterno" Layout)
+Now, integrate these backgrounds into the main `App.jsx` (or `Page.jsx`). The layout should be:
+
+1.  **Hero Section ("Digital Experiences..."):**
+    - **Effect:** `<Iridescence />`
+    - **Settings:** `color={[1, 0.27, 0]} mouseReact={true} amplitude={0.1} speed={0.7}`
+    - **Styling:** The background should be `opacity: 0.4` so the text pops.
+
+2.  **Visual Storytelling Section ("Perfect Capture"):**
+    - **Effect:** `<GradientBlinds />`
+    - **Settings:** `blindCount={10} gradientColors={['#000000', '#050505', '#220a00']} noise={0.5}`
+    - **Vibe:** A dark, cinematic transition.
+
+3.  **Web Development Section ("Digital Home"):**
+    - **Effect:** `<GridScan />`
+    - **Settings:** `gridScale={0.05} scanColor="#FF4500" linesColor="#1a1a1a" enableWebcam={false}`
+    - **Vibe:** Highly technical, architectural feel.
+
+4.  **Social Media Section ("Tell The World"):**
+    - **Effect:** `<LiquidEther />`
+    - **Settings:** `colors={['#000000', '#111111', '#220a00']}`
+    - **Vibe:** Fluid, dynamic movement representing social flow.
+
+**CRITICAL CSS RULES FOR ALL SECTIONS:**
+1.  Every Section (Hero, Web, Social, etc.) must have `position: relative; overflow: hidden;`.
+2.  The Background Component must be placed as the *first* child of the section.
+3.  The Background Component wrapper must have: `position: absolute; inset: 0; z-index: 0;`.
+4.  All Text/Buttons/Cards in the section must be wrapped in a container with `position: relative; z-index: 10;` to ensure they sit ON TOP of the background.
+
+[Paste the raw code for LiquidEther, GradientBlinds, GridScan, and Iridescence here from my previous message]
