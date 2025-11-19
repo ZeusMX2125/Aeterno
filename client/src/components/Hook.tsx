@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import logoImage from '@assets/AETERNO (3)_1762894919968.png';
 
@@ -12,26 +12,32 @@ export default function Hook({ openModal }: HookProps) {
   const sublineRef = useRef<HTMLParagraphElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
+      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+      const duration = isMobile ? 0.8 : 1.2;
+      const yOffset = isMobile ? 25 : 40;
+      
       gsap.fromTo(
         [logoRef.current, headlineRef.current, sublineRef.current, buttonRef.current],
-        { opacity: 0, y: 40 },
+        { opacity: 0, y: yOffset },
         {
           opacity: 1,
           y: 0,
-          duration: 1.2,
-          stagger: 0.2,
+          duration,
+          stagger: isMobile ? 0.15 : 0.2,
           ease: 'power3.out',
         }
       );
     });
 
-    return () => ctx.revert();
+    return () => {
+      ctx.kill(true);
+    };
   }, []);
 
   return (
-    <section className="relative min-h-screen bg-black flex flex-col items-center justify-center px-4 py-12 overflow-hidden">
+    <section className="relative min-h-[100svh] bg-black flex flex-col items-center justify-center px-4 py-12 overflow-hidden">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-orange-950/40 to-black" />
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-orange-900/20" />
@@ -49,34 +55,44 @@ export default function Hook({ openModal }: HookProps) {
       }} />
       
       {/* Content */}
-      <div className="relative z-10 max-w-6xl w-full flex flex-col items-center text-center gap-8">
+      <div className="relative z-10 max-w-6xl w-full flex flex-col items-center text-center gap-6 md:gap-8">
         <img
           ref={logoRef}
           src={logoImage}
           alt="Aeterno Media"
-          className="w-48 md:w-64 h-auto mb-4"
+          className="w-40 md:w-48 lg:w-64 h-auto mb-2 md:mb-4"
           data-testid="img-logo"
+          loading="eager"
         />
         
         <h1
           ref={headlineRef}
-          className="font-title text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-white leading-[0.95] tracking-tight max-w-5xl uppercase"
+          className="font-title font-bold text-white leading-[0.95] tracking-tight max-w-5xl uppercase"
           data-testid="text-headline"
+          style={{
+            fontSize: 'clamp(2.5rem, 10vw, 6rem)',
+          }}
         >
           Digital Experiences <span className="text-primary">Worth Remembering</span>
         </h1>
         
         <p
           ref={sublineRef}
-          className="text-muted-foreground text-lg md:text-xl max-w-2xl font-body"
+          className="text-muted-foreground max-w-2xl font-body"
           data-testid="text-subline"
+          style={{
+            fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)',
+          }}
         >Creative agency specializing in photography, web development, and social media marketing</p>
         
         <button
           ref={buttonRef}
           onClick={() => openModal('Website Development (using Replit)')}
-          className="bg-primary text-white font-body font-semibold text-base md:text-lg px-10 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all duration-300 hover:scale-105 active:scale-95 mt-4"
+          className="bg-primary text-white font-body font-semibold px-10 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all duration-300 hover:scale-105 active:scale-95 mt-2 md:mt-4 min-h-[44px]"
           data-testid="button-start-project"
+          style={{
+            fontSize: 'clamp(0.9rem, 2.5vw, 1.125rem)',
+          }}
         >
           Start Your Project
         </button>
