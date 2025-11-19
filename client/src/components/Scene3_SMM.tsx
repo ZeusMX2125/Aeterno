@@ -241,7 +241,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
               fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
             }}
           >
-            Get a Quote for Socials
+            View Our Marketing Results
           </button>
         </div>
       </div>

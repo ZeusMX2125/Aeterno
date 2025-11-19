@@ -200,10 +200,10 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
                   <h3 className="font-title text-lg md:text-xl font-bold text-white mb-1 md:mb-2">
-                    Responsive Design
+                    Performance First Development
                   </h3>
                   <p className="font-body text-xs md:text-sm text-muted-foreground">
-                    Beautiful on every device
+                    Lightning-fast load times, optimized for conversion
                   </p>
                 </div>
               </div>
@@ -223,10 +223,10 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
                   <h3 className="font-title text-lg md:text-xl font-bold text-white mb-1 md:mb-2">
-                    Polished & Professional
+                    Conversion Focused Design
                   </h3>
                   <p className="font-body text-xs md:text-sm text-muted-foreground">
-                    Built on Replit for speed & reliability
+                    Every element designed to turn visitors into customers
                   </p>
                 </div>
               </div>
@@ -244,7 +244,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
               fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
             }}
           >
-            Get a Quote for a Website
+            View Our Web Work
           </button>
         </div>
       </div>

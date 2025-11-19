@@ -235,7 +235,7 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
               fontSize: 'clamp(0.85rem, 2vw, 1rem)',
             }}
           >
-            Get a Quote for Visuals
+            View Our Work
           </button>
         </div>
 
