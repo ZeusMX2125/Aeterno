@@ -2,14 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* DARK MODE - Pure Black Base */
+/* MASTER DESIGN: Futuristic Professional Dark UI */
 :root {
   --button-outline: rgba(255,255,255, .10);
   --badge-outline: rgba(255,255,255, .05);
   --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
-  --background: 0 0% 4%;
+  --background: 0 0% 0%;
   --foreground: 0 0% 100%;
   --border: 0 0% 15%;
   --card: 0 0% 7%;
@@ -18,26 +18,26 @@
   --sidebar: 0 0% 7%;
   --sidebar-foreground: 0 0% 100%;
   --sidebar-border: 0 0% 12%;
-  --sidebar-primary: 20 87% 54%;
+  --sidebar-primary: 16 100% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 0 0% 10%;
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 20 87% 54%;
+  --sidebar-ring: 16 100% 50%;
   --popover: 0 0% 7%;
   --popover-foreground: 0 0% 100%;
   --popover-border: 0 0% 15%;
-  --primary: 20 87% 54%;
+  --primary: 16 100% 50%;
   --primary-foreground: 0 0% 100%;
   --secondary: 0 0% 12%;
   --secondary-foreground: 0 0% 100%;
   --muted: 0 0% 10%;
-  --muted-foreground: 0 0% 70%;
+  --muted-foreground: 0 0% 80%;
   --accent: 0 0% 8%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
   --input: 0 0% 20%;
-  --ring: 20 87% 54%;
+  --ring: 16 100% 50%;
   --chart-1: 20 87% 65%;
   --chart-2: 210 70% 65%;
   --chart-3: 280 75% 70%;
@@ -209,8 +209,15 @@
     inset: -1px;
   }
 
-  /* Glass-morphism effect for modern dark UI */
+  /* Glassmorphism - Primary card style per design specs */
   .glass {
+    background: rgba(18, 18, 18, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-light {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -224,18 +231,26 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Orange glow effect for CTAs and accents */
+  /* Safety Orange (#FF4500) glow effects */
   .glow-orange {
-    box-shadow: 0 0 20px rgba(242, 122, 35, 0.3), 0 0 40px rgba(242, 122, 35, 0.1);
+    box-shadow: 0 0 20px rgba(255, 69, 0, 0.3), 0 0 40px rgba(255, 69, 0, 0.1);
   }
 
   .glow-orange-strong {
-    box-shadow: 0 0 30px rgba(242, 122, 35, 0.5), 0 0 60px rgba(242, 122, 35, 0.2);
+    box-shadow: 0 0 30px rgba(255, 69, 0, 0.5), 0 0 60px rgba(255, 69, 0, 0.2);
+  }
+
+  .glow-orange-hover {
+    transition: box-shadow 0.3s ease;
+  }
+
+  .glow-orange-hover:hover {
+    box-shadow: 0 0 25px rgba(255, 69, 0, 0.4), 0 0 50px rgba(255, 69, 0, 0.15);
   }
 
   /* Text glow for stats/numbers */
   .text-glow-orange {
-    text-shadow: 0 0 20px rgba(242, 122, 35, 0.3);
+    text-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
   }
 
   /* Marquee animation for scrolling text */

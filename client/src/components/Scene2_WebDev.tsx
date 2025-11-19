@@ -136,13 +136,12 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
       className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center py-12 md:py-16 lg:py-24"
       data-testid="section-webdev"
     >
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-orange-950/30 to-black" />
-      <div className="absolute inset-0 bg-gradient-to-tl from-red-950/20 via-transparent to-primary/10" />
-      
-      {/* Moving gradient orbs */}
-      <div className="absolute top-1/3 right-1/4 bg-orange-500/15 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 left-1/4 bg-primary/15 rounded-full blur-3xl animate-float-delayed" />
+      {/* Subtle animated gradient - Safety Orange accent */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/3 right-1/4 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/3 left-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
+      </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
@@ -195,7 +194,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
                   src={laptopMockup}
                   alt="Laptop Mockup"
                   className="w-full h-auto object-contain drop-shadow-2xl"
-                  style={{ filter: 'drop-shadow(0 0 30px rgba(242, 122, 35, 0.2))' }}
+                  style={{ filter: 'drop-shadow(0 0 30px rgba(255, 69, 0, 0.2))' }}
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -239,10 +238,9 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
         <div className="text-center mt-8 md:mt-12">
           <button
             onClick={() => openModal('Website Development (using Replit)')}
-            className="bg-primary text-white font-body font-semibold px-8 py-4 rounded-xl transition-all hover:scale-105 active:scale-95 hover-elevate active-elevate-2 min-h-[44px]"
+            className="bg-primary text-white font-body font-semibold px-8 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95 min-h-[44px]"
             data-testid="button-quote-website"
             style={{ 
-              boxShadow: '0 0 30px rgba(242, 122, 35, 0.3)',
               fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
             }}
           >

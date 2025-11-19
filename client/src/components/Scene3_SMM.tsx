@@ -135,13 +135,12 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
       className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center py-12 md:py-16 lg:py-24"
       data-testid="section-smm"
     >
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-bl from-black via-pink-950/30 to-black" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-red-950/20 via-transparent to-orange-950/20" />
-      
-      {/* Moving gradient orbs */}
-      <div className="absolute top-1/4 left-1/3 bg-pink-500/15 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/4 right-1/3 bg-primary/15 rounded-full blur-3xl animate-float-slow" />
+      {/* Subtle animated gradient - Safety Orange accent */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/4 left-1/3 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/3 bg-primary/5 rounded-full blur-3xl animate-float-slow" />
+      </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
@@ -171,7 +170,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
                   src={phoneMockup}
                   alt="Phone Instagram Mockup"
                   className="w-auto h-full object-contain drop-shadow-2xl"
-                  style={{ filter: 'drop-shadow(0 0 30px rgba(242, 122, 35, 0.2))' }}
+                  style={{ filter: 'drop-shadow(0 0 30px rgba(255, 69, 0, 0.2))' }}
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -190,7 +189,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
           {/* Card 2: Engagement Growth */}
           <TiltCard className="floating-card perspective-container group">
             <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
-              <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-pink-950/40 to-purple-950/40 flex flex-col items-center justify-center p-6 md:p-8">
+              <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex flex-col items-center justify-center p-6 md:p-8">
                 <TrendingUp className="w-16 h-16 md:w-20 md:h-20 text-primary mb-3 md:mb-4" strokeWidth={1.5} />
                 <div className="text-center space-y-2">
                   <div className="flex items-center justify-center gap-3 md:gap-4">
@@ -212,7 +211,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
           {/* Card 3: Strategic Content */}
           <TiltCard className="floating-card perspective-container group">
             <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
-              <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-orange-950/40 to-red-950/40 flex flex-col items-center justify-center p-6 md:p-8 text-center">
+              <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex flex-col items-center justify-center p-6 md:p-8 text-center">
                 <div className="grid grid-cols-3 gap-1.5 md:gap-2 mb-3 md:mb-4">
                   {[...Array(9)].map((_, i) => (
                     <div
@@ -236,10 +235,9 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
         <div className="text-center mt-8 md:mt-12">
           <button
             onClick={() => openModal('Social Media Marketing')}
-            className="bg-primary text-white font-body font-semibold px-8 py-4 rounded-xl transition-all hover:scale-105 active:scale-95 hover-elevate active-elevate-2 min-h-[44px]"
+            className="bg-primary text-white font-body font-semibold px-8 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95 min-h-[44px]"
             data-testid="button-quote-socials"
             style={{ 
-              boxShadow: '0 0 30px rgba(242, 122, 35, 0.3)',
               fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
             }}
           >

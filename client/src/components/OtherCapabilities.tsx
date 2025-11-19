@@ -10,43 +10,36 @@ const services = [
     icon: Camera,
     title: 'Photography',
     description: 'Professional photo shoots that capture your brand essence',
-    gradient: 'from-orange-500 to-pink-500',
   },
   {
     icon: Video,
     title: 'Video Editing',
     description: 'Cinematic editing that tells compelling stories',
-    gradient: 'from-primary to-red-500',
   },
   {
     icon: Image,
     title: 'Image Editing',
     description: 'Pixel-perfect retouching and enhancement',
-    gradient: 'from-pink-500 to-primary',
   },
   {
     icon: Globe,
     title: 'Website Development (using Replit)',
     description: 'Custom websites built to convert visitors into customers',
-    gradient: 'from-primary to-orange-600',
   },
   {
     icon: Share2,
     title: 'Social Media Marketing',
     description: 'Strategic content that builds engaged communities',
-    gradient: 'from-yellow-500 to-primary',
   },
   {
     icon: Palette,
     title: 'Graphic Design',
     description: 'Visual identities that make lasting impressions',
-    gradient: 'from-orange-600 to-pink-500',
   },
   {
     icon: FileText,
     title: 'Copywriting',
     description: 'Words that persuade, inform, and convert',
-    gradient: 'from-red-500 to-primary',
   },
 ];
 
@@ -171,11 +164,11 @@ export default function OtherCapabilities() {
 
   return (
     <section ref={containerRef} className="py-12 md:py-16 lg:py-24 bg-black relative overflow-hidden" data-testid="section-capabilities">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-red-950/25 to-black" />
-      <div className="absolute inset-0">
-        <div className="absolute top-1/3 left-1/5 bg-orange-500/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute bottom-1/3 right-1/5 bg-primary/10 rounded-full blur-3xl animate-float-delayed" />
+      {/* Subtle animated gradient - Safety Orange accent */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-950/50 to-black" />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/3 left-1/5 bg-primary/10 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute bottom-1/3 right-1/5 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
@@ -209,10 +202,10 @@ export default function OtherCapabilities() {
                   <div className="glass rounded-2xl p-5 md:p-6 border border-white/10 transition-all duration-300 hover:border-primary/30 h-full">
                     <div className="flex flex-col gap-3 md:gap-4">
                       <div className="relative">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br ${service.gradient} rounded-xl flex items-center justify-center shadow-lg`}>
-                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/20 rounded-xl flex items-center justify-center shadow-lg border border-primary/30">
+                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                         </div>
-                        <div className={`absolute inset-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300`} />
+                        <div className="absolute inset-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/20 opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300" />
                       </div>
                       
                       <div>
@@ -224,9 +217,6 @@ export default function OtherCapabilities() {
                         </p>
                       </div>
                     </div>
-                    
-                    {/* Gradient overlay on hover */}
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`} />
                   </div>
                 </div>
               </TiltCard>

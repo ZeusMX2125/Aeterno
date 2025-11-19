@@ -10,25 +10,21 @@ const stats = [
     icon: Camera,
     number: '500+',
     label: 'Visual Stories',
-    gradient: 'from-orange-500 to-pink-500',
   },
   {
     icon: Code,
     number: '120+',
     label: 'Sites Built',
-    gradient: 'from-primary to-orange-600',
   },
   {
     icon: TrendingUp,
     number: '2.5M+',
     label: 'Impressions',
-    gradient: 'from-yellow-500 to-primary',
   },
   {
     icon: Users,
     number: '98%',
     label: 'Client Retention',
-    gradient: 'from-primary to-red-500',
   },
 ];
 
@@ -153,20 +149,12 @@ export default function Statistics() {
 
   return (
     <section ref={containerRef} className="py-12 md:py-16 lg:py-24 bg-black relative overflow-hidden">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-orange-950/20 to-black" />
-      <div className="absolute inset-0">
+      {/* Subtle animated gradient - Safety Orange accent */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-950/50 to-black" />
+      <div className="absolute inset-0 opacity-30">
         <div className="absolute top-1/4 left-1/4 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-1/4 bg-orange-600/10 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 right-1/2 bg-red-500/8 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute bottom-1/4 right-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
-      
-      {/* Grid overlay */}
-      <div className="absolute inset-0 opacity-3" style={{
-        backgroundImage: `linear-gradient(rgba(242, 122, 35, 0.05) 1px, transparent 1px),
-                         linear-gradient(90deg, rgba(242, 122, 35, 0.05) 1px, transparent 1px)`,
-        backgroundSize: '60px 60px',
-      }} />
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
@@ -197,17 +185,16 @@ export default function Statistics() {
                   <div className="glass rounded-2xl p-6 md:p-8 border border-white/10 transition-all duration-300 hover:border-primary/30">
                     {/* Icon */}
                     <div className="mb-4 md:mb-6 relative">
-                      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br ${stat.gradient} p-2.5 md:p-3 shadow-lg`}>
-                        <Icon className="w-full h-full text-white" />
+                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/20 p-2.5 md:p-3 shadow-lg border border-primary/30">
+                        <Icon className="w-full h-full text-primary" />
                       </div>
-                      <div className={`absolute inset-0 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300`} />
+                      <div className="absolute inset-0 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/20 opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300" />
                     </div>
 
                     {/* Number */}
                     <div 
-                      className="font-title font-bold text-white mb-2 md:mb-3"
+                      className="font-title font-bold text-white mb-2 md:mb-3 text-glow-orange"
                       style={{
-                        textShadow: '0 0 40px rgba(242, 122, 35, 0.3)',
                         fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
                       }}
                       data-testid={`text-stat-number-${index}`}
@@ -219,9 +206,6 @@ export default function Statistics() {
                     <p className="font-body text-xs md:text-sm lg:text-base text-white/60 uppercase tracking-wide">
                       {stat.label}
                     </p>
-
-                    {/* Gradient overlay on hover */}
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`} />
                   </div>
                 </div>
               </TiltCard>
