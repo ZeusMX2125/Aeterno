@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import instagramScreenImage from '@assets/generated_images/Instagram_feed_preview_8cd8e59f.png';
-import { Heart, MessageCircle, Send } from 'lucide-react';
+import phoneMockup from '@assets/generated_images/Phone_Instagram_mockup_657ad6c9.png';
+import { Heart, MessageCircle, Share2, TrendingUp } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,80 +12,79 @@ interface Scene3Props {
 
 export default function Scene3_SMM({ openModal }: Scene3Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const heartsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const textContainerRef = useRef<HTMLDivElement>(null);
-  const phoneRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
-          start: 'top top',
-          end: '+=150%',
-          pin: true,
-          scrub: 1,
+          start: 'top center',
+          end: 'bottom center',
+          toggleActions: 'play none none reverse',
         },
       });
 
       tl.fromTo(
-        phoneRef.current,
-        { rotateY: -25, rotateX: 5, scale: 0.9 },
-        {
-          rotateY: 0,
-          rotateX: 0,
-          scale: 1,
-          duration: 0.5,
-          ease: 'power2.out',
-        }
+        headlineRef.current,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
       );
 
-      heartsRef.current.forEach((heart, index) => {
-        if (heart) {
-          tl.fromTo(
-            heart,
-            { opacity: 0, y: 20, scale: 0.5, z: -50 },
-            {
-              opacity: 1,
-              y: -30,
-              scale: 1,
-              z: index % 2 === 0 ? 50 : 20,
-              duration: 0.4,
-              ease: 'power2.out',
-            },
-            0.3 + index * 0.08
-          );
-        }
-      });
-
-      tl.fromTo(
-        textContainerRef.current,
-        { opacity: 0, x: -50 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.5,
-        },
-        0.6
-      );
+      const cards = cardsRef.current?.querySelectorAll('.floating-card');
+      if (cards) {
+        tl.fromTo(
+          cards,
+          { opacity: 0, y: 100, rotateX: -15 },
+          {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: 'power3.out',
+          },
+          '-=0.4'
+        );
+      }
     });
 
     return () => ctx.revert();
   }, []);
 
-  const heartPositions = [
-    { top: '15%', right: '-5%' },
-    { top: '25%', right: '5%' },
-    { top: '40%', right: '-8%' },
-    { top: '55%', right: '2%' },
-    { top: '70%', right: '-3%' },
-    { top: '30%', right: '-15%' },
-  ];
+  const handleCardTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 20;
+    const rotateY = (centerX - x) / 20;
+
+    gsap.to(card, {
+      rotateX,
+      rotateY,
+      duration: 0.3,
+      ease: 'power2.out',
+      transformPerspective: 1000,
+    });
+  };
+
+  const handleCardReset = (e: React.MouseEvent<HTMLDivElement>) => {
+    gsap.to(e.currentTarget, {
+      rotateX: 0,
+      rotateY: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+    });
+  };
 
   return (
     <section
       ref={containerRef}
-      className="min-h-screen w-full relative bg-black flex items-center justify-center overflow-hidden"
+      className="min-h-screen w-full relative overflow-hidden bg-black flex items-center justify-center py-16 md:py-24"
       data-testid="section-smm"
     >
       {/* Animated gradient background */}
@@ -96,129 +95,112 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
       <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-pink-500/15 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-float-slow" />
       
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-        <div ref={textContainerRef} className="space-y-4 md:space-y-6 order-2 md:order-1 glass rounded-2xl p-6 md:p-8">
-          <h2
-            className="font-title text-3xl md:text-5xl lg:text-6xl font-bold text-white uppercase leading-tight"
-            data-testid="text-smm-headline"
-          >
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
+        {/* Header */}
+        <div ref={headlineRef} className="text-center mb-12 md:mb-16">
+          <p className="text-primary font-body text-sm uppercase tracking-wider mb-3">
+            Social Media Marketing
+          </p>
+          <h2 className="font-title text-4xl md:text-6xl lg:text-7xl font-bold text-white uppercase leading-tight mb-4">
             Then, we <span className="text-primary">tell the world</span>
           </h2>
-          
-          <p
-            className="font-body text-base md:text-lg text-muted-foreground"
-            data-testid="text-smm-subheadline"
-          >
+          <p className="font-body text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             We turn your assets into a community. Strategic SMM that grows your audience.
           </p>
-          
+        </div>
+
+        {/* Floating Cards Grid */}
+        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {/* Card 1: Phone Mockup */}
+          <div
+            className="floating-card perspective-container group"
+            onMouseMove={handleCardTilt}
+            onMouseLeave={handleCardReset}
+          >
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+              <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex items-center justify-center p-6">
+                <img
+                  src={phoneMockup}
+                  alt="Phone Instagram Mockup"
+                  className="w-auto h-full object-contain drop-shadow-2xl"
+                  style={{ filter: 'drop-shadow(0 0 30px rgba(242, 122, 35, 0.2))' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="font-title text-xl font-bold text-white mb-2">
+                    Mobile-First Content
+                  </h3>
+                  <p className="font-body text-sm text-muted-foreground">
+                    Optimized for where your audience is
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Engagement Growth */}
+          <div
+            className="floating-card perspective-container group"
+            onMouseMove={handleCardTilt}
+            onMouseLeave={handleCardReset}
+          >
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+              <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-pink-950/40 to-purple-950/40 flex flex-col items-center justify-center p-8">
+                <TrendingUp className="w-20 h-20 text-primary mb-4" strokeWidth={1.5} />
+                <div className="text-center space-y-2">
+                  <div className="flex items-center justify-center gap-4">
+                    <Heart className="w-8 h-8 text-pink-500" fill="currentColor" />
+                    <MessageCircle className="w-8 h-8 text-blue-500" />
+                    <Share2 className="w-8 h-8 text-green-500" />
+                  </div>
+                  <h3 className="font-title text-xl font-bold text-white">
+                    Drive Engagement
+                  </h3>
+                  <p className="font-body text-sm text-muted-foreground">
+                    Turn followers into customers
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Strategic Content */}
+          <div
+            className="floating-card perspective-container group"
+            onMouseMove={handleCardTilt}
+            onMouseLeave={handleCardReset}
+          >
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+              <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-orange-950/40 to-red-950/40 flex flex-col items-center justify-center p-8 text-center">
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  {[...Array(9)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-12 h-12 bg-primary/20 rounded-lg border border-primary/30"
+                    />
+                  ))}
+                </div>
+                <h3 className="font-title text-xl font-bold text-white mb-2">
+                  Strategic Planning
+                </h3>
+                <p className="font-body text-sm text-muted-foreground">
+                  Consistent, on-brand content calendar
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-12">
           <button
             onClick={() => openModal('Social Media Marketing')}
-            className="bg-primary text-white font-body font-semibold text-sm md:text-base px-6 py-3 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95"
+            className="bg-primary text-white font-body font-semibold text-base md:text-lg px-8 py-4 rounded-xl transition-all hover:scale-105 active:scale-95 hover-elevate active-elevate-2"
             data-testid="button-quote-socials"
+            style={{ boxShadow: '0 0 30px rgba(242, 122, 35, 0.3)' }}
           >
             Get a Quote for Socials
           </button>
-        </div>
-
-        {/* 3D Phone Mockup */}
-        <div className="relative flex items-center justify-center order-1 md:order-2 perspective-container-far">
-          <div
-            ref={phoneRef}
-            className="preserve-3d relative"
-            style={{
-              width: '280px',
-              height: '570px',
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            {/* Phone Frame/Bezel */}
-            <div
-              className="absolute inset-0 bg-gradient-to-br from-[#2A2A2A] to-[#1A1A1A] rounded-[3rem] border-[12px] border-[#1A1A1A] preserve-3d"
-              style={{
-                transform: 'translateZ(5px)',
-                boxShadow: '0 0 50px rgba(242, 122, 35, 0.15), inset 0 0 20px rgba(0,0,0,0.5)',
-              }}
-            >
-              {/* Screen */}
-              <div className="absolute inset-2 bg-black rounded-[2.5rem] overflow-hidden">
-                {/* Instagram Content */}
-                <div className="w-full h-full bg-gradient-to-b from-purple-900/20 to-pink-900/20">
-                  {/* Status Bar */}
-                  <div className="h-8 bg-black/40 backdrop-blur-sm flex items-center justify-between px-4 text-white text-xs">
-                    <span>9:41</span>
-                    <div className="flex gap-1">
-                      <div className="w-4 h-4 border border-white rounded-sm" />
-                      <div className="w-4 h-4 border border-white rounded-sm" />
-                      <div className="w-4 h-4 border border-white rounded-sm" />
-                    </div>
-                  </div>
-
-                  {/* Instagram Post Preview */}
-                  <div className="p-3 space-y-3">
-                    {/* Post Header */}
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-pink-500" />
-                      <span className="text-white text-sm font-semibold">aeterno.media</span>
-                    </div>
-
-                    {/* Post Image Placeholder */}
-                    <div className="aspect-square bg-gradient-to-br from-primary/30 to-purple-500/30 rounded-lg flex items-center justify-center">
-                      <div className="text-white/50 text-4xl">📸</div>
-                    </div>
-
-                    {/* Engagement Icons */}
-                    <div className="flex gap-4 text-white">
-                      <Heart className="w-6 h-6" />
-                      <MessageCircle className="w-6 h-6" />
-                      <Send className="w-6 h-6" />
-                    </div>
-
-                    {/* Likes */}
-                    <div className="text-white text-sm font-semibold">
-                      29,431 likes
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Screen Glow */}
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none" />
-              </div>
-
-              {/* Phone Notch */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-3xl" />
-              
-              {/* Screen Reflection */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-[3rem] pointer-events-none" />
-            </div>
-
-            {/* Floating Hearts in 3D Space */}
-            {heartPositions.map((position, index) => (
-              <div
-                key={index}
-                ref={(el) => (heartsRef.current[index] = el)}
-                className="absolute preserve-3d"
-                style={{
-                  ...position,
-                  transformStyle: 'preserve-3d',
-                }}
-              >
-                <Heart 
-                  className="w-8 h-8 text-primary fill-primary" 
-                  style={{
-                    filter: 'drop-shadow(0 0 15px rgba(242,122,35,0.8))',
-                    transform: `translateZ(${index % 2 === 0 ? '40px' : '20px'})`,
-                  }}
-                />
-              </div>
-            ))}
-
-            {/* Shadow */}
-            <div
-              className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[70%] h-4 bg-black/40 blur-xl rounded-full"
-              style={{ transform: 'translateZ(-20px)' }}
-            />
-          </div>
         </div>
       </div>
     </section>

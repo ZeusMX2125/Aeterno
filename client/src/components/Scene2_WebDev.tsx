@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import laptopMockup from '@assets/generated_images/Laptop_mockup_device_5ea35f15.png';
 import wireframeImage from '@assets/generated_images/Wireframe_design_sketch_da0c3a05.png';
 import finalDesignImage from '@assets/generated_images/Final_website_design_03e22cfd.png';
-import { MousePointer2 } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,68 +13,79 @@ interface Scene2Props {
 
 export default function Scene2_WebDev({ openModal }: Scene2Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const designRef = useRef<HTMLDivElement>(null);
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const textContainerRef = useRef<HTMLDivElement>(null);
-  const laptopRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
-          start: 'top top',
-          end: '+=150%',
-          pin: true,
-          scrub: 1,
+          start: 'top center',
+          end: 'bottom center',
+          toggleActions: 'play none none reverse',
         },
       });
 
       tl.fromTo(
-        laptopRef.current,
-        { rotateY: 25, rotateX: 5, scale: 0.9 },
-        {
-          rotateY: 0,
-          rotateX: 0,
-          scale: 1,
-          duration: 0.5,
-          ease: 'power2.out',
-        }
-      )
-        .to(designRef.current, {
-          opacity: 1,
-          duration: 1,
-          ease: 'power2.inOut',
-        })
-        .to(
-          cursorRef.current,
-          {
-            x: 200,
-            y: -100,
-            duration: 0.8,
-            ease: 'power1.inOut',
-          },
-          0.5
-        )
-        .fromTo(
-          textContainerRef.current,
-          { opacity: 0, x: 50 },
+        headlineRef.current,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
+      );
+
+      const cards = cardsRef.current?.querySelectorAll('.floating-card');
+      if (cards) {
+        tl.fromTo(
+          cards,
+          { opacity: 0, y: 100, rotateX: -15 },
           {
             opacity: 1,
-            x: 0,
-            duration: 0.5,
+            y: 0,
+            rotateX: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: 'power3.out',
           },
-          0.8
+          '-=0.4'
         );
+      }
     });
 
     return () => ctx.revert();
   }, []);
 
+  const handleCardTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 20;
+    const rotateY = (centerX - x) / 20;
+
+    gsap.to(card, {
+      rotateX,
+      rotateY,
+      duration: 0.3,
+      ease: 'power2.out',
+      transformPerspective: 1000,
+    });
+  };
+
+  const handleCardReset = (e: React.MouseEvent<HTMLDivElement>) => {
+    gsap.to(e.currentTarget, {
+      rotateX: 0,
+      rotateY: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+    });
+  };
+
   return (
     <section
       ref={containerRef}
-      className="min-h-screen w-full relative bg-black flex items-center justify-center overflow-hidden"
+      className="min-h-screen w-full relative overflow-hidden bg-black flex items-center justify-center py-16 md:py-24"
       data-testid="section-webdev"
     >
       {/* Animated gradient background */}
@@ -85,107 +96,109 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-500/15 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-float-delayed" />
       
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-        {/* 3D Laptop Mockup */}
-        <div className="perspective-container-far">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
+        {/* Header */}
+        <div ref={headlineRef} className="text-center mb-12 md:mb-16">
+          <p className="text-primary font-body text-sm uppercase tracking-wider mb-3">
+            Website Development
+          </p>
+          <h2 className="font-title text-4xl md:text-6xl lg:text-7xl font-bold text-white uppercase leading-tight mb-4">
+            We build your brand's <span className="text-primary">digital home</span>
+          </h2>
+          <p className="font-body text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+            A stunning website is your #1 salesperson. We build experiences that convert.
+          </p>
+        </div>
+
+        {/* Floating Cards Grid */}
+        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {/* Card 1: Wireframe to Final */}
           <div
-            ref={laptopRef}
-            className="preserve-3d relative"
-            style={{
-              transformStyle: 'preserve-3d',
-            }}
+            className="floating-card perspective-container group"
+            onMouseMove={handleCardTilt}
+            onMouseLeave={handleCardReset}
           >
-            {/* Laptop Screen */}
-            <div
-              className="relative w-full aspect-[16/10] bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] rounded-t-2xl border-8 border-[#2A2A2A] preserve-3d"
-              style={{
-                transform: 'translateZ(10px)',
-                boxShadow: '0 0 60px rgba(242, 122, 35, 0.15)',
-              }}
-            >
-              {/* Screen Inner Bezel */}
-              <div className="absolute inset-2 bg-black rounded-lg overflow-hidden">
-                {/* Wireframe Background */}
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+              <div className="aspect-[4/3] relative overflow-hidden">
                 <img
                   src={wireframeImage}
-                  alt="Wireframe"
+                  alt="Wireframe Design"
                   className="w-full h-full object-cover"
                 />
-                
-                {/* Final Design Overlay */}
-                <div
-                  ref={designRef}
-                  className="absolute inset-0 opacity-0"
-                  style={{ 
-                    backgroundImage: `url(${finalDesignImage})`, 
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="font-title text-xl font-bold text-white mb-2">
+                    Strategic Planning
+                  </h3>
+                  <p className="font-body text-sm text-muted-foreground">
+                    From wireframes to pixel-perfect designs
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Laptop Mockup */}
+          <div
+            className="floating-card perspective-container group"
+            onMouseMove={handleCardTilt}
+            onMouseLeave={handleCardReset}
+          >
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+              <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex items-center justify-center p-8">
+                <img
+                  src={laptopMockup}
+                  alt="Laptop Mockup"
+                  className="w-full h-auto object-contain drop-shadow-2xl"
+                  style={{ filter: 'drop-shadow(0 0 30px rgba(242, 122, 35, 0.2))' }}
                 />
-                
-                {/* Screen Glow */}
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="font-title text-xl font-bold text-white mb-2">
+                    Responsive Design
+                  </h3>
+                  <p className="font-body text-sm text-muted-foreground">
+                    Beautiful on every device
+                  </p>
+                </div>
               </div>
-              
-              {/* Animated Cursor */}
-              <div
-                ref={cursorRef}
-                className="absolute top-1/2 left-1/2 z-20 text-primary"
-                style={{
-                  filter: 'drop-shadow(0 0 10px rgba(242,122,35,0.6))',
-                  transform: 'translateZ(20px)',
-                }}
-              >
-                <MousePointer2 className="w-8 h-8" />
+            </div>
+          </div>
+
+          {/* Card 3: Final Design */}
+          <div
+            className="floating-card perspective-container group"
+            onMouseMove={handleCardTilt}
+            onMouseLeave={handleCardReset}
+          >
+            <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30">
+              <div className="aspect-[4/3] relative overflow-hidden">
+                <img
+                  src={finalDesignImage}
+                  alt="Final Website Design"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="font-title text-xl font-bold text-white mb-2">
+                    Polished & Professional
+                  </h3>
+                  <p className="font-body text-sm text-muted-foreground">
+                    Built on Replit for speed & reliability
+                  </p>
+                </div>
               </div>
-              
-              {/* Screen Reflection */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-lg pointer-events-none" />
             </div>
-
-            {/* Laptop Keyboard/Base */}
-            <div
-              className="w-full h-6 bg-gradient-to-b from-[#2A2A2A] to-[#1A1A1A] rounded-b-2xl relative preserve-3d"
-              style={{
-                transform: 'rotateX(-90deg) translateY(3px) translateZ(-3px)',
-                transformOrigin: 'top center',
-              }}
-            >
-              {/* Keyboard Detail */}
-              <div className="absolute inset-x-8 top-1 bottom-1 bg-black/40 rounded-sm" />
-              
-              {/* Trackpad */}
-              <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-16 h-2 bg-black/60 rounded-sm" />
-            </div>
-
-            {/* Shadow */}
-            <div
-              className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-2 bg-black/40 blur-xl rounded-full"
-              style={{ transform: 'translateZ(-20px)' }}
-            />
           </div>
         </div>
 
-        {/* Text Content */}
-        <div ref={textContainerRef} className="space-y-4 md:space-y-6 glass rounded-2xl p-6 md:p-8">
-          <h2
-            className="font-title text-3xl md:text-5xl lg:text-6xl font-bold text-white uppercase leading-tight"
-            data-testid="text-webdev-headline"
-          >
-            We build your brand's <span className="text-primary">digital home</span>
-          </h2>
-          
-          <p
-            className="font-body text-base md:text-lg text-muted-foreground"
-            data-testid="text-webdev-subheadline"
-          >
-            A stunning website is your #1 salesperson. We build experiences that convert.
-          </p>
-          
+        {/* CTA */}
+        <div className="text-center mt-12">
           <button
             onClick={() => openModal('Website Development (using Replit)')}
-            className="bg-primary text-white font-body font-semibold text-sm md:text-base px-6 py-3 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95"
+            className="bg-primary text-white font-body font-semibold text-base md:text-lg px-8 py-4 rounded-xl transition-all hover:scale-105 active:scale-95 hover-elevate active-elevate-2"
             data-testid="button-quote-website"
+            style={{ boxShadow: '0 0 30px rgba(242, 122, 35, 0.3)' }}
           >
             Get a Quote for a Website
           </button>
