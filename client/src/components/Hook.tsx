@@ -37,22 +37,16 @@ export default function Hook({ openModal }: HookProps) {
   }, []);
 
   return (
-    <section className="relative min-h-[100svh] bg-black flex flex-col items-center justify-center px-4 py-12 overflow-hidden">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-orange-950/40 to-black" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-orange-900/20" />
+    <section className="relative min-h-[100svh] bg-black flex flex-col items-center justify-center px-4 py-12 overflow-hidden noise-texture">
+      {/* Moving futuristic gradient background - MASTER DESIGN */}
+      <div className="absolute inset-0 moving-gradient" />
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gray-950/30 to-transparent" />
       
-      {/* Moving gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 bg-primary/20 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/4 right-1/4 bg-orange-600/15 rounded-full blur-3xl animate-float-delayed" />
-      <div className="absolute top-1/2 right-1/3 bg-red-500/10 rounded-full blur-3xl animate-float-slow" />
-      
-      {/* Grid overlay */}
-      <div className="absolute inset-0 opacity-5" style={{
-        backgroundImage: `linear-gradient(rgba(242, 122, 35, 0.1) 1px, transparent 1px),
-                         linear-gradient(90deg, rgba(242, 122, 35, 0.1) 1px, transparent 1px)`,
-        backgroundSize: '50px 50px',
-      }} />
+      {/* Moving gradient orbs - reduced for cleaner mobile */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/4 left-1/4 bg-primary/15 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 bg-primary/10 rounded-full blur-3xl animate-float-delayed" />
+      </div>
       
       {/* Content */}
       <div className="relative z-10 max-w-6xl w-full flex flex-col items-center text-center gap-6 md:gap-8">
