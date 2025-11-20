@@ -1,0 +1,41 @@
+You are acting as the Lead Frontend Architect. We are executing a "Performance Stabilization" plan.
+
+**Current Status:** The site is unusable due to WebGL Context Overload. We have too many heavy background effects (`LiquidEther`, `GridScan`, `Particles`) crashing the browser.
+
+**The Mandate:**
+1. **Keep** `Aurora.jsx` ONLY for the Hero Section (`Hook.tsx`).
+2. **Delete/Remove** usages of `LiquidEther`, `GridScan`, and `Particles` from all other sections.
+3. **Replace** the backgrounds in `Scene1`, `Scene2`, and `Scene3` with a high-end, static **CSS "Dark Glass" styling**.
+
+### STEP 1: UNINSTALL BLOAT
+Remove these dependencies from `package.json` if they are no longer used by Aurora:
+- `face-api.js` (Confirmed delete)
+- `postprocessing` (Confirmed delete)
+
+### STEP 2: COMPONENT REFACTORING
+**1. Refactor `Scene1_Photography.tsx`, `Scene2_WebDev.tsx`, `Scene3_SMM.tsx`:**
+   - Remove the imports for `LiquidEther`, `GridScan`, `Particles`.
+   - Apply a standard CSS class for the background: `bg-neutral-950`.
+   - Add a subtle CSS radial gradient to the container instead of the heavy React component:
+     ```css
+     /* Example Replacement Style */
+     background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
+     ```
+
+**2. Refactor `Hook.tsx` (Hero):**
+   - Ensure `Aurora` is the ONLY background here.
+   - This will be the *single* WebGL context allowed on the page, ensuring it never crashes.
+
+**3. Clean up `App.tsx` / `Main.tsx`:**
+   - Ensure no other global canvas elements are being rendered.
+
+### STEP 3: SCROLL ANIMATION FIX
+Now that the heavy backgrounds are gone, fix the `GSAP` scroll logic in the Scenes:
+- In `Scene1`, `Scene2`, `Scene3`:
+- Ensure `ScrollTrigger` uses `pin: true` ONLY for desktop (`min-width: 1024px`).
+- Remove any `canvas` related resizing logic from these files.
+
+### EXECUTION GOAL:
+The site must load instantly. Scrolling must be 60fps. The "Black Void" bug should be gone because we are no longer relying on crashing WebGL canvases for backgrounds.
+
+Proceed with these deletions and CSS replacements immediately.

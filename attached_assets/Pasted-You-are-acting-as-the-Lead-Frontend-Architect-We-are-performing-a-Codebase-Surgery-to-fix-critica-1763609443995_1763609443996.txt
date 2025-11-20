@@ -1,0 +1,53 @@
+You are acting as the Lead Frontend Architect. We are performing a "Codebase Surgery" to fix critical rendering bugs, lag, and structural issues.
+
+**Objective:** Convert the site into a high-performance, single-page scroll experience. Remove "Tabs", fix the "Black Void" scroll bugs, and eliminate lag.
+
+### PHASE 1: STRUCTURAL SIMPLIFICATION (The Layout Fix)
+**1. Remove "Tabs" & Complex Navigation:**
+   - Delete `components/ui/tabs.tsx`.
+   - If `OtherCapabilities.tsx` or any section uses Tabs, refactor it immediately to a simple **CSS Grid** layout.
+   - Ensure the page flows vertically: Hook -> Photography -> Web Dev -> Social Media -> Stats -> Contact.
+
+**2. Fix the "Black Space" Scroll Bug (GSAP):**
+   - The `ScrollTrigger` pinning is breaking the layout.
+   - **ACTION:** Disable `pin: true` for MOBILE and TABLET devices in `Scene1`, `Scene2`, and `Scene3`. Pinning should ONLY happen on `min-width: 1024px`.
+   - **Code Update:**
+     ```javascript
+     ScrollTrigger.create({
+       trigger: containerRef.current,
+       start: 'top top',
+       end: '+=100%',
+       pin: window.innerWidth > 1024, // CONDITIONAL PINNING IS CRITICAL
+       scrub: 1,
+     });
+     ```
+
+### PHASE 2: PERFORMANCE OPTIMIZATION (The Lag Fix)
+**1. Remove "Face-API" & "PostProcessing":**
+   - These libraries are massive and unused. Uninstall them.
+   - In `GridScan.jsx`, remove all imports related to `face-api.js` and `postprocessing`. Use standard THREE.js or OGL only.
+
+**2. Fix "Tilt Card" Event Listener Spam:**
+   - Currently, every card in `Scene1` and `Scene2` attaches a `mousemove` listener. This causes stuttering.
+   - **ACTION:** Refactor `TiltCard` to use **CSS-only 3D transforms** (using `group-hover`) OR use a single mouse listener on the parent container that passes coordinates down via Context.
+   - **Preferred Fix:** Switch to CSS variables for mouse position to handle the tilt effect on the GPU, not the CPU.
+
+**3. Fix "ScrollVelocity" Bloat:**
+   - We are loading `Framer Motion` just for one marquee effect.
+   - **ACTION:** Rewrite `ScrollVelocity.tsx` to use GSAP `to()` with a simple infinite loop. Uninstall `framer-motion`.
+
+### PHASE 3: WEBGL CONTEXT MANAGER (The Invisible Background Fix)
+Browsers are killing your backgrounds because there are too many active contexts.
+**ACTION:** Create a HOC (Higher Order Component) or Hook `useIntersectionPause`.
+   - Apply this to `GridScan`, `LiquidEther`, `Aurora`, and `Particles`.
+   - Logic: If the section is NOT in the viewport, `cancelAnimationFrame` immediately.
+   - This will free up the GPU for the section the user is actually looking at.
+
+### EXECUTION PLAN:
+1. **Uninstall** `face-api.js`, `framer-motion`, `postprocessing`.
+2. **Refactor** `Scene1`, `Scene2`, `Scene3` to disable pinning on mobile.
+3. **Rewrite** `GridScan.jsx` to remove the heavy AI imports.
+4. **Replace** `ScrollVelocity` with a GSAP version.
+5. **Verify** no black spaces appear on scroll.
+
+Execute this plan immediately.
