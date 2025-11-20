@@ -30,8 +30,8 @@ Preferred communication style: Simple, everyday language.
 **Animation Strategy**: 
 - GSAP (GreenSock Animation Platform) with ScrollTrigger plugin for scroll-locked, narrative storytelling animations
 - Each "scene" component pins content while scrolling to create cinematic transitions
-- Text animation components: TextType (typewriter effect), ShinyText (gradient shimmer), CurvedLoop (curved marquee text), ScrollFloat (character-by-character reveal), ScrollVelocity (velocity-based scrolling text)
-- Framer Motion for advanced physics-based animations in ScrollVelocity component
+- Text animation components: TextType (typewriter effect), ShinyText (gradient shimmer), CurvedLoop (curved marquee text with document.fonts.ready sync), ScrollFloat (character-by-character reveal)
+- WebGL performance optimization via IntersectionObserver-based pause system
 
 ### Design Philosophy
 
@@ -128,9 +128,8 @@ Located in `client/src/components/animations/`:
 
 1. **TextType**: Typewriter effect with customizable typing/deleting speeds, cursor blinking, variable speed, multiple text arrays, color cycling
 2. **ShinyText**: Animated gradient shimmer effect across text, configurable speed and disable state
-3. **CurvedLoop**: SVG-based curved marquee text with interactive drag, customizable curve amount and direction
+3. **CurvedLoop**: SVG-based curved marquee text with interactive drag, customizable curve amount and direction - **Fixed**: Font loading race condition resolved using document.fonts.ready.then() to ensure accurate width calculations
 4. **ScrollFloat**: GSAP-powered character-by-character scroll reveal with scale/opacity transitions
-5. **ScrollVelocity**: Framer Motion velocity-based parallax scrolling text with physics-based damping and stiffness
 
 All components include corresponding CSS files and are fully typed with TypeScript.
 
@@ -146,9 +145,34 @@ Located in `client/src/components/backgrounds/`:
 6. **Particles**: 3D particle system with rotation and mouse interaction, customizable particle count, spread, speed, colors, mouse interaction, alpha transparency, base size, camera distance, and rotation - from ReactBits.dev
 
 All WebGL backgrounds include:
+- **Performance Optimization**: IntersectionObserver-based pause system using ref pattern to preserve WebGL contexts while stopping animations when off-screen
+- **Ref-Based Pause Logic**: isPausedRef tracks pause state without triggering effect re-runs, preventing expensive context teardown/recreation
+- **Context Preservation**: WebGL contexts initialize once and remain alive throughout component lifetime; animation loops check ref and stop calling requestAnimationFrame when paused
+- **Smooth Resume**: Dedicated resume effects restart animations instantly when sections scroll back into view
 - Proper cleanup on unmount (ResizeObserver, requestAnimationFrame, WebGL context)
 - Console logging for debugging
 - Try-catch error handling
 - WebGL1/WebGL2 compatibility
 - Default export for easy integration
 - Corresponding CSS files for containers
+
+### WebGL Performance Optimization System
+
+**useIntersectionPause Hook** (`client/src/hooks/useIntersectionPause.ts`):
+- Monitors viewport intersection with 200px rootMargin for early preparation
+- Returns boolean `isPaused` state that updates when component enters/exits viewport
+- Balances performance (pausing off-screen content) with smooth user experience (early resume preparation)
+
+**Ref-Based Pause Pattern** (implemented in all 6 WebGL backgrounds):
+1. `isPausedRef` created to track pause state without dependency array side effects
+2. Sync effect updates ref when isPaused changes: `useEffect(() => { isPausedRef.current = isPaused; }, [isPaused])`
+3. Main WebGL setup effect excludes isPaused from dependencies (preserves contexts)
+4. Animation loops check `isPausedRef.current` instead of `isPaused` state
+5. Resume effects restart animation when isPaused transitions from true→false
+
+**Performance Benefits**:
+- GPU load drops significantly when WebGL sections scroll out of view
+- No context loss or expensive teardown/recreation overhead
+- Smooth, instant resume when scrolling back
+- Eliminates GC churn and hitching during scroll
+- WebGL contexts stay alive but frozen when paused
