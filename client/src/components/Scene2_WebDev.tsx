@@ -6,6 +6,7 @@ import wireframeImage from '@assets/generated_images/Wireframe_design_sketch_da0
 import finalDesignImage from '@assets/generated_images/Final_website_design_03e22cfd.png';
 // @ts-ignore - WebGL component without TypeScript definitions
 import GridScan from './backgrounds/GridScan';
+import ShinyText from './animations/ShinyText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -161,15 +162,22 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
           <p className="text-primary font-body text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3">
             Website Development
           </p>
-          <h2 className="font-title font-bold text-white uppercase leading-tight mb-3 md:mb-4" style={{
-            fontSize: 'clamp(2rem, 8vw, 4.5rem)',
-          }}>
+          <h2 
+            className="font-title font-bold text-white uppercase leading-tight mb-3 md:mb-4"
+            style={{
+              fontSize: 'clamp(2rem, 8vw, 4.5rem)',
+            }}
+          >
             We build your brand's <span className="text-primary">digital home</span>
           </h2>
           <p className="font-body text-muted-foreground max-w-3xl mx-auto" style={{
             fontSize: 'clamp(0.9rem, 2vw, 1.25rem)',
           }}>
-            A stunning website is your #1 salesperson. We build experiences that convert.
+            <ShinyText 
+              text="A stunning website is your #1 salesperson. We build experiences that convert."
+              speed={10}
+              className="inline-block"
+            />
           </p>
         </div>
 

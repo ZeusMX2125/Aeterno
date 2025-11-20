@@ -3,6 +3,8 @@ import { gsap } from 'gsap';
 import logoImage from '@assets/AETERNO (3)_1762894919968.png';
 // @ts-ignore - WebGL component without TypeScript definitions
 import Iridescence from './backgrounds/Iridescence';
+import TextType from './animations/TextType';
+import ShinyText from './animations/ShinyText';
 
 interface HookProps {
   openModal: (service: string) => void;
@@ -73,7 +75,15 @@ export default function Hook({ openModal }: HookProps) {
             fontSize: 'clamp(2.5rem, 10vw, 6rem)',
           }}
         >
-          Digital Experiences <span className="text-primary">Worth Remembering</span>
+          <TextType 
+            text={["Digital Experiences Worth Remembering", "Creative Solutions That Convert", "Your Brand's Digital Evolution"]}
+            as="span"
+            typingSpeed={80}
+            deletingSpeed={50}
+            pauseDuration={3000}
+            loop={true}
+            className="inline-block"
+          />
         </h1>
         
         <p
@@ -83,7 +93,13 @@ export default function Hook({ openModal }: HookProps) {
           style={{
             fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)',
           }}
-        >Creative agency specializing in photography, web development, and social media marketing</p>
+        >
+          <ShinyText 
+            text="Creative agency specializing in photography, web development, and social media marketing"
+            speed={8}
+            className="inline-block"
+          />
+        </p>
         
         <button
           ref={buttonRef}

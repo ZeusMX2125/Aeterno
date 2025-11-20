@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Play, Camera, Video, Image as ImageIcon, Film, Aperture, Clapperboard } from 'lucide-react';
 // @ts-ignore - WebGL component without TypeScript definitions
 import GradientBlinds from './backgrounds/GradientBlinds';
+import ShinyText from './animations/ShinyText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -224,8 +225,8 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
             Visual Storytelling
           </p>
           <h2
-            className="font-title font-bold text-white mb-4 md:mb-6 uppercase leading-tight"
             data-testid="text-photography-headline"
+            className="font-title font-bold text-white mb-4 md:mb-6 uppercase leading-tight"
             style={{
               fontSize: 'clamp(2rem, 8vw, 4rem)',
             }}
@@ -239,7 +240,11 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
               fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
             }}
           >
-            From stunning photography to cinematic video, we create the visual content that defines your brand.
+            <ShinyText 
+              text="From stunning photography to cinematic video, we create the visual content that defines your brand."
+              speed={10}
+              className="inline-block"
+            />
           </p>
           <button
             onClick={() => openModal('Photography')}

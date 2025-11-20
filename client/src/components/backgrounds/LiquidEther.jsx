@@ -83,12 +83,27 @@ export default function LiquidEther({
         this.container = null;
         this.renderer = null;
         this.clock = null;
+        this.isWebGL2 = false;
       }
       init(container) {
         this.container = container;
         this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
         this.resize();
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        const canvas = document.createElement('canvas');
+        let gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+        if (!gl) {
+          throw new Error('WebGL not supported');
+        }
+        this.isWebGL2 = gl instanceof WebGL2RenderingContext;
+        console.log('LiquidEther: WebGL version:', this.isWebGL2 ? 'WebGL2' : 'WebGL1');
+        
+        this.renderer = new THREE.WebGLRenderer({ 
+          canvas: canvas,
+          context: gl,
+          antialias: true, 
+          alpha: true 
+        });
         this.renderer.autoClear = false;
         this.renderer.setClearColor(new THREE.Color(0x000000), 0);
         this.renderer.setPixelRatio(this.pixelRatio);
@@ -774,12 +789,15 @@ export default function LiquidEther({
         this.createShaderPass();
       }
       getFloatType() {
+        if (!Common.isWebGL2) {
+          return THREE.UnsignedByteType;
+        }
         const isIOS = /(iPad|iPhone|iPod)/i.test(navigator.userAgent);
         return isIOS ? THREE.HalfFloatType : THREE.FloatType;
       }
       createAllFBO() {
-        const type = this.getFloatType();
-        const opts = {
+        let type = this.getFloatType();
+        let opts = {
           type,
           depthBuffer: false,
           stencilBuffer: false,
@@ -788,8 +806,16 @@ export default function LiquidEther({
           wrapS: THREE.ClampToEdgeWrapping,
           wrapT: THREE.ClampToEdgeWrapping
         };
-        for (let key in this.fbos) {
-          this.fbos[key] = new THREE.WebGLRenderTarget(this.fboSize.x, this.fboSize.y, opts);
+        try {
+          for (let key in this.fbos) {
+            this.fbos[key] = new THREE.WebGLRenderTarget(this.fboSize.x, this.fboSize.y, opts);
+          }
+        } catch (error) {
+          console.warn('LiquidEther: Float render targets unavailable, falling back to UnsignedByteType', error);
+          opts.type = THREE.UnsignedByteType;
+          for (let key in this.fbos) {
+            this.fbos[key] = new THREE.WebGLRenderTarget(this.fboSize.x, this.fboSize.y, opts);
+          }
         }
       }
       createShaderPass() {

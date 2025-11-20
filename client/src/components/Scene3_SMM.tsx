@@ -5,6 +5,7 @@ import phoneMockup from '@assets/generated_images/Phone_Instagram_mockup_657ad6c
 import { Heart, MessageCircle, Share2, TrendingUp } from 'lucide-react';
 // @ts-ignore - WebGL component without TypeScript definitions
 import LiquidEther from './backgrounds/LiquidEther';
+import ShinyText from './animations/ShinyText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -155,15 +156,22 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
           <p className="text-primary font-body text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3">
             Social Media Marketing
           </p>
-          <h2 className="font-title font-bold text-white uppercase leading-tight mb-3 md:mb-4" style={{
-            fontSize: 'clamp(2rem, 8vw, 4.5rem)',
-          }}>
+          <h2 
+            className="font-title font-bold text-white uppercase leading-tight mb-3 md:mb-4"
+            style={{
+              fontSize: 'clamp(2rem, 8vw, 4.5rem)',
+            }}
+          >
             Then, we <span className="text-primary">tell the world</span>
           </h2>
           <p className="font-body text-muted-foreground max-w-3xl mx-auto" style={{
             fontSize: 'clamp(0.9rem, 2vw, 1.25rem)',
           }}>
-            We turn your assets into a community. Strategic SMM that grows your audience.
+            <ShinyText 
+              text="We turn your assets into a community. Strategic SMM that grows your audience."
+              speed={10}
+              className="inline-block"
+            />
           </p>
         </div>
 

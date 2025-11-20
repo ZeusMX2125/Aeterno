@@ -432,6 +432,12 @@ export const GridScan = ({
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
+    const gl = renderer.getContext();
+    const isWebGL2 = gl instanceof WebGL2RenderingContext;
+    console.log('GridScan: WebGL version:', isWebGL2 ? 'WebGL2' : 'WebGL1');
+
+    const enablePostProcessing = enablePost && isWebGL2;
+
     const uniforms = {
       iResolution: {
         value: new THREE.Vector3(container.clientWidth, container.clientHeight, renderer.getPixelRatio())
@@ -475,30 +481,36 @@ export const GridScan = ({
     scene.add(quad);
 
     let composer = null;
-    if (enablePost) {
-      composer = new EffectComposer(renderer);
-      composerRef.current = composer;
-      const renderPass = new RenderPass(scene, camera);
-      composer.addPass(renderPass);
+    if (enablePostProcessing) {
+      try {
+        composer = new EffectComposer(renderer);
+        composerRef.current = composer;
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
 
-      const bloom = new BloomEffect({
-        intensity: 1.0,
-        luminanceThreshold: bloomThreshold,
-        luminanceSmoothing: bloomSmoothing
-      });
-      bloom.blendMode.opacity.value = Math.max(0, bloomIntensity);
-      bloomRef.current = bloom;
+        const bloom = new BloomEffect({
+          intensity: 1.0,
+          luminanceThreshold: bloomThreshold,
+          luminanceSmoothing: bloomSmoothing
+        });
+        bloom.blendMode.opacity.value = Math.max(0, bloomIntensity);
+        bloomRef.current = bloom;
 
-      const chroma = new ChromaticAberrationEffect({
-        offset: new THREE.Vector2(chromaticAberration, chromaticAberration),
-        radialModulation: true,
-        modulationOffset: 0.0
-      });
-      chromaRef.current = chroma;
+        const chroma = new ChromaticAberrationEffect({
+          offset: new THREE.Vector2(chromaticAberration, chromaticAberration),
+          radialModulation: true,
+          modulationOffset: 0.0
+        });
+        chromaRef.current = chroma;
 
-      const effectPass = new EffectPass(camera, bloom, chroma);
-      effectPass.renderToScreen = true;
-      composer.addPass(effectPass);
+        const effectPass = new EffectPass(camera, bloom, chroma);
+        effectPass.renderToScreen = true;
+        composer.addPass(effectPass);
+      } catch (error) {
+        console.warn('GridScan: Post-processing unavailable, using basic rendering', error);
+        composer = null;
+        composerRef.current = null;
+      }
     }
 
     const onResize = () => {
@@ -671,6 +683,16 @@ export const GridScan = ({
   useEffect(() => {
     let canceled = false;
     const load = async () => {
+      const renderer = rendererRef.current;
+      if (!renderer) return;
+      const gl = renderer.getContext();
+      const isWebGL2 = gl instanceof WebGL2RenderingContext;
+      
+      if (!isWebGL2) {
+        if (!canceled) setModelsReady(false);
+        return;
+      }
+      
       try {
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath),
