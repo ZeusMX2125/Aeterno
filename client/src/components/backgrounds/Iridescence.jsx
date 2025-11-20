@@ -1,5 +1,6 @@
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
+import { useIntersectionPause } from '../../hooks/useIntersectionPause';
 
 import './Iridescence.css';
 
@@ -49,6 +50,16 @@ void main() {
 export default function Iridescence({ color = [1.0, 0.27, 0.0], speed = 1.0, amplitude = 0.1, mouseReact = true, ...rest }) {
   const ctnDom = useRef(null);
   const mousePos = useRef({ x: 0.5, y: 0.5 });
+  const rafRef = useRef(null);
+  const updateRef = useRef(null);
+  const isPausedRef = useRef(false);
+
+  const isPaused = useIntersectionPause(ctnDom, '200px');
+
+  // Sync isPaused to ref
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
   useEffect(() => {
     if (!ctnDom.current) return;
@@ -97,11 +108,22 @@ export default function Iridescence({ color = [1.0, 0.27, 0.0], speed = 1.0, amp
       const mesh = new Mesh(gl, { geometry, program });
 
       function update(t) {
-        animateId = requestAnimationFrame(update);
+        updateRef.current = update;
         program.uniforms.uTime.value = t * 0.001;
         renderer.render({ scene: mesh });
+        
+        // Only continue animation if not paused (check ref, not state)
+        if (!isPausedRef.current) {
+          rafRef.current = requestAnimationFrame(update);
+        } else {
+          rafRef.current = null;
+        }
       }
-      animateId = requestAnimationFrame(update);
+      
+      // Only start the loop if not initially paused
+      if (!isPausedRef.current) {
+        rafRef.current = requestAnimationFrame(update);
+      }
       ctn.appendChild(gl.canvas);
 
       function handleMouseMove(e) {
@@ -117,7 +139,7 @@ export default function Iridescence({ color = [1.0, 0.27, 0.0], speed = 1.0, amp
       }
 
       return () => {
-        if (animateId) cancelAnimationFrame(animateId);
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
         window.removeEventListener('resize', resize);
         if (mouseReact) {
           ctn.removeEventListener('mousemove', handleMouseMove);
@@ -132,6 +154,13 @@ export default function Iridescence({ color = [1.0, 0.27, 0.0], speed = 1.0, amp
       return () => {}; // Empty cleanup function
     }
   }, [color, speed, amplitude, mouseReact]);
+
+  // Resume effect - restart animation when unpausing
+  useEffect(() => {
+    if (!isPaused && rafRef.current === null && updateRef.current) {
+      rafRef.current = requestAnimationFrame(updateRef.current);
+    }
+  }, [isPaused]);
 
   return <div ref={ctnDom} className="iridescence-container" {...rest} />;
 }

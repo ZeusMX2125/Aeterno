@@ -1,0 +1,53 @@
+You are acting as the Lead Frontend Architect. We are performing a "Codebase Rescue" on this project. The current build is suffering from severe performance lag, WebGL context loss, and layout rendering issues due to library bloat.
+
+You must strictly follow this remediation plan to fix the Animated Backgrounds, the Curved Text, and the Lag.
+
+### PHASE 1: DEPENDENCY & BLOAT CLEANUP
+1. **Library Consolidation:**
+   - We are currently using BOTH `Three.js` AND `OGL`.
+   - **Action:** Refactor `LiquidEther.jsx` and `GridScan.jsx` to use `OGL` (like Iridescence) OR standard Three.js, but do not mix them if possible. If mixing is necessary, you MUST implement strict cleanup.
+   - **Action:** Remove `face-api.js` completely. It is imported in `GridScan.jsx` but we have disabled webcam features. It is a massive library causing lag.
+
+2. **Animation Library Standardization:**
+   - We use both GSAP and Framer Motion.
+   - **Action:** Standardize on **GSAP** for all scroll-based interactions.
+   - Refactor `ScrollVelocity.tsx` to use GSAP instead of Framer Motion, or if Framer is kept, ensure it is lazy-loaded.
+
+### PHASE 2: FIXING THE WEBGL CONTEXT LOSS (Invisible Backgrounds)
+The site attempts to render 5+ WebGL canvases simultaneously. Browsers limit this (approx 8 contexts), causing backgrounds to disappear.
+
+**Action:** Implement a strict `IntersectionObserver` Manager for all background components (`Iridescence`, `GradientBlinds`, `GridScan`, `LiquidEther`, `Particles`).
+1. Modify every background component to accept a `paused` prop.
+2. When the component is NOT in the viewport, `paused` must be `true`.
+3. When `paused` is true:
+   - `cancelAnimationFrame` must be called immediately.
+   - The WebGL context should ideally be preserved but rendering must stop 100% to save GPU.
+   - If context loss occurs, implement a `gl.getExtension('WEBGL_lose_context')?.restoreContext()` handler.
+
+### PHASE 3: FIXING COMPONENT BUGS
+
+**1. Fix `CurvedLoop.tsx` (Text Rendering):**
+The curved text calculates width before the font loads.
+- **Fix:** Wrap the `useEffect` width calculation in `document.fonts.ready.then(() => { ... })`.
+- Ensure the SVG `path` logic handles window resizing dynamically.
+
+**2. Fix `LiquidEther.jsx`:**
+- The current file contains duplicate/corrupted code.
+- **Action:** Rewrite `LiquidEther.jsx` to be a clean, minimal implementation using the Three.js standard shader approach, ensuring it accepts the `colors` prop correctly for the brand theme (Black/Orange).
+
+**3. Fix `Navigation.tsx`:**
+- Ensure the navbar has a high `z-index` (50+) and a distinct backdrop blur so it doesn't blend into the background contents.
+
+### PHASE 4: PERFORMANCE TUNING
+1. **Lazy Loading:**
+   - Use `React.lazy` and `Suspense` to load the heavy background components (`LiquidEther`, `GridScan`) only when they are nearing the viewport.
+2. **CSS Optimization:**
+   - Ensure `will-change: transform` is used only on active animating elements, not globally.
+
+### EXECUTION ORDER:
+1. Uninstall `face-api.js`.
+2. Fix `CurvedLoop.tsx` font loading issue immediately.
+3. Refactor `GridScan` and `LiquidEther` to remove unused imports and implement the `IntersectionObserver` pause logic.
+4. Verify all backgrounds render visible.
+
+Start by fixing `CurvedLoop.tsx` and cleaning up the `face-api.js` dependency.

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
+import { useIntersectionPause } from '../../hooks/useIntersectionPause';
 import './GradientBlinds.css';
 
 const MAX_COLORS = 8;
@@ -47,6 +48,15 @@ const GradientBlinds = ({
   const mouseTargetRef = useRef([0, 0]);
   const lastTimeRef = useRef(0);
   const firstResizeRef = useRef(true);
+  const loopRef = useRef(null);
+  const isPausedRef = useRef(false);
+
+  const isPaused = useIntersectionPause(containerRef, '200px');
+
+  // Sync isPaused to ref
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -269,7 +279,7 @@ void main() {
     canvas.addEventListener('pointermove', onPointerMove);
 
     const loop = t => {
-      rafRef.current = requestAnimationFrame(loop);
+      loopRef.current = loop;
       uniforms.iTime.value = t * 0.001;
       if (mouseDampening > 0) {
         if (!lastTimeRef.current) lastTimeRef.current = t;
@@ -292,8 +302,19 @@ void main() {
           console.error(e);
         }
       }
+      
+      // Only continue animation if not paused (check ref, not state)
+      if (!isPausedRef.current) {
+        rafRef.current = requestAnimationFrame(loop);
+      } else {
+        rafRef.current = null;
+      }
     };
-    rafRef.current = requestAnimationFrame(loop);
+    
+    // Only start the loop if not initially paused
+    if (!isPausedRef.current) {
+      rafRef.current = requestAnimationFrame(loop);
+    }
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -336,6 +357,13 @@ void main() {
     distortAmount,
     shineDirection
   ]);
+
+  // Resume effect - restart animation when unpausing
+  useEffect(() => {
+    if (!isPaused && rafRef.current === null && loopRef.current) {
+      rafRef.current = requestAnimationFrame(loopRef.current);
+    }
+  }, [isPaused]);
 
   return (
     <div

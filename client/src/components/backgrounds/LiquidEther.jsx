@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { useIntersectionPause } from '../../hooks/useIntersectionPause';
 import './LiquidEther.css';
 
 export default function LiquidEther({
@@ -27,9 +28,15 @@ export default function LiquidEther({
   const webglRef = useRef(null);
   const resizeObserverRef = useRef(null);
   const rafRef = useRef(null);
-  const intersectionObserverRef = useRef(null);
-  const isVisibleRef = useRef(true);
   const resizeRafRef = useRef(null);
+  const isPausedRef = useRef(false);
+
+  const isPaused = useIntersectionPause(mountRef, '200px');
+
+  // Sync isPaused to ref
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -972,15 +979,6 @@ export default function LiquidEther({
         this._loop = this.loop.bind(this);
         this._resize = this.resize.bind(this);
         window.addEventListener('resize', this._resize);
-        this._onVisibility = () => {
-          const hidden = document.hidden;
-          if (hidden) {
-            this.pause();
-          } else if (isVisibleRef.current) {
-            this.start();
-          }
-        };
-        document.addEventListener('visibilitychange', this._onVisibility);
         this.running = false;
       }
       init() {
@@ -1000,7 +998,13 @@ export default function LiquidEther({
       loop() {
         if (!this.running) return; // safety
         this.render();
-        rafRef.current = requestAnimationFrame(this._loop);
+        
+        // Only continue animation if not paused (check ref, not state)
+        if (!isPausedRef.current) {
+          rafRef.current = requestAnimationFrame(this._loop);
+        } else {
+          rafRef.current = null;
+        }
       }
       start() {
         if (this.running) return;
@@ -1017,7 +1021,6 @@ export default function LiquidEther({
       dispose() {
         try {
           window.removeEventListener('resize', this._resize);
-          document.removeEventListener('visibilitychange', this._onVisibility);
           Mouse.dispose();
           if (Common.renderer) {
             const canvas = Common.renderer.domElement;
@@ -1068,25 +1071,10 @@ export default function LiquidEther({
     };
     applyOptionsFromProps();
 
-    webgl.start();
-
-    // IntersectionObserver to pause rendering when not visible
-    const io = new IntersectionObserver(
-      entries => {
-        const entry = entries[0];
-        const isVisible = entry.isIntersecting && entry.intersectionRatio > 0;
-        isVisibleRef.current = isVisible;
-        if (!webglRef.current) return;
-        if (isVisible && !document.hidden) {
-          webglRef.current.start();
-        } else {
-          webglRef.current.pause();
-        }
-      },
-      { threshold: [0, 0.01, 0.1] }
-    );
-    io.observe(container);
-    intersectionObserverRef.current = io;
+    // Only start the loop if not initially paused
+    if (!isPausedRef.current) {
+      webgl.start();
+    }
 
     const ro = new ResizeObserver(() => {
       if (!webglRef.current) return;
@@ -1104,13 +1092,6 @@ export default function LiquidEther({
       if (resizeObserverRef.current) {
         try {
           resizeObserverRef.current.disconnect();
-        } catch (e) {
-          void 0;
-        }
-      }
-      if (intersectionObserverRef.current) {
-        try {
-          intersectionObserverRef.current.disconnect();
         } catch (e) {
           void 0;
         }
@@ -1143,6 +1124,13 @@ export default function LiquidEther({
     autoResumeDelay,
     autoRampDuration
   ]);
+
+  // Resume effect - restart animation when unpausing
+  useEffect(() => {
+    if (!isPaused && webglRef.current && !webglRef.current.running) {
+      webglRef.current.start();
+    }
+  }, [isPaused]);
 
   useEffect(() => {
     const webgl = webglRef.current;

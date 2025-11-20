@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Geometry, Transform, Vec3, Camera, Mat4 } from 'ogl';
+import { useIntersectionPause } from '../../hooks/useIntersectionPause';
 import './Particles.css';
 
 const vertexShader = `
@@ -71,6 +72,15 @@ export default function Particles({
   const containerRef = useRef(null);
   const rafRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const loopRef = useRef(null);
+  const isPausedRef = useRef(false);
+
+  const isPaused = useIntersectionPause(containerRef, '200px');
+
+  // Sync isPaused to ref
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
   useEffect(() => {
     console.log('Particles: Initializing with props', {
@@ -204,7 +214,7 @@ export default function Particles({
 
       let time = 0;
       const loop = (t) => {
-        rafRef.current = requestAnimationFrame(loop);
+        loopRef.current = loop;
         time += speed;
 
         // Update particle positions
@@ -256,9 +266,19 @@ export default function Particles({
         } catch (e) {
           console.error('Particles: Render error', e);
         }
+        
+        // Only continue animation if not paused (check ref, not state)
+        if (!isPausedRef.current) {
+          rafRef.current = requestAnimationFrame(loop);
+        } else {
+          rafRef.current = null;
+        }
       };
 
-      rafRef.current = requestAnimationFrame(loop);
+      // Only start the loop if not initially paused
+      if (!isPausedRef.current) {
+        rafRef.current = requestAnimationFrame(loop);
+      }
 
       return () => {
         console.log('Particles: Cleaning up');
@@ -290,6 +310,13 @@ export default function Particles({
     cameraDistance,
     disableRotation
   ]);
+
+  // Resume effect - restart animation when unpausing
+  useEffect(() => {
+    if (!isPaused && rafRef.current === null && loopRef.current) {
+      rafRef.current = requestAnimationFrame(loopRef.current);
+    }
+  }, [isPaused]);
 
   return <div ref={containerRef} className="particles-container" {...rest} />;
 }

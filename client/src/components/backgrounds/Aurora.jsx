@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
+import { useIntersectionPause } from '../../hooks/useIntersectionPause';
 import './Aurora.css';
 
 const vertexShader = `
@@ -118,6 +119,15 @@ export default function Aurora({
 }) {
   const containerRef = useRef(null);
   const rafRef = useRef(null);
+  const loopRef = useRef(null);
+  const isPausedRef = useRef(false);
+
+  const isPaused = useIntersectionPause(containerRef, '200px');
+
+  // Sync isPaused to ref
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
   useEffect(() => {
     console.log('Aurora: Initializing with props', { colorStops, speed, blend, amplitude });
@@ -182,7 +192,7 @@ export default function Aurora({
       ro.observe(container);
 
       const loop = (t) => {
-        rafRef.current = requestAnimationFrame(loop);
+        loopRef.current = loop;
         uniforms.uTime.value = t * 0.001;
         
         try {
@@ -190,9 +200,19 @@ export default function Aurora({
         } catch (e) {
           console.error('Aurora: Render error', e);
         }
+        
+        // Only continue animation if not paused (check ref, not state)
+        if (!isPausedRef.current) {
+          rafRef.current = requestAnimationFrame(loop);
+        } else {
+          rafRef.current = null;
+        }
       };
 
-      rafRef.current = requestAnimationFrame(loop);
+      // Only start the loop if not initially paused
+      if (!isPausedRef.current) {
+        rafRef.current = requestAnimationFrame(loop);
+      }
 
       return () => {
         console.log('Aurora: Cleaning up');
@@ -211,6 +231,13 @@ export default function Aurora({
       return () => {};
     }
   }, [colorStops, speed, blend, amplitude]);
+
+  // Resume effect - restart animation when unpausing
+  useEffect(() => {
+    if (!isPaused && rafRef.current === null && loopRef.current) {
+      rafRef.current = requestAnimationFrame(loopRef.current);
+    }
+  }, [isPaused]);
 
   return <div ref={containerRef} className="aurora-container" {...rest} />;
 }

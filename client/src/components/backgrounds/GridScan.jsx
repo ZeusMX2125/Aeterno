@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { EffectComposer, RenderPass, EffectPass, BloomEffect, ChromaticAberrationEffect } from 'postprocessing';
 import * as THREE from 'three';
-import * as faceapi from 'face-api.js';
+import { useIntersectionPause } from '../../hooks/useIntersectionPause';
 import './GridScan.css';
 
 const vert = `
@@ -302,12 +302,16 @@ export const GridScan = ({
   const containerRef = useRef(null);
   const videoRef = useRef(null);
 
+  const isPaused = useIntersectionPause(containerRef, '200px');
+
   const rendererRef = useRef(null);
   const materialRef = useRef(null);
   const composerRef = useRef(null);
   const bloomRef = useRef(null);
   const chromaRef = useRef(null);
   const rafRef = useRef(null);
+  const tickRef = useRef(null);
+  const isPausedRef = useRef(false);
 
   const [modelsReady, setModelsReady] = useState(false);
   const [uiFaceActive, setUiFaceActive] = useState(false);
@@ -354,6 +358,11 @@ export const GridScan = ({
   const maxSpeed = Infinity;
 
   const yBoost = THREE.MathUtils.lerp(1.2, 1.6, s);
+
+  // Sync isPaused to ref
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -522,6 +531,7 @@ export const GridScan = ({
 
     let last = performance.now();
     const tick = () => {
+      tickRef.current = tick;
       const now = performance.now();
       const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
       last = now;
@@ -564,9 +574,19 @@ export const GridScan = ({
       } else {
         renderer.render(scene, camera);
       }
-      rafRef.current = requestAnimationFrame(tick);
+      
+      // Only continue animation if not paused (check ref, not state)
+      if (!isPausedRef.current) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        rafRef.current = null;
+      }
     };
-    rafRef.current = requestAnimationFrame(tick);
+    
+    // Only start the loop if not initially paused
+    if (!isPausedRef.current) {
+      rafRef.current = requestAnimationFrame(tick);
+    }
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -613,6 +633,13 @@ export const GridScan = ({
     tiltScale,
     yawScale
   ]);
+
+  // Resume effect - restart animation when unpausing
+  useEffect(() => {
+    if (!isPaused && rafRef.current === null && tickRef.current) {
+      rafRef.current = requestAnimationFrame(tickRef.current);
+    }
+  }, [isPaused]);
 
   useEffect(() => {
     const m = materialRef.current;
@@ -679,6 +706,13 @@ export const GridScan = ({
       window.removeEventListener('deviceorientation', handler);
     };
   }, [enableGyro, uiFaceActive]);
+
+  // Resume animation when unpaused
+  useEffect(() => {
+    if (!isPaused && rafRef.current === null && rendererRef.current && tickRef.current) {
+      rafRef.current = requestAnimationFrame(tickRef.current);
+    }
+  }, [isPaused]);
 
   useEffect(() => {
     let canceled = false;
