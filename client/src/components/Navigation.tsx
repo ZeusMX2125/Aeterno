@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'wouter';
 import logoImage from '@assets/AETERNO (3)_1762894919968.png';
 
 interface NavigationProps {
@@ -43,41 +44,45 @@ export default function Navigation({ openModal }: NavigationProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <img
-              src={logoImage}
-              alt="Aeterno Media"
-              className="h-10 md:h-12 w-auto cursor-pointer"
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              data-testid="img-nav-logo"
-            />
-          </div>
+          <Link href="/">
+            <div className="flex-shrink-0 cursor-pointer">
+              <img
+                src={logoImage}
+                alt="Aeterno Media"
+                className="h-10 md:h-12 w-auto"
+                data-testid="img-nav-logo"
+              />
+            </div>
+          </Link>
 
           {/* Navigation Links - Hidden on mobile */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            <Link href="/photography">
+              <span
+                className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base cursor-pointer"
+                data-testid="link-photography"
+              >
+                Photography
+              </span>
+            </Link>
+            <Link href="/web-development">
+              <span
+                className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base cursor-pointer"
+                data-testid="link-web-dev"
+              >
+                Web Dev
+              </span>
+            </Link>
+            <Link href="/social-media">
+              <span
+                className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base cursor-pointer"
+                data-testid="link-social-media"
+              >
+                Social Media
+              </span>
+            </Link>
             <button
-              onClick={() => scrollToSection('services')}
-              className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
-              data-testid="link-services"
-            >
-              Services
-            </button>
-            <button
-              onClick={() => scrollToSection('work')}
-              className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
-              data-testid="link-work"
-            >
-              Work
-            </button>
-            <button
-              onClick={() => scrollToSection('about')}
-              className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
-              data-testid="link-about"
-            >
-              About
-            </button>
-            <button
-              onClick={() => scrollToSection('contact')}
+              onClick={() => openModal('General Inquiry')}
               className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
               data-testid="link-contact"
             >

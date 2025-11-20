@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, memo, useCallback } from 'react';
+import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import laptopMockup from '@assets/generated_images/Laptop_mockup_device_5ea35f15.png';
@@ -255,16 +256,27 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-8 md:mt-12">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 md:mt-12">
+          <Link href="/web-development">
+            <button
+              className="bg-white/5 backdrop-blur-md text-white font-body font-semibold px-8 py-4 rounded-xl border border-white/10 hover:border-primary/50 transition-all hover:scale-105 active:scale-95 min-h-[44px] hover-elevate"
+              data-testid="button-learn-more-webdev"
+              style={{ 
+                fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
+              }}
+            >
+              View Details
+            </button>
+          </Link>
           <button
             onClick={() => openModal('Website Development (using Replit)')}
             className="bg-primary text-white font-body font-semibold px-8 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95 min-h-[44px]"
-            data-testid="button-quote-website"
+            data-testid="button-quote-webdev"
             style={{ 
               fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
             }}
           >
-            View Our Web Work
+            Get Quote
           </button>
         </div>
       </div>

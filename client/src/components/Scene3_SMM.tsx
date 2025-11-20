@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, memo, useCallback } from 'react';
+import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import phoneMockup from '@assets/generated_images/Phone_Instagram_mockup_657ad6c9.png';
@@ -247,16 +248,27 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-8 md:mt-12">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 md:mt-12">
+          <Link href="/social-media">
+            <button
+              className="bg-white/5 backdrop-blur-md text-white font-body font-semibold px-8 py-4 rounded-xl border border-white/10 hover:border-primary/50 transition-all hover:scale-105 active:scale-95 min-h-[44px] hover-elevate"
+              data-testid="button-learn-more-smm"
+              style={{ 
+                fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
+              }}
+            >
+              Learn More
+            </button>
+          </Link>
           <button
             onClick={() => openModal('Social Media Marketing')}
             className="bg-primary text-white font-body font-semibold px-8 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95 min-h-[44px]"
-            data-testid="button-quote-socials"
+            data-testid="button-quote-smm"
             style={{ 
               fontSize: 'clamp(0.9rem, 2vw, 1.125rem)',
             }}
           >
-            View Our Marketing Results
+            Get Quote
           </button>
         </div>
       </div>

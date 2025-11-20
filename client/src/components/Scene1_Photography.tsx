@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState, useCallback, memo } from 'react';
+import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Play, Camera, Video, Image as ImageIcon, Film, Aperture, Clapperboard } from 'lucide-react';
@@ -246,16 +247,29 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
               className="inline-block"
             />
           </p>
-          <button
-            onClick={() => openModal('Photography')}
-            className="bg-primary text-white font-body font-semibold px-8 py-3.5 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95 min-h-[44px]"
-            data-testid="button-quote-visuals"
-            style={{
-              fontSize: 'clamp(0.85rem, 2vw, 1rem)',
-            }}
-          >
-            View Our Work
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/photography">
+              <button
+                className="bg-white/5 backdrop-blur-md text-white font-body font-semibold px-8 py-3.5 rounded-xl border border-white/10 hover:border-primary/50 transition-all hover:scale-105 active:scale-95 min-h-[44px] hover-elevate"
+                data-testid="button-learn-more-photography"
+                style={{
+                  fontSize: 'clamp(0.85rem, 2vw, 1rem)',
+                }}
+              >
+                Learn More
+              </button>
+            </Link>
+            <button
+              onClick={() => openModal('Photography')}
+              className="bg-primary text-white font-body font-semibold px-8 py-3.5 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95 min-h-[44px]"
+              data-testid="button-quote-photography"
+              style={{
+                fontSize: 'clamp(0.85rem, 2vw, 1rem)',
+              }}
+            >
+              Get Quote
+            </button>
+          </div>
         </div>
 
         {/* Floating Media Grid */}
