@@ -2,8 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { Camera, Video, Image as ImageIcon, Film, Aperture, Clapperboard, ArrowLeft } from 'lucide-react';
-// @ts-ignore - WebGL component without TypeScript definitions
-import Aurora from '@/components/backgrounds/Aurora';
 import ShinyText from '@/components/animations/ShinyText';
 import QuoteIntake from '@/components/QuoteIntake';
 import Footer from '@/components/Footer';
@@ -97,19 +95,18 @@ export default function Photography() {
   return (
     <div className="w-full overflow-x-hidden bg-black">
       {/* Hero Section */}
-      <section className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 py-20 overflow-hidden">
-        {/* WebGL Background */}
-        <div className="absolute inset-0 z-0">
-          <Aurora 
-            colorStops={["#8B2500", "#A03000", "#FF4500"]}
-            speed={0.8}
-            blend={0.6}
-            amplitude={1.2}
-          />
+      <section 
+        className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 py-20 overflow-hidden"
+        style={{
+          background: 'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%)',
+        }}
+      >
+        {/* Dark Glass Effect Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-black/40" />
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
         </div>
-
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gray-950/30 to-transparent" />
 
         {/* Hero Content */}
         <div ref={heroRef} className="relative z-10 max-w-6xl w-full flex flex-col items-center text-center gap-6 md:gap-8 hero-content">

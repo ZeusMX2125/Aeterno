@@ -2,8 +2,6 @@ import { useLayoutEffect, useRef, memo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Camera, Code, TrendingUp, Users } from 'lucide-react';
-// @ts-ignore - WebGL component without TypeScript definitions
-import GridScan from './backgrounds/GridScan';
 import ScrollFloat from './animations/ScrollFloat';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -159,22 +157,18 @@ export default function Statistics() {
   }, []);
 
   return (
-    <section ref={containerRef} className="section-spacing bg-black relative overflow-hidden">
-      {/* WebGL Background */}
-      <div className="absolute inset-0 z-0">
-        <GridScan 
-          gridScale={0.05} 
-          scanColor='#FF4500' 
-          linesColor='#1a1a1a' 
-          enableWebcam={false}
-        />
-      </div>
-      
-      {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-gray-950/20 to-black/30" />
-      <div className="absolute inset-0 z-10 opacity-20">
-        <div className="absolute top-1/4 left-1/4 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
+    <section 
+      ref={containerRef} 
+      className="section-spacing relative overflow-hidden"
+      style={{
+        background: 'radial-gradient(ellipse at 50% 50%, #1a1a1a 0%, #0a0a0a 50%, #000000 100%)',
+      }}
+    >
+      {/* Dark Glass Effect Overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-transparent to-black/40" />
+      <div className="absolute inset-0 z-10 opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
       
       <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8">

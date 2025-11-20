@@ -2,8 +2,6 @@ import { useLayoutEffect, useRef, memo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Camera, Video, Image, Globe, Share2, Palette, FileText } from 'lucide-react';
-// @ts-ignore - WebGL component without TypeScript definitions
-import Particles from '@/components/backgrounds/Particles';
 import ShinyText from '@/components/animations/ShinyText';
 import TextType from '@/components/animations/TextType';
 import SpotlightCard from '@/components/effects/SpotlightCard';
@@ -168,23 +166,22 @@ export default function OtherCapabilities() {
   }, []);
 
   return (
-    <section ref={containerRef} className="section-spacing bg-black relative overflow-hidden" data-testid="section-capabilities">
-      {/* Particles WebGL Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <Particles 
-          particleCount={150}
-          particleSpread={12}
-          speed={0.08}
-          particleColors={['#FF4500', '#ffffff', '#FF6633']}
-          moveParticlesOnHover={false}
-          alphaParticles={true}
-          particleBaseSize={80}
-          cameraDistance={22}
-          disableRotation={false}
-        />
+    <section 
+      ref={containerRef} 
+      className="section-spacing relative overflow-hidden" 
+      data-testid="section-capabilities"
+      style={{
+        background: 'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%)',
+      }}
+    >
+      {/* Dark Glass Effect Overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-transparent to-black/40" />
+      <div className="absolute inset-0 z-10 opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8">
         <div ref={headlineRef} className="text-center mb-8 md:mb-12 lg:mb-16">
           <p className="text-primary font-body text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3">
             SERVICES
