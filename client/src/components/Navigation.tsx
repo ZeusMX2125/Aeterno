@@ -128,24 +128,30 @@ export default function Navigation({ openModal }: NavigationProps) {
               </SheetHeader>
               <div className="flex flex-col space-y-6 mt-8">
                 <SheetClose asChild>
-                  <Link href="/photography">
-                    <a className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" data-testid="link-photography-mobile">
-                      Photography
-                    </a>
+                  <Link 
+                    href="/photography" 
+                    className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" 
+                    data-testid="link-photography-mobile"
+                  >
+                    Photography
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="/web-development">
-                    <a className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" data-testid="link-web-dev-mobile">
-                      Web Development
-                    </a>
+                  <Link 
+                    href="/web-development" 
+                    className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" 
+                    data-testid="link-web-dev-mobile"
+                  >
+                    Web Development
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="/social-media">
-                    <a className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" data-testid="link-social-media-mobile">
-                      Social Media
-                    </a>
+                  <Link 
+                    href="/social-media" 
+                    className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" 
+                    data-testid="link-social-media-mobile"
+                  >
+                    Social Media
                   </Link>
                 </SheetClose>
                 <button
