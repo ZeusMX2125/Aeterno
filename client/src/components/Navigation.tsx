@@ -29,8 +29,10 @@ export default function Navigation({ openModal }: NavigationProps) {
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
-    if (element) {
-      const navHeight = window.innerWidth >= 768 ? 80 : 64;
+    const nav = document.querySelector('[data-testid="nav-header"]');
+    
+    if (element && nav) {
+      const navHeight = nav.getBoundingClientRect().height;
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementPosition - navHeight - 20;
       

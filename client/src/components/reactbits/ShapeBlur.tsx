@@ -248,12 +248,16 @@ const ShapeBlur = ({
       if (ro) ro.disconnect();
       document.removeEventListener('mousemove', onPointerMove);
       document.removeEventListener('pointermove', onPointerMove);
+      
+      // Properly dispose of THREE.js resources
+      geo.dispose();
+      material.dispose();
       if (mount && renderer.domElement.parentNode === mount) {
         mount.removeChild(renderer.domElement);
       }
       renderer.dispose();
     };
-  }, [variation, pixelRatioProp, shapeSize, roundness, borderSize, circleSize, circleEdge]);
+  }, []);
 
   return <div className={className} ref={mountRef} style={{ width: '100%', height: '100%' }} />;
 };

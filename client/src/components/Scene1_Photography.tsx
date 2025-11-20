@@ -72,7 +72,7 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
     >
       {/* ShapeBlur Background */}
       <div className="absolute inset-0 z-0">
-        <ShapeBlur color="#FF4500" intensity={0.6} speed={2} />
+        <ShapeBlur variation={0} />
       </div>
 
       {/* Dark Glass Effect Overlay */}
