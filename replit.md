@@ -133,3 +133,22 @@ Located in `client/src/components/animations/`:
 5. **ScrollVelocity**: Framer Motion velocity-based parallax scrolling text with physics-based damping and stiffness
 
 All components include corresponding CSS files and are fully typed with TypeScript.
+
+### WebGL Background Components
+Located in `client/src/components/backgrounds/`:
+
+**OGL-Based Backgrounds** (using lightweight OGL library):
+1. **Iridescence**: Holographic rainbow gradient with mouse-responsive distortion, customizable color intensity and mouse sensitivity
+2. **GradientBlinds**: Animated gradient blinds effect with vertical stripe transitions, configurable stripe count, gradient colors, and animation speed
+3. **GridScan**: Retro-futuristic grid with scan lines and glow effects, customizable grid size, line width, colors, speed, and glow intensity - WebGL1 fallback support
+4. **LiquidEther**: Flowing ethereal liquid effect with fractal noise, customizable flow speed, complexity, and color scheme - WebGL1 fallback with UnsignedByteType render targets
+5. **Aurora**: Northern lights effect with flowing waves using fractal brownian motion (FBM), customizable color stops (3 hex colors), speed, blend, and amplitude - from ReactBits.dev
+6. **Particles**: 3D particle system with rotation and mouse interaction, customizable particle count, spread, speed, colors, mouse interaction, alpha transparency, base size, camera distance, and rotation - from ReactBits.dev
+
+All WebGL backgrounds include:
+- Proper cleanup on unmount (ResizeObserver, requestAnimationFrame, WebGL context)
+- Console logging for debugging
+- Try-catch error handling
+- WebGL1/WebGL2 compatibility
+- Default export for easy integration
+- Corresponding CSS files for containers
