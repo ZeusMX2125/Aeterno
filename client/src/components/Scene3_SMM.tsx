@@ -4,8 +4,6 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import phoneMockup from '@assets/generated_images/Phone_Instagram_mockup_657ad6c9.png';
 import { Heart, MessageCircle, Share2, TrendingUp } from 'lucide-react';
-// @ts-ignore - WebGL component without TypeScript definitions
-import LiquidEther from './backgrounds/LiquidEther';
 import ShinyText from './animations/ShinyText';
 import TextType from './animations/TextType';
 
@@ -137,19 +135,17 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
   return (
     <section
       ref={containerRef}
-      className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center section-spacing"
+      className="min-h-[100svh] w-full relative overflow-hidden flex items-center justify-center section-spacing"
       data-testid="section-smm"
+      style={{
+        background: 'radial-gradient(ellipse at 70% 50%, #1a1a1a 0%, #0a0a0a 50%, #000000 100%)',
+      }}
     >
-      {/* WebGL Background */}
-      <div className="absolute inset-0 z-0">
-        <LiquidEther colors={['#000000', '#0f0300', '#1a0500']} />
-      </div>
-      
-      {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/30 via-gray-950/20 to-black/30" />
-      <div className="absolute inset-0 z-10 opacity-20">
-        <div className="absolute top-1/4 left-1/3 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-1/3 bg-primary/5 rounded-full blur-3xl animate-float-slow" />
+      {/* Dark Glass Effect Overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/40 via-transparent to-black/40" />
+      <div className="absolute inset-0 z-10 opacity-30">
+        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-float-slow" />
       </div>
       
       <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8">

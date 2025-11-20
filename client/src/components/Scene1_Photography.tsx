@@ -3,8 +3,6 @@ import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Play, Camera, Video, Image as ImageIcon, Film, Aperture, Clapperboard } from 'lucide-react';
-// @ts-ignore - WebGL component without TypeScript definitions
-import GradientBlinds from './backgrounds/GradientBlinds';
 import ShinyText from './animations/ShinyText';
 import TextType from './animations/TextType';
 
@@ -198,26 +196,17 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
     <section
       id="scene-photography"
       ref={containerRef}
-      className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center"
+      className="min-h-[100svh] w-full relative overflow-hidden flex items-center justify-center"
       data-testid="section-photography"
+      style={{
+        background: 'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%)',
+      }}
     >
-      {/* WebGL Background */}
-      <div className="absolute inset-0 z-0">
-        <GradientBlinds 
-          blindCount={10} 
-          gradientColors={['#000000', '#1a0500', '#FF4500']} 
-          noise={0.5}
-          mouseDampening={0.05}
-          spotlightOpacity={2}
-          spotlightRadius={0.7}
-        />
-      </div>
-      
-      {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/30 via-gray-950/20 to-black/30" />
-      <div className="absolute inset-0 z-10 opacity-20">
-        <div className="absolute top-1/4 right-1/4 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 left-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
+      {/* Dark Glass Effect Overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/40 via-transparent to-black/40" />
+      <div className="absolute inset-0 z-10 opacity-30">
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
 
       <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8 section-spacing">

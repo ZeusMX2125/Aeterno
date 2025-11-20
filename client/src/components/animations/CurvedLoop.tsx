@@ -114,17 +114,25 @@ const CurvedLoop = ({
   };
 
   const cursorStyle = interactive ? (dragRef.current ? 'grabbing' : 'grab') : 'auto';
+  // Calculate viewBox height dynamically based on curve amount
+  const viewBoxHeight = Math.max(600, curveAmount + 200);
 
   return (
     <div
       className="curved-loop-jacket"
-      style={{ visibility: ready ? 'visible' : 'hidden', cursor: cursorStyle }}
+      style={{ 
+        visibility: ready ? 'visible' : 'hidden', 
+        cursor: cursorStyle,
+        position: 'absolute',
+        zIndex: 20,
+        pointerEvents: interactive ? 'auto' : 'none',
+      }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}
       onPointerLeave={endDrag}
     >
-      <svg className="curved-loop-svg" viewBox="0 0 1440 120">
+      <svg className="curved-loop-svg" viewBox={`0 0 1440 ${viewBoxHeight}`}>
         <text ref={measureRef} xmlSpace="preserve" style={{ visibility: 'hidden', opacity: 0, pointerEvents: 'none' }}>
           {text}
         </text>

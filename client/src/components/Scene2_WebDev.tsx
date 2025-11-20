@@ -5,8 +5,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import laptopMockup from '@assets/generated_images/Laptop_mockup_device_5ea35f15.png';
 import wireframeImage from '@assets/generated_images/Wireframe_design_sketch_da0c3a05.png';
 import finalDesignImage from '@assets/generated_images/Final_website_design_03e22cfd.png';
-// @ts-ignore - WebGL component without TypeScript definitions
-import GridScan from './backgrounds/GridScan';
 import ShinyText from './animations/ShinyText';
 import TextType from './animations/TextType';
 import NoiseTexture from '@/components/effects/NoiseTexture';
@@ -139,24 +137,17 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
   return (
     <section
       ref={containerRef}
-      className="min-h-[100svh] w-full relative overflow-hidden bg-black flex items-center justify-center section-spacing"
+      className="min-h-[100svh] w-full relative overflow-hidden flex items-center justify-center section-spacing"
       data-testid="section-webdev"
+      style={{
+        background: 'radial-gradient(ellipse at 30% 50%, #1a1a1a 0%, #0a0a0a 50%, #000000 100%)',
+      }}
     >
-      {/* WebGL Background */}
-      <div className="absolute inset-0 z-0">
-        <GridScan 
-          gridScale={0.05} 
-          scanColor='#FF4500' 
-          linesColor='#1a1a1a' 
-          enableWebcam={false}
-        />
-      </div>
-      
-      {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/30 via-gray-950/20 to-black/30" />
-      <div className="absolute inset-0 z-10 opacity-20">
-        <div className="absolute top-1/3 right-1/4 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/3 left-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
+      {/* Dark Glass Effect Overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/40 via-transparent to-black/40" />
+      <div className="absolute inset-0 z-10 opacity-30">
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
       
       <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8">
