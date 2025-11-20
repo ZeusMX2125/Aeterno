@@ -1,5 +1,4 @@
 import { useLayoutEffect, useRef } from 'react';
-import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Camera, Film, Aperture, Clapperboard, ImageIcon, Video } from 'lucide-react';
@@ -7,6 +6,12 @@ import ShinyText from './animations/ShinyText';
 import TextType from './animations/TextType';
 import ShapeBlur from './reactbits/ShapeBlur';
 import CircularGallery from './reactbits/CircularGallery';
+import photo1 from '@assets/stock_images/professional_photogr_a6f08629.jpg';
+import photo2 from '@assets/stock_images/professional_photogr_774655f6.jpg';
+import photo3 from '@assets/stock_images/professional_photogr_b08a2d76.jpg';
+import photo4 from '@assets/stock_images/professional_photogr_0a55aa08.jpg';
+import photo5 from '@assets/stock_images/professional_photogr_c90de42f.jpg';
+import photo6 from '@assets/stock_images/professional_photogr_051ddf95.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,12 +20,12 @@ interface Scene1Props {
 }
 
 const photographyItems = [
-  { icon: Camera, label: 'Product Photography' },
-  { icon: Film, label: 'Brand Videos' },
-  { icon: Aperture, label: 'Lifestyle Shots' },
-  { icon: Clapperboard, label: 'Social Content' },
-  { icon: ImageIcon, label: 'Event Coverage' },
-  { icon: Video, label: 'Portrait Sessions' },
+  { image: photo1, icon: Camera, label: 'Product Photography' },
+  { image: photo2, icon: Film, label: 'Brand Videos' },
+  { image: photo3, icon: Aperture, label: 'Lifestyle Shots' },
+  { image: photo4, icon: Clapperboard, label: 'Social Content' },
+  { image: photo5, icon: ImageIcon, label: 'Event Coverage' },
+  { image: photo6, icon: Video, label: 'Portrait Sessions' },
 ];
 
 export default function Scene1_Photography({ openModal }: Scene1Props) {
@@ -70,11 +75,6 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
         background: '#000000',
       }}
     >
-      {/* ShapeBlur Background */}
-      <div className="absolute inset-0 z-0">
-        <ShapeBlur variation={0} />
-      </div>
-
       {/* Dark Glass Effect Overlay */}
       <div className="absolute inset-0 z-5 bg-gradient-to-br from-black/40 via-transparent to-black/40" />
 
@@ -115,17 +115,6 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
             />
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-12">
-            <Link href="/photography">
-              <button
-                className="bg-white/5 backdrop-blur-md text-white font-body font-semibold px-8 py-3.5 rounded-xl border border-white/10 hover:border-primary/50 transition-all hover:scale-105 active:scale-95 min-h-[44px] hover-elevate"
-                data-testid="button-learn-more-photography"
-                style={{
-                  fontSize: 'clamp(0.85rem, 2vw, 1rem)',
-                }}
-              >
-                Learn More
-              </button>
-            </Link>
             <button
               onClick={() => openModal('Photography')}
               className="bg-primary text-white font-body font-semibold px-8 py-3.5 rounded-xl glow-orange hover:glow-orange-strong transition-all hover:scale-105 active:scale-95 min-h-[44px]"
@@ -139,8 +128,15 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
           </div>
         </div>
 
-        {/* Circular Gallery */}
-        <CircularGallery items={photographyItems} radius={280} />
+        {/* Circular Gallery wrapped with ShapeBlur */}
+        <div className="relative">
+          <div className="absolute inset-0 -m-8">
+            <ShapeBlur variation={0} className="w-full h-full" />
+          </div>
+          <div className="relative z-10">
+            <CircularGallery items={photographyItems} radius={280} />
+          </div>
+        </div>
       </div>
     </section>
   );

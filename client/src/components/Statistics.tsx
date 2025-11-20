@@ -149,6 +149,39 @@ export default function Statistics() {
           '-=0.4'
         );
       }
+
+      // Animate numbers counting up
+      const numberElements = cardsRef.current?.querySelectorAll('.stat-number');
+      if (numberElements) {
+        numberElements.forEach((el) => {
+          const target = el.getAttribute('data-value') || '0';
+          const hasDecimal = target.includes('.');
+          const hasSuffix = target.match(/[^\d.]/g);
+          const numericValue = parseFloat(target.replace(/[^\d.]/g, ''));
+          const suffix = hasSuffix ? target.match(/[^\d.]+$/)?.[0] || '' : '';
+
+          const obj = { value: 0 };
+          const tween = gsap.to(obj, {
+            value: numericValue,
+            duration: 2,
+            ease: 'power2.out',
+            onUpdate: () => {
+              const current = obj.value;
+              const formatted = hasDecimal ? current.toFixed(1) : Math.floor(current).toString();
+              el.textContent = formatted + suffix;
+            },
+          });
+
+          ScrollTrigger.create({
+            trigger: el,
+            start: 'top 80%',
+            once: true,
+            onEnter: () => tween.play(),
+          });
+
+          tween.pause();
+        });
+      }
     });
 
     return () => {
@@ -206,25 +239,19 @@ export default function Statistics() {
                       <div className="absolute inset-0 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/20 opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300" />
                     </div>
 
-                    {/* Animated Number with ScrollFloat */}
-                    <ScrollFloat
-                      containerClassName="mb-2 md:mb-3"
-                      textClassName="font-title font-bold text-white text-glow-orange"
-                      animationDuration={1.2}
-                      ease="back.inOut(2)"
-                      scrollStart="top 80%"
-                      scrollEnd="top 40%"
-                      stagger={0.05}
-                    >
+                    {/* Animated Number */}
+                    <div className="mb-2 md:mb-3">
                       <span
+                        className="font-title font-bold text-white text-glow-orange inline-block stat-number"
                         style={{
                           fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
                         }}
                         data-testid={`text-stat-number-${index}`}
+                        data-value={stat.number}
                       >
                         {stat.number}
                       </span>
-                    </ScrollFloat>
+                    </div>
 
                     {/* Label */}
                     <p className="font-body text-xs md:text-sm lg:text-base text-white/60 uppercase tracking-wide">

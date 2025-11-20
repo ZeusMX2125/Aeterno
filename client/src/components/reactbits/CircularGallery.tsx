@@ -114,13 +114,33 @@ export default function CircularGallery({ items, radius = 300 }: CircularGallery
                 transformStyle: 'preserve-3d',
               }}
             >
-              <div className="w-full h-full glass rounded-2xl overflow-hidden shadow-2xl flex flex-col items-center justify-center p-6 border border-white/10 glow-orange-hover">
-                <div className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-sm flex items-center justify-center mb-4 border border-white/10">
-                  <Icon className="w-10 h-10 text-white" strokeWidth={1.5} />
-                </div>
-                <p className="text-white font-body text-sm font-medium text-center">
-                  {item.label}
-                </p>
+              <div className="w-full h-full glass rounded-2xl overflow-hidden shadow-2xl border border-white/10 glow-orange-hover">
+                {item.image ? (
+                  <>
+                    <img
+                      src={item.image}
+                      alt={item.label}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4">
+                      <div className="flex items-center gap-2 justify-center">
+                        <Icon className="w-5 h-5 text-primary" strokeWidth={2} />
+                        <p className="text-white font-body text-sm font-semibold text-center">
+                          {item.label}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-6">
+                    <div className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-sm flex items-center justify-center mb-4 border border-white/10">
+                      <Icon className="w-10 h-10 text-white" strokeWidth={1.5} />
+                    </div>
+                    <p className="text-white font-body text-sm font-medium text-center">
+                      {item.label}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           );
