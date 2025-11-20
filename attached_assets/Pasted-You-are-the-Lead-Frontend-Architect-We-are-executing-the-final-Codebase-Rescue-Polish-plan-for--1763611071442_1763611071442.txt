@@ -1,0 +1,89 @@
+You are the Lead Frontend Architect. We are executing the final "Codebase Rescue & Polish" plan for the Aeterno Media site.
+
+**Core Objectives:**
+1.  **Fix the Hero:** Restore the `<Iridescence />` background immediately (previous attempts incorrectly reverted to Aurora).
+2.  **Fix the Structure:** Convert to a pure vertical scroll layout (No Tabs) and fix the "Black Void" scroll bugs by disabling pinning on mobile.
+3.  **Upgrade UI:** Replace glitchy sections with high-end `ReactBits` components (`FlyingPosters`, `CircularGallery`, etc.).
+4.  **Fix Layout Bugs:** Tame the "Curved Text" so it flows freely but doesn't block content.
+
+---
+
+### 🚨 PHASE 1: CRITICAL CORRECTIONS (Do First)
+
+**1. FIX `Hook.tsx` (RESTORE IRIDESCENCE)**
+The current file uses `<Aurora />`. This is wrong.
+* **Action:** Import `Iridescence` from `./backgrounds/Iridescence`.
+* **Action:** Replace the `<Aurora />` block with:
+    ```jsx
+    <div className="absolute inset-0 z-0 w-full h-full opacity-40">
+      <Iridescence 
+        color={[1, 0.27, 0]} // Safety Orange
+        mouseReact={false} 
+        amplitude={0.1} 
+        speed={1.0}
+      />
+    </div>
+    ```
+
+**2. FIX `CurvedLoop` (Z-INDEX & CLIPPING)**
+The text is cutting off or floating over headlines.
+* **Action:** In `CurvedLoop.css`, remove `overflow: hidden` and set `height: 0`.
+* **Action:** In `CurvedLoop.tsx`, set the wrapper style to `position: absolute; z-index: 0; pointer-events: none; opacity: 0.3;`.
+* **Action:** Ensure all main content sections (`Scene1`, `Scene2`, etc.) have `z-index: 10` and `position: relative` so they visually sit *on top* of the floating text.
+
+---
+
+### 🛠️ PHASE 2: REACTBITS COMPONENT IMPLEMENTATION
+
+Create a new folder `client/src/components/reactbits/` and implement these components. Use **GSAP** for animations to maintain consistency.
+
+**1. `ShapeBlur.tsx` (For Photography Background)**
+   - **Concept:** A WebGL mesh gradient that blurs and morphs.
+   - **Usage:** Replaces `GradientBlinds` in `Scene1`.
+
+**2. `CircularGallery.tsx` (For Photography Content)**
+   - **Concept:** A rotating 3D cylinder of images.
+   - **Usage:** Replaces the static grid in `Scene1`.
+
+**3. `FlyingPosters.tsx` (For Web Dev Section)**
+   - **Concept:** A stack of website mockups that fly outward/inward based on scroll.
+   - **Usage:** Replaces the glitchy `GridScan` setup in `Scene2`.
+
+**4. `CardSwap.tsx` (For "What We Do Best")**
+   - **Concept:** An interactive stack of cards for services.
+   - **Usage:** Replaces the list in `OtherCapabilities.tsx`.
+
+**5. `FluidGlass.tsx` & `FlowingMenu.tsx` (For Navigation)**
+   - **Concept:** A distortion effect background and liquid-motion links.
+   - **Usage:** Replaces the current `Navigation` bar.
+
+---
+
+### 🏗️ PHASE 3: SCENE RECONSTRUCTION
+
+**1. REBUILD `Scene1_Photography.tsx`**
+   - **Background:** `<ShapeBlur />`
+   - **Content:** `<CircularGallery items={portfolioItems} />`
+   - **Scroll Logic:** `pin: window.innerWidth > 1024` (Disable pinning on mobile to stop black void bugs).
+
+**2. REBUILD `Scene2_WebDev.tsx`**
+   - **Background:** Clean dark CSS gradient (Remove `GridScan`).
+   - **Content:** `<FlyingPosters />` featuring the laptop/wireframe assets.
+   - **Scroll Logic:** `pin: window.innerWidth > 1024`.
+
+**3. REFACTOR `OtherCapabilities.tsx`**
+   - **Remove:** Any "Tabs" or complex switching logic.
+   - **Implement:** `<CardSwap />` to display the remaining services (Graphic Design, Copywriting, etc.) in a fun, interactive deck.
+
+**4. CLEANUP**
+   - Uninstall `face-api.js`, `postprocessing`, and `framer-motion` (unless strictly needed for a specific ReactBits component).
+   - Remove unused background files (`GradientBlinds`, `GridScan`) to clear the project.
+
+### EXECUTION ORDER
+1. Fix `Hook.tsx` (Iridescence).
+2. Fix `CurvedLoop` styling.
+3. Create `reactbits` components.
+4. Rebuild Scenes 1 & 2.
+5. Update Navigation.
+
+Execute this plan immediately.

@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import logoImage from '@assets/AETERNO (3)_1762894919968.png';
 // @ts-ignore - WebGL component without TypeScript definitions
-import Aurora from './backgrounds/Aurora';
+import Iridescence from './backgrounds/Iridescence';
 import TextType from './animations/TextType';
 import ShinyText from './animations/ShinyText';
 import MagneticButton from '@/components/effects/MagneticButton';
@@ -43,13 +43,13 @@ export default function Hook({ openModal }: HookProps) {
 
   return (
     <section className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 py-12 overflow-hidden">
-      {/* WebGL Background - ONLY Aurora allowed */}
-      <div className="absolute inset-0 z-0" style={{ opacity: 0.5 }}>
-        <Aurora 
-          colorStops={['#8B2500', '#A03000', '#FF4500']} 
-          speed={0.8} 
-          blend={0.6} 
-          amplitude={1.2} 
+      {/* WebGL Background - Iridescence */}
+      <div className="absolute inset-0 z-0 w-full h-full opacity-40">
+        <Iridescence 
+          color={[1, 0.27, 0]}
+          mouseReact={false}
+          amplitude={0.1}
+          speed={1.0}
         />
       </div>
       

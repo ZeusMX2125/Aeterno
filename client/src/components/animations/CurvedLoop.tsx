@@ -124,8 +124,9 @@ const CurvedLoop = ({
         visibility: ready ? 'visible' : 'hidden', 
         cursor: cursorStyle,
         position: 'absolute',
-        zIndex: 20,
-        pointerEvents: interactive ? 'auto' : 'none',
+        zIndex: 0,
+        pointerEvents: 'none',
+        opacity: 0.3,
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
