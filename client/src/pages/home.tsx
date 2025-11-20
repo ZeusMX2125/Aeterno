@@ -29,25 +29,18 @@ export default function Home() {
       <Navigation openModal={openModal} />
       <Hook openModal={openModal} />
       <SectionDivider />
-      <div id="services">
+      <div id="photography">
         <Scene1_Photography openModal={openModal} />
       </div>
-      <SectionDivider />
-      <div id="work">
+      <div id="web-development">
         <Scene2_WebDev openModal={openModal} />
       </div>
-      <SectionDivider />
-      <Scene3_SMM openModal={openModal} />
-      <SectionDivider />
-      <div id="about">
-        <Statistics />
+      <div id="social-media">
+        <Scene3_SMM openModal={openModal} />
       </div>
-      <SectionDivider />
+      <Statistics />
       <OtherCapabilities />
-      <SectionDivider />
-      <div id="contact">
-        <Footer />
-      </div>
+      <Footer />
       
       <QuoteIntake
         isModalOpen={isModalOpen}

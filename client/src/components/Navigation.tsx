@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'wouter';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import logoImage from '@assets/AETERNO (3)_1762894919968.png';
 import {
   Sheet,
@@ -10,8 +9,6 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
-import FluidGlass from './reactbits/FluidGlass';
-import FlowingMenu from './reactbits/FlowingMenu';
 
 interface NavigationProps {
   openModal: (service: string) => void;
@@ -20,7 +17,6 @@ interface NavigationProps {
 export default function Navigation({ openModal }: NavigationProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [location] = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,13 +27,12 @@ export default function Navigation({ openModal }: NavigationProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const navHeight = window.innerWidth >= 768 ? 80 : 64; // md:h-20 (80px) or h-16 (64px)
+      const navHeight = window.innerWidth >= 768 ? 80 : 64;
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navHeight - 20; // Extra 20px spacing
+      const offsetPosition = elementPosition - navHeight - 20;
       
       window.scrollTo({
         top: offsetPosition,
@@ -45,12 +40,6 @@ export default function Navigation({ openModal }: NavigationProps) {
       });
     }
   };
-
-  const menuItems = [
-    { label: 'Photography', href: '/photography' },
-    { label: 'Web Dev', href: '/web-development' },
-    { label: 'Social Media', href: '/social-media' },
-  ];
 
   return (
     <nav
@@ -61,29 +50,44 @@ export default function Navigation({ openModal }: NavigationProps) {
       }`}
       data-testid="nav-header"
     >
-      {/* FluidGlass Background Effect */}
-      {scrolled && <FluidGlass intensity={0.3} />}
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/">
-            <div className="flex-shrink-0 cursor-pointer">
-              <img
-                src={logoImage}
-                alt="Aeterno Media"
-                className="h-10 md:h-12 w-auto"
-                data-testid="img-nav-logo"
-              />
-            </div>
-          </Link>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex-shrink-0 cursor-pointer">
+            <img
+              src={logoImage}
+              alt="Aeterno Media"
+              className="h-10 md:h-12 w-auto"
+              data-testid="img-nav-logo"
+            />
+          </button>
 
-          {/* Desktop Navigation Links - FlowingMenu */}
-          <div className="hidden md:flex items-center">
-            <FlowingMenu items={menuItems} />
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            <button
+              onClick={() => scrollToSection('photography')}
+              className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
+              data-testid="link-photography"
+            >
+              Photography
+            </button>
+            <button
+              onClick={() => scrollToSection('web-development')}
+              className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
+              data-testid="link-web-dev"
+            >
+              Web Dev
+            </button>
+            <button
+              onClick={() => scrollToSection('social-media')}
+              className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
+              data-testid="link-social-media"
+            >
+              Social Media
+            </button>
             <button
               onClick={() => openModal('General Inquiry')}
-              className="ml-6 lg:ml-8 text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
+              className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
               data-testid="link-contact"
             >
               Contact
@@ -115,33 +119,36 @@ export default function Navigation({ openModal }: NavigationProps) {
                 <SheetTitle className="text-white font-title text-2xl">Menu</SheetTitle>
               </SheetHeader>
               <div className="flex flex-col space-y-6 mt-8">
-                <SheetClose asChild>
-                  <Link 
-                    href="/photography" 
-                    className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" 
-                    data-testid="link-photography-mobile"
-                  >
-                    Photography
-                  </Link>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Link 
-                    href="/web-development" 
-                    className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" 
-                    data-testid="link-web-dev-mobile"
-                  >
-                    Web Development
-                  </Link>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Link 
-                    href="/social-media" 
-                    className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg cursor-pointer block" 
-                    data-testid="link-social-media-mobile"
-                  >
-                    Social Media
-                  </Link>
-                </SheetClose>
+                <button
+                  onClick={() => {
+                    scrollToSection('photography');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg text-left"
+                  data-testid="link-photography-mobile"
+                >
+                  Photography
+                </button>
+                <button
+                  onClick={() => {
+                    scrollToSection('web-development');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg text-left"
+                  data-testid="link-web-dev-mobile"
+                >
+                  Web Development
+                </button>
+                <button
+                  onClick={() => {
+                    scrollToSection('social-media');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-lg text-left"
+                  data-testid="link-social-media-mobile"
+                >
+                  Social Media
+                </button>
                 <button
                   onClick={() => {
                     openModal('General Inquiry');

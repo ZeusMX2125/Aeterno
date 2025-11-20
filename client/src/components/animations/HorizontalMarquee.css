@@ -1,0 +1,23 @@
+.horizontal-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.horizontal-marquee-content {
+  display: inline-block;
+  animation: marquee-scroll 40s linear infinite;
+}
+
+.horizontal-marquee-content span {
+  display: inline-block;
+  padding-right: 2rem;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
