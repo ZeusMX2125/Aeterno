@@ -10,6 +10,8 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
+import FluidGlass from './reactbits/FluidGlass';
+import FlowingMenu from './reactbits/FlowingMenu';
 
 interface NavigationProps {
   openModal: (service: string) => void;
@@ -44,6 +46,12 @@ export default function Navigation({ openModal }: NavigationProps) {
     }
   };
 
+  const menuItems = [
+    { label: 'Photography', href: '/photography' },
+    { label: 'Web Dev', href: '/web-development' },
+    { label: 'Social Media', href: '/social-media' },
+  ];
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -53,6 +61,9 @@ export default function Navigation({ openModal }: NavigationProps) {
       }`}
       data-testid="nav-header"
     >
+      {/* FluidGlass Background Effect */}
+      {scrolled && <FluidGlass intensity={0.3} />}
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
@@ -67,35 +78,12 @@ export default function Navigation({ openModal }: NavigationProps) {
             </div>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
-            <Link href="/photography">
-              <span
-                className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base cursor-pointer"
-                data-testid="link-photography"
-              >
-                Photography
-              </span>
-            </Link>
-            <Link href="/web-development">
-              <span
-                className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base cursor-pointer"
-                data-testid="link-web-dev"
-              >
-                Web Dev
-              </span>
-            </Link>
-            <Link href="/social-media">
-              <span
-                className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base cursor-pointer"
-                data-testid="link-social-media"
-              >
-                Social Media
-              </span>
-            </Link>
+          {/* Desktop Navigation Links - FlowingMenu */}
+          <div className="hidden md:flex items-center">
+            <FlowingMenu items={menuItems} />
             <button
               onClick={() => openModal('General Inquiry')}
-              className="text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
+              className="ml-6 lg:ml-8 text-white/80 hover:text-primary transition-colors duration-200 font-body text-sm lg:text-base"
               data-testid="link-contact"
             >
               Contact
