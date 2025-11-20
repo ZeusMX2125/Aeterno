@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 interface QuoteIntakeProps {
   isModalOpen: boolean;
@@ -22,12 +25,45 @@ const services = [
 ];
 
 export default function QuoteIntake({ isModalOpen, closeModal, selectedService }: QuoteIntakeProps) {
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     services: [] as string[],
     budget: 5000,
     name: '',
     email: '',
+  });
+
+  const submitMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      return await apiRequest('POST', '/api/quote-submissions', {
+        services: data.services,
+        budget: data.budget,
+        name: data.name,
+        email: data.email,
+      });
+    },
+    onSuccess: () => {
+      toast({ 
+        title: 'Success!', 
+        description: 'Your quote request has been submitted.' 
+      });
+      setFormData({
+        services: [],
+        budget: 5000,
+        name: '',
+        email: '',
+      });
+      setCurrentStep(1);
+      closeModal();
+    },
+    onError: () => {
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to submit quote. Please try again.', 
+        variant: 'destructive' 
+      });
+    },
   });
 
   useEffect(() => {
@@ -64,15 +100,7 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
   };
 
   const handleSubmit = () => {
-    console.log('Quote Form Submitted:', formData);
-    setFormData({
-      services: [],
-      budget: 5000,
-      name: '',
-      email: '',
-    });
-    setCurrentStep(1);
-    closeModal();
+    submitMutation.mutate(formData);
   };
 
   const canProceed = () => {
@@ -288,11 +316,11 @@ export default function QuoteIntake({ isModalOpen, closeModal, selectedService }
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={!canProceed()}
+              disabled={!canProceed() || submitMutation.isPending}
               className="flex-1 h-12 font-body bg-primary hover:bg-primary/90 glow-orange"
               data-testid="button-submit"
             >
-              Schedule Your Consultation
+              {submitMutation.isPending ? 'Submitting...' : 'Schedule Your Consultation'}
             </Button>
           )}
         </div>
