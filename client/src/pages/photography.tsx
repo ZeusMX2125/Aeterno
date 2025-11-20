@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { Camera, Video, Image as ImageIcon, Film, Aperture, Clapperboard, ArrowLeft } from 'lucide-react';
@@ -90,6 +90,10 @@ export default function Photography() {
     return () => ctx.kill(true);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   return (
     <div className="w-full overflow-x-hidden bg-black">
       {/* Hero Section */}
@@ -97,7 +101,7 @@ export default function Photography() {
         {/* WebGL Background */}
         <div className="absolute inset-0 z-0">
           <Aurora 
-            colorStops={["#FF4500", "#8B4513", "#FF6347"]}
+            colorStops={["#8B2500", "#A03000", "#FF4500"]}
             speed={0.8}
             blend={0.6}
             amplitude={1.2}

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { TrendingUp, Target, Users, BarChart3, Calendar, MessageSquare, ArrowLeft } from 'lucide-react';
@@ -95,6 +95,10 @@ export default function SocialMedia() {
     });
 
     return () => ctx.kill(true);
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   return (

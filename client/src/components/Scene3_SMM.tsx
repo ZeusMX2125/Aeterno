@@ -7,6 +7,7 @@ import { Heart, MessageCircle, Share2, TrendingUp } from 'lucide-react';
 // @ts-ignore - WebGL component without TypeScript definitions
 import LiquidEther from './backgrounds/LiquidEther';
 import ShinyText from './animations/ShinyText';
+import TextType from './animations/TextType';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -141,17 +142,17 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
     >
       {/* WebGL Background */}
       <div className="absolute inset-0 z-0">
-        <LiquidEther colors={['#000000', '#111111', '#220a00']} />
+        <LiquidEther colors={['#000000', '#0f0300', '#1a0500']} />
       </div>
       
       {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/30 via-gray-950/20 to-black/30" />
+      <div className="absolute inset-0 z-10 opacity-20">
         <div className="absolute top-1/4 left-1/3 bg-primary/10 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-1/4 right-1/3 bg-primary/5 rounded-full blur-3xl animate-float-slow" />
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
         <div ref={headlineRef} className="text-center mb-8 md:mb-12 lg:mb-16">
           <p className="text-primary font-body text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3">
@@ -163,7 +164,15 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
               fontSize: 'clamp(2rem, 8vw, 4.5rem)',
             }}
           >
-            Then, we <span className="text-primary">tell the world</span>
+            Then, we <TextType
+              text={['tell the world', 'build communities', 'grow your audience', 'amplify your voice']}
+              as="span"
+              className="text-primary inline-block"
+              typingSpeed={100}
+              deletingSpeed={50}
+              pauseDuration={2000}
+              loop={true}
+            />
           </h2>
           <p className="font-body text-muted-foreground max-w-3xl mx-auto" style={{
             fontSize: 'clamp(0.9rem, 2vw, 1.25rem)',

@@ -8,6 +8,8 @@ import finalDesignImage from '@assets/generated_images/Final_website_design_03e2
 // @ts-ignore - WebGL component without TypeScript definitions
 import GridScan from './backgrounds/GridScan';
 import ShinyText from './animations/ShinyText';
+import TextType from './animations/TextType';
+import NoiseTexture from '@/components/effects/NoiseTexture';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -151,13 +153,13 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
       </div>
       
       {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/30 via-gray-950/20 to-black/30" />
+      <div className="absolute inset-0 z-10 opacity-20">
         <div className="absolute top-1/3 right-1/4 bg-primary/10 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-1/3 left-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
         <div ref={headlineRef} className="text-center mb-8 md:mb-12 lg:mb-16">
           <p className="text-primary font-body text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3">
@@ -169,7 +171,15 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
               fontSize: 'clamp(2rem, 8vw, 4.5rem)',
             }}
           >
-            We build your brand's <span className="text-primary">digital home</span>
+            We build your brand's <TextType
+              text={['digital home', 'online presence', 'web experience', 'digital foundation']}
+              as="span"
+              className="text-primary inline-block"
+              typingSpeed={100}
+              deletingSpeed={50}
+              pauseDuration={2000}
+              loop={true}
+            />
           </h2>
           <p className="font-body text-muted-foreground max-w-3xl mx-auto" style={{
             fontSize: 'clamp(0.9rem, 2vw, 1.25rem)',
@@ -187,6 +197,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
           {/* Card 1: Wireframe to Final */}
           <TiltCard className="floating-card perspective-container group">
             <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
+              <NoiseTexture opacity={0.02} />
               <div className="aspect-[4/3] relative overflow-hidden">
                 <img
                   src={wireframeImage}
@@ -210,6 +221,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
           {/* Card 2: Laptop Mockup */}
           <TiltCard className="floating-card perspective-container group">
             <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
+              <NoiseTexture opacity={0.02} />
               <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] flex items-center justify-center p-6 md:p-8">
                 <img
                   src={laptopMockup}
@@ -234,6 +246,7 @@ export default function Scene2_WebDev({ openModal }: Scene2Props) {
           {/* Card 3: Final Design */}
           <TiltCard className="floating-card perspective-container group">
             <div className="preserve-3d relative glass rounded-2xl overflow-hidden border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover">
+              <NoiseTexture opacity={0.02} />
               <div className="aspect-[4/3] relative overflow-hidden">
                 <img
                   src={finalDesignImage}

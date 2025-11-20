@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { Code, Smartphone, Zap, Shield, Rocket, Palette, ArrowLeft } from 'lucide-react';
@@ -100,6 +100,10 @@ export default function WebDevelopment() {
     });
 
     return () => ctx.kill(true);
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   return (

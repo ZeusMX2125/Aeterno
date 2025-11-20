@@ -6,6 +6,7 @@ import { Play, Camera, Video, Image as ImageIcon, Film, Aperture, Clapperboard }
 // @ts-ignore - WebGL component without TypeScript definitions
 import GradientBlinds from './backgrounds/GradientBlinds';
 import ShinyText from './animations/ShinyText';
+import TextType from './animations/TextType';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -204,7 +205,7 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
       <div className="absolute inset-0 z-0">
         <GradientBlinds 
           blindCount={10} 
-          gradientColors={['#000000', '#050505', '#220a00']} 
+          gradientColors={['#000000', '#1a0500', '#FF4500']} 
           noise={0.5}
           mouseDampening={0.05}
           spotlightOpacity={2}
@@ -213,13 +214,13 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
       </div>
       
       {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950/50 to-black" />
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/30 via-gray-950/20 to-black/30" />
+      <div className="absolute inset-0 z-10 opacity-20">
         <div className="absolute top-1/4 right-1/4 bg-primary/10 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-1/4 left-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 section-spacing">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8 section-spacing">
         {/* Header */}
         <div ref={headlineRef} className="text-center mb-8 md:mb-12 lg:mb-16">
           <p className="text-primary font-body text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3 opacity-80">
@@ -232,7 +233,15 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
               fontSize: 'clamp(2rem, 8vw, 4rem)',
             }}
           >
-            It all starts with the <span className="text-primary">perfect capture</span>
+            It all starts with the <TextType
+              text={['perfect capture', 'right moment', 'creative vision', 'perfect shot']}
+              as="span"
+              className="text-primary inline-block"
+              typingSpeed={100}
+              deletingSpeed={50}
+              pauseDuration={2000}
+              loop={true}
+            />
           </h2>
           <p
             className="font-body text-white/60 mb-6 md:mb-8 max-w-2xl mx-auto"

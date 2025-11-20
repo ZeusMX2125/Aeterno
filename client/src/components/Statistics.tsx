@@ -1,7 +1,10 @@
-import { useLayoutEffect, useRef, memo, useCallback, useState } from 'react';
+import { useLayoutEffect, useRef, memo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Camera, Code, TrendingUp, Users } from 'lucide-react';
+// @ts-ignore - WebGL component without TypeScript definitions
+import GridScan from './backgrounds/GridScan';
+import ScrollFloat from './animations/ScrollFloat';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -100,74 +103,6 @@ const TiltCard = memo(({ children, className }: { children: React.ReactNode; cla
 
 TiltCard.displayName = 'TiltCard';
 
-// Animated Counter Component
-const StatCounter = memo(({ value, suffix, index }: { value: number; suffix: string; index: number }) => {
-  const [displayValue, setDisplayValue] = useState(0);
-  const numberRef = useRef<HTMLDivElement>(null);
-  const hasAnimated = useRef(false);
-
-  useLayoutEffect(() => {
-    if (!numberRef.current || hasAnimated.current) return;
-
-    const ctx = gsap.context(() => {
-      const counter = { val: 0 };
-      
-      const animation = gsap.to(counter, {
-        val: value,
-        duration: 2.5,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: numberRef.current,
-          start: 'top 80%',
-          once: true,
-        },
-        onUpdate: () => {
-          setDisplayValue(counter.val);
-        },
-        onComplete: () => {
-          hasAnimated.current = true;
-        },
-      });
-
-      return animation;
-    });
-
-    return () => {
-      ctx.revert();
-      ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.trigger === numberRef.current) {
-          trigger.kill();
-        }
-      });
-    };
-  }, [value]);
-
-  const formatNumber = (num: number) => {
-    // Check if the original value has decimals
-    if (value % 1 !== 0) {
-      // Original value has decimals (like 2.5), preserve them
-      return num.toFixed(1);
-    }
-    // Original value is whole number, display as integer
-    return Math.floor(num);
-  };
-
-  return (
-    <div
-      ref={numberRef}
-      className="font-title font-bold text-white mb-2 md:mb-3 text-glow-orange"
-      style={{
-        fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
-      }}
-      data-testid={`text-stat-number-${index}`}
-    >
-      {formatNumber(displayValue)}{suffix}
-    </div>
-  );
-});
-
-StatCounter.displayName = 'StatCounter';
-
 export default function Statistics() {
   const containerRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
@@ -225,14 +160,24 @@ export default function Statistics() {
 
   return (
     <section ref={containerRef} className="section-spacing bg-black relative overflow-hidden">
+      {/* WebGL Background */}
+      <div className="absolute inset-0 z-0">
+        <GridScan 
+          gridScale={0.05} 
+          scanColor='#FF4500' 
+          linesColor='#1a1a1a' 
+          enableWebcam={false}
+        />
+      </div>
+      
       {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-950/50 to-black" />
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-gray-950/20 to-black/30" />
+      <div className="absolute inset-0 z-10 opacity-20">
         <div className="absolute top-1/4 left-1/4 bg-primary/10 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-1/4 right-1/4 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
         <div ref={headlineRef} className="text-center mb-12 md:mb-16">
           <p className="text-primary font-body text-xs md:text-sm uppercase tracking-wider mb-3 md:mb-4 opacity-80">
@@ -267,8 +212,25 @@ export default function Statistics() {
                       <div className="absolute inset-0 w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/20 opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300" />
                     </div>
 
-                    {/* Animated Number */}
-                    <StatCounter value={stat.value} suffix={stat.suffix} index={index} />
+                    {/* Animated Number with ScrollFloat */}
+                    <ScrollFloat
+                      containerClassName="mb-2 md:mb-3"
+                      textClassName="font-title font-bold text-white text-glow-orange"
+                      animationDuration={1.2}
+                      ease="back.inOut(2)"
+                      scrollStart="top 80%"
+                      scrollEnd="top 40%"
+                      stagger={0.05}
+                    >
+                      <span
+                        style={{
+                          fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+                        }}
+                        data-testid={`text-stat-number-${index}`}
+                      >
+                        {stat.number}
+                      </span>
+                    </ScrollFloat>
 
                     {/* Label */}
                     <p className="font-body text-xs md:text-sm lg:text-base text-white/60 uppercase tracking-wide">

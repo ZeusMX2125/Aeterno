@@ -5,6 +5,8 @@ import { Camera, Video, Image, Globe, Share2, Palette, FileText } from 'lucide-r
 // @ts-ignore - WebGL component without TypeScript definitions
 import Particles from '@/components/backgrounds/Particles';
 import ShinyText from '@/components/animations/ShinyText';
+import TextType from '@/components/animations/TextType';
+import SpotlightCard from '@/components/effects/SpotlightCard';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -194,7 +196,15 @@ export default function OtherCapabilities() {
               fontSize: 'clamp(2rem, 8vw, 4rem)',
             }}
           >
-            What We <span className="text-primary">Do Best</span>
+            What We <TextType
+              text={['Do Best', 'Excel At', 'Master', 'Deliver']}
+              as="span"
+              className="text-primary inline-block"
+              typingSpeed={100}
+              deletingSpeed={50}
+              pauseDuration={2000}
+              loop={true}
+            />
           </h2>
           <p className="font-body text-muted-foreground max-w-3xl mx-auto" style={{
             fontSize: 'clamp(0.9rem, 2vw, 1.25rem)',
@@ -215,30 +225,32 @@ export default function OtherCapabilities() {
                 key={index}
                 className="floating-card perspective-container group"
               >
-                <div
-                  className="preserve-3d relative"
-                  data-testid={`card-service-${index}`}
-                >
-                  <div className="glass rounded-2xl p-5 md:p-6 border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover h-full">
-                    <div className="flex flex-col gap-3 md:gap-4">
-                      <div className="relative">
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/20 rounded-xl flex items-center justify-center shadow-lg border border-primary/30">
-                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                <SpotlightCard>
+                  <div
+                    className="preserve-3d relative"
+                    data-testid={`card-service-${index}`}
+                  >
+                    <div className="glass rounded-2xl p-5 md:p-6 border border-white/10 transition-all duration-300 hover:border-primary/30 glow-orange-hover h-full">
+                      <div className="flex flex-col gap-3 md:gap-4">
+                        <div className="relative">
+                          <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/20 rounded-xl flex items-center justify-center shadow-lg border border-primary/30">
+                            <Icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                          </div>
+                          <div className="absolute inset-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/20 opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300" />
                         </div>
-                        <div className="absolute inset-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/20 opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300" />
-                      </div>
-                      
-                      <div>
-                        <h3 className="font-title text-base md:text-lg lg:text-xl font-bold text-white mb-1.5 md:mb-2 uppercase">
-                          {service.title}
-                        </h3>
-                        <p className="font-body text-xs md:text-sm text-muted-foreground leading-relaxed">
-                          {service.description}
-                        </p>
+                        
+                        <div>
+                          <h3 className="font-title text-base md:text-lg lg:text-xl font-bold text-white mb-1.5 md:mb-2 uppercase">
+                            {service.title}
+                          </h3>
+                          <p className="font-body text-xs md:text-sm text-muted-foreground leading-relaxed">
+                            {service.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </SpotlightCard>
               </TiltCard>
             );
           })}

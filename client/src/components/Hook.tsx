@@ -5,6 +5,7 @@ import logoImage from '@assets/AETERNO (3)_1762894919968.png';
 import Iridescence from './backgrounds/Iridescence';
 import TextType from './animations/TextType';
 import ShinyText from './animations/ShinyText';
+import MagneticButton from '@/components/effects/MagneticButton';
 
 interface HookProps {
   openModal: (service: string) => void;
@@ -101,17 +102,19 @@ export default function Hook({ openModal }: HookProps) {
           />
         </p>
         
-        <button
-          ref={buttonRef}
-          onClick={() => openModal('Website Development (using Replit)')}
-          className="bg-primary text-white font-body font-semibold px-10 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all duration-300 hover:scale-105 active:scale-95 mt-2 md:mt-4 min-h-[44px]"
-          data-testid="button-start-project"
-          style={{
-            fontSize: 'clamp(0.9rem, 2.5vw, 1.125rem)',
-          }}
-        >
-          Start Your Project
-        </button>
+        <MagneticButton padding={120} magnetStrength={0.3}>
+          <button
+            ref={buttonRef}
+            onClick={() => openModal('Website Development (using Replit)')}
+            className="bg-primary text-white font-body font-semibold px-10 py-4 rounded-xl glow-orange hover:glow-orange-strong transition-all duration-300 hover:scale-105 active:scale-95 mt-2 md:mt-4 min-h-[44px]"
+            data-testid="button-start-project"
+            style={{
+              fontSize: 'clamp(0.9rem, 2.5vw, 1.125rem)',
+            }}
+          >
+            Start Your Project
+          </button>
+        </MagneticButton>
       </div>
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
