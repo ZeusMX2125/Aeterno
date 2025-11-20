@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface CircularGalleryItem {
   image?: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: React.ComponentType<any>;
   label: string;
 }
 
