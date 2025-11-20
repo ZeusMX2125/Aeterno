@@ -2,6 +2,9 @@ import { useLayoutEffect, useRef, memo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Camera, Video, Image, Globe, Share2, Palette, FileText } from 'lucide-react';
+// @ts-ignore - WebGL component without TypeScript definitions
+import Particles from '@/components/backgrounds/Particles';
+import ShinyText from '@/components/animations/ShinyText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -164,11 +167,19 @@ export default function OtherCapabilities() {
 
   return (
     <section ref={containerRef} className="section-spacing bg-black relative overflow-hidden" data-testid="section-capabilities">
-      {/* Subtle animated gradient - Safety Orange accent */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-950/50 to-black" />
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/3 left-1/5 bg-primary/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute bottom-1/3 right-1/5 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
+      {/* Particles WebGL Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Particles 
+          particleCount={150}
+          particleSpread={12}
+          speed={0.08}
+          particleColors={['#FF4500', '#ffffff', '#FF6633']}
+          moveParticlesOnHover={false}
+          alphaParticles={true}
+          particleBaseSize={80}
+          cameraDistance={22}
+          disableRotation={false}
+        />
       </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
@@ -177,7 +188,7 @@ export default function OtherCapabilities() {
             SERVICES
           </p>
           <h2
-            className="font-title font-bold text-white uppercase leading-tight"
+            className="font-title font-bold text-white uppercase leading-tight mb-3 md:mb-4"
             data-testid="text-capabilities-headline"
             style={{
               fontSize: 'clamp(2rem, 8vw, 4rem)',
@@ -185,6 +196,15 @@ export default function OtherCapabilities() {
           >
             What We <span className="text-primary">Do Best</span>
           </h2>
+          <p className="font-body text-muted-foreground max-w-3xl mx-auto" style={{
+            fontSize: 'clamp(0.9rem, 2vw, 1.25rem)',
+          }}>
+            <ShinyText 
+              text="From photography to web development, we offer comprehensive creative solutions that elevate your brand."
+              speed={10}
+              className="inline-block"
+            />
+          </p>
         </div>
 
         <div ref={cardsRef} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">

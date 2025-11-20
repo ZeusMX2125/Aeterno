@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 import { gsap } from 'gsap';
 import { Camera, Video, Image as ImageIcon, Film, Aperture, Clapperboard, ArrowLeft } from 'lucide-react';
 // @ts-ignore - WebGL component without TypeScript definitions
-import GradientBlinds from '@/components/backgrounds/GradientBlinds';
+import Aurora from '@/components/backgrounds/Aurora';
 import ShinyText from '@/components/animations/ShinyText';
 import QuoteIntake from '@/components/QuoteIntake';
 import Footer from '@/components/Footer';
@@ -96,12 +96,11 @@ export default function Photography() {
       <section className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 py-20 overflow-hidden">
         {/* WebGL Background */}
         <div className="absolute inset-0 z-0">
-          <GradientBlinds 
-            blindCount={10} 
-            gradientColors={['#000000', '#050505', '#220a00']} 
-            noise={0.5}
-            mouseDampening={0.05}
-            spotlightOpacity={2}
+          <Aurora 
+            colorStops={["#FF4500", "#8B4513", "#FF6347"]}
+            speed={0.8}
+            blend={0.6}
+            amplitude={1.2}
           />
         </div>
 
