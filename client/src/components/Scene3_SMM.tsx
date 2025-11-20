@@ -135,7 +135,7 @@ export default function Scene3_SMM({ openModal }: Scene3Props) {
   return (
     <section
       ref={containerRef}
-      className="min-h-[100svh] w-full relative overflow-hidden flex items-center justify-center section-spacing"
+      className="min-h-[100svh] w-full relative z-10 overflow-hidden flex items-center justify-center section-spacing"
       data-testid="section-smm"
       style={{
         background: 'radial-gradient(ellipse at 70% 50%, #1a1a1a 0%, #0a0a0a 50%, #000000 100%)',

@@ -196,7 +196,7 @@ export default function Scene1_Photography({ openModal }: Scene1Props) {
     <section
       id="scene-photography"
       ref={containerRef}
-      className="min-h-[100svh] w-full relative overflow-hidden flex items-center justify-center"
+      className="min-h-[100svh] w-full relative z-10 overflow-hidden flex items-center justify-center"
       data-testid="section-photography"
       style={{
         background: 'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%)',
